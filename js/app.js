@@ -879,9 +879,20 @@
     var saveCustomScenarios = function () {
       var custom = allScenarios.filter(function (s) { return s.custom; });
       try { localStorage.setItem(SCENARIO_STORAGE_KEY, JSON.stringify(custom)); } catch (e) {}
+      updateDockInfo();
+    };
+
+    // Keep the bottom dock's basic info in sync
+    var updateDockInfo = function () {
+      var el = document.getElementById('dockScenarioCount');
+      if (!el) return;
+      var custom = allScenarios.filter(function (s) { return s.custom; }).length;
+      el.textContent = allScenarios.length + ' scenarios' +
+        (custom ? ' (' + custom + ' custom)' : '');
     };
 
     loadCustomScenarios();
+    updateDockInfo();
 
     // Populate scenario selector with all scenarios
     var scenarioSelect = document.getElementById('scenarioSelect');

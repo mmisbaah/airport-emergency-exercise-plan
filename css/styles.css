@@ -153,7 +153,7 @@ body{
 }
 
 /* ---------- Views ---------- */
-main{padding:30px 0 80px;}
+main.wrap{padding-top:30px;padding-bottom:120px;}
 .view{display:none;animation:fade .28s ease;}
 
 #ttx-tab-phases:checked ~ main #phases,
@@ -497,6 +497,35 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
 .board-step b{display:block;font-size:13px;font-weight:600;margin-bottom:4px;}
 .board-step span{display:block;font-size:11.8px;color:var(--muted);line-height:1.45;}
 
+/* ---------- Bottom dock ---------- */
+.app-dock{
+  position:fixed; left:0; right:0; bottom:0; z-index:60;
+  background:var(--header-bg);
+  backdrop-filter:blur(14px);
+  border-top:1px solid var(--line-soft);
+}
+.dock-inner{
+  display:flex; align-items:center; justify-content:space-between;
+  flex-wrap:wrap; gap:6px 18px;
+  padding-top:9px; padding-bottom:9px;
+  font-size:12px; color:var(--muted);
+}
+.dock-left{display:flex;align-items:center;gap:9px;min-width:0;}
+.dock-mark{
+  width:22px;height:22px;flex:0 0 22px;border-radius:7px;
+  display:grid;place-items:center;font-size:12px;
+  background:linear-gradient(145deg,#1e3a8a,#0e1c38);
+  border:1px solid #2c4a7a;color:#fff;
+}
+.dock-left strong{color:var(--text);font-size:12.5px;font-weight:600;white-space:nowrap;}
+.dock-sub{white-space:nowrap;color:var(--muted2);}
+.dock-center{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0;}
+.dock-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.dock-right a{color:var(--blue);text-decoration:none;font-weight:500;white-space:nowrap;}
+.dock-right a:hover{text-decoration:underline;}
+.dock-kbd{color:var(--muted2);white-space:nowrap;}
+.dock-sep{color:var(--muted2);}
+
 /* ---------- Responsive ---------- */
 @media (max-width:1000px){
   .map-layout{grid-template-columns:1fr;}
@@ -510,6 +539,7 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
   .flow-arrow{transform:rotate(90deg);justify-self:center;}
   .brand h1{font-size:15px;white-space:normal;}
   .status-chip{display:none;}
+  .dock-kbd,.dock-sub{display:none;}
 }
 @media (max-width:520px){
   .wrap{padding:0 14px;}
@@ -517,6 +547,7 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
   .steps{gap:7px;}
   .step-sep{display:none;}
   .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .dock-center{display:none;}
 }
 
 /* ---------- Print Styles ---------- */
@@ -526,12 +557,12 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
     color:#000 !important;
     font-size:12px;
   }
-  .app-header,.tabs,.reset-btn,#scenarioModal,.status-chip,
+  .app-header,.tabs,.reset-btn,#scenarioModal,.status-chip,.app-dock,
   #scenarioEditorBtn,#printBtn,#themeToggle,.notice{
     display:none !important;
   }
   .wrap{max-width:100%;padding:0;}
-  main{padding:0;}
+  main.wrap{padding:0;}
   .view{display:block !important;}
   .card,.team-card,.zone-card,.emg-card,.ac-card,.diagram-card,
   .flow-node,.legend-item,.check-item,.step-chip{
