@@ -1105,6 +1105,174 @@
       });
     }
 
+    /* ================= ICS FORM GENERATOR ================= */
+    var icsBtn = document.getElementById('icsBtn');
+    var icsModal = document.getElementById('icsModal');
+    var closeIcsModal = document.getElementById('closeIcsModal');
+    var icsContent = document.getElementById('icsContent');
+    var icsDownloadBtn = document.getElementById('icsDownloadBtn');
+    var icsCopyBtn = document.getElementById('icsCopyBtn');
+
+    var generateICSForms = function () {
+      var scenarioSelect = document.getElementById('scenarioSelect');
+      var scenario = null;
+      if (scenarioSelect && scenarioSelect.value) {
+        scenario = allScenarios.find(function (s) { return s.id === scenarioSelect.value; });
+      }
+
+      var now = new Date();
+      var dateStr = now.toISOString().slice(0, 10);
+      var timeStr = now.toTimeString().slice(0, 5);
+
+      var report = '';
+      report += '=================================================================\n';
+      report += '  ICS 201 — INCIDENT BRIEFING\n';
+      report += '=================================================================\n\n';
+      report += '1. Incident Name: ' + (scenario ? scenario.name : 'Airport Emergency Exercise') + '\n';
+      report += '2. Date/Time Prepared: ' + dateStr + ' ' + timeStr + '\n';
+      report += '3. Incident Commander: _________________________\n';
+      report += '4. Agency: Airport Emergency Management\n';
+      report += '5. Incident Type: ' + (scenario ? (scenario.category || 'aircraft') : 'Exercise') + '\n\n';
+
+      report += '6. Situation Summary:\n';
+      if (scenario) {
+        report += '   - Aircraft: ' + (scenario.aircraft || 'N/A') + '\n';
+        report += '   - Souls on Board: ' + scenario.soulsOnBoard + '\n';
+        report += '   - Fuel Load: ' + scenario.fuelLoad + '\n';
+        report += '   - Fire Involved: ' + (scenario.fireInvolved ? 'Yes' : 'No') + '\n';
+        report += '   - Estimated Casualties: Red=' + scenario.casualties.red + ', Yellow=' + scenario.casualties.yellow + ', Green=' + scenario.casualties.green + ', Deceased=' + scenario.casualties.deceased + '\n';
+      } else {
+        report += '   No scenario selected. Select a scenario to auto-populate.\n';
+      }
+      report += '\n';
+
+      report += '7. Current Actions:\n';
+      if (timelineEvents.length > 0) {
+        timelineEvents.forEach(function (evt) {
+          report += '   [' + evt.time + '] ' + evt.text + '\n';
+        });
+      } else {
+        report += '   No actions recorded.\n';
+      }
+      report += '\n';
+
+      report += '8. Resource Requirements:\n';
+      if (scenario) {
+        report += '   - ARFF Vehicles: ' + scenario.resources.arff + '\n';
+        report += '   - Ambulances: ' + scenario.resources.ambulances + '\n';
+        report += '   - Fire Trucks: ' + scenario.resources.fireTrucks + '\n';
+        report += '   - Buses: ' + scenario.resources.buses + '\n';
+      }
+      report += '\n';
+
+      report += '=================================================================\n';
+      report += '  ICS 202 — INCIDENT OBJECTIVES\n';
+      report += '=================================================================\n\n';
+      report += '1. Incident Name: ' + (scenario ? scenario.name : 'Airport Emergency Exercise') + '\n';
+      report += '2. Operational Period: ' + dateStr + ' ' + timeStr + ' — Ongoing\n\n';
+      report += '3. Objectives:\n';
+      report += '   a. Establish Incident Command Post and command structure\n';
+      report += '   b. Ensure life safety — rescue and triage casualties\n';
+      report += '   c. Contain and control the hazard\n';
+      report += '   d. Establish hot/warm/cold zones and cordons\n';
+      report += '   e. Coordinate multi-agency response\n';
+      report += '   f. Establish Family Assistance Center\n';
+      report += '   g. Manage media and public information\n';
+      report += '   h. Document all actions for After Action Report\n\n';
+
+      report += '4. Strategy:\n';
+      report += '   - Prioritize life safety over property conservation\n';
+      report += '   - Establish unified command with all responding agencies\n';
+      report += '   - Maintain span of control (3-7 subordinates per supervisor)\n\n';
+
+      report += '=================================================================\n';
+      report += '  ICS 203 — ORGANIZATION ASSIGNMENT LIST\n';
+      report += '=================================================================\n\n';
+      report += '1. Incident Name: ' + (scenario ? scenario.name : 'Airport Emergency Exercise') + '\n';
+      report += '2. Date/Time Prepared: ' + dateStr + ' ' + timeStr + '\n\n';
+      report += '3. Command Staff:\n';
+      report += '   Incident Commander: _________________________\n';
+      report += '   Safety Officer: _________________________\n';
+      report += '   Public Information Officer: _________________________\n';
+      report += '   Liaison Officer: _________________________\n\n';
+
+      report += '4. Operations Section:\n';
+      report += '   Operations Section Chief: _________________________\n';
+      report += '   ARFF Group: _________________________\n';
+      report += '   EMS/Triage Group: _________________________\n';
+      report += '   Security/Perimeter Group: _________________________\n\n';
+
+      report += '5. Planning Section:\n';
+      report += '   Planning Section Chief: _________________________\n';
+      report += '   Situation Unit: _________________________\n';
+      report += '   Resources Unit: _________________________\n\n';
+
+      report += '6. Logistics Section:\n';
+      report += '   Logistics Section Chief: _________________________\n';
+      report += '   Staging Area Manager: _________________________\n';
+      report += '   Communications Unit: _________________________\n\n';
+
+      report += '=================================================================\n';
+      report += '  END OF ICS FORMS\n';
+      report += '=================================================================\n';
+
+      return report;
+    };
+
+    if (icsBtn) {
+      icsBtn.addEventListener('click', function () {
+        icsModal.style.display = 'block';
+        icsContent.textContent = generateICSForms();
+      });
+    }
+
+    if (closeIcsModal) {
+      closeIcsModal.addEventListener('click', function () {
+        icsModal.style.display = 'none';
+      });
+    }
+
+    if (icsModal) {
+      icsModal.addEventListener('click', function (e) {
+        if (e.target === icsModal) icsModal.style.display = 'none';
+      });
+    }
+
+    if (icsDownloadBtn) {
+      icsDownloadBtn.addEventListener('click', function () {
+        var content = icsContent.textContent;
+        var blob = new Blob([content], { type: 'text/plain' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'ICS-Forms-' + new Date().toISOString().slice(0, 10) + '.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    if (icsCopyBtn) {
+      icsCopyBtn.addEventListener('click', function () {
+        var content = icsContent.textContent;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(content).then(function () {
+            icsCopyBtn.textContent = 'Copied!';
+            setTimeout(function () { icsCopyBtn.textContent = 'Copy to Clipboard'; }, 2000);
+          });
+        } else {
+          // Fallback
+          var ta = document.createElement('textarea');
+          ta.value = content;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          icsCopyBtn.textContent = 'Copied!';
+          setTimeout(function () { icsCopyBtn.textContent = 'Copy to Clipboard'; }, 2000);
+        }
+      });
+    }
+
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }

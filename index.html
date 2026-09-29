@@ -29,6 +29,7 @@
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
       <button id="scenarioEditorBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Open Scenario Editor">📝 Scenarios</button>
+      <button id="icsBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Generate ICS Forms">📋 ICS Forms</button>
       <button id="printBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Print exercise plan">🖨️ Print</button>
       <button id="themeToggle" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Toggle light/dark mode">☀️</button>
       <div class="status-chip">
@@ -1029,6 +1030,23 @@
         <button id="saveScenarioBtn" class="reset-btn" type="button" style="padding:8px 20px;background:var(--blue);color:#fff;border-color:var(--blue);">Save Scenario</button>
         <button id="cancelScenarioBtn" class="reset-btn" type="button" style="padding:8px 20px;">Cancel</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ICS FORMS MODAL ============ -->
+<div id="icsModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:900px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="margin:0;font-size:18px;">ICS Form Generator</h2>
+      <button id="closeIcsModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+    </div>
+
+    <div id="icsContent" style="font-family:monospace;font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap;"></div>
+
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button id="icsDownloadBtn" class="reset-btn" type="button" style="padding:8px 20px;background:var(--blue);color:#fff;border-color:var(--blue);">Download ICS Forms</button>
+      <button id="icsCopyBtn" class="reset-btn" type="button" style="padding:8px 20px;">Copy to Clipboard</button>
     </div>
   </div>
 </div>
