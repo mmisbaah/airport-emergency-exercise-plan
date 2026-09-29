@@ -1779,6 +1779,196 @@
       });
     }
 
+    /* ================= EXPORT TO PDF ================= */
+    var exportPdfBtn = document.getElementById('exportPdfBtn');
+
+    if (exportPdfBtn) {
+      exportPdfBtn.addEventListener('click', function () {
+        // Get current scenario
+        var scenarioSelect = document.getElementById('scenarioSelect');
+        var scenario = null;
+        if (scenarioSelect && scenarioSelect.value) {
+          scenario = allScenarios.find(function (s) { return s.id === scenarioSelect.value; });
+        }
+
+        // Build comprehensive exercise package
+        var now = new Date();
+        var dateStr = now.toISOString().slice(0, 10);
+        var timeStr = now.toTimeString().slice(0, 5);
+
+        var report = '';
+        report += '=================================================================\n';
+        report += '  AIRPORT EMERGENCY EXERCISE — COMPLETE EXERCISE PACKAGE\n';
+        report += '=================================================================\n\n';
+        report += 'Generated: ' + dateStr + ' ' + timeStr + '\n';
+        report += '=================================================================\n\n';
+
+        // Section 1: Scenario Details
+        report += '-----------------------------------------------------------------\n';
+        report += 'SECTION 1: SCENARIO DETAILS\n';
+        report += '-----------------------------------------------------------------\n\n';
+        if (scenario) {
+          report += 'Scenario Name: ' + scenario.name + '\n';
+          report += 'Aircraft: ' + (scenario.aircraft || 'N/A') + '\n';
+          report += 'Souls on Board: ' + scenario.soulsOnBoard + '\n';
+          report += 'Fuel Load: ' + scenario.fuelLoad + '\n';
+          report += 'Fire Involved: ' + (scenario.fireInvolved ? 'Yes' : 'No') + '\n';
+          report += 'Category: ' + (scenario.category || 'aircraft') + '\n\n';
+          report += 'Estimated Casualties:\n';
+          report += '  Red (Immediate): ' + scenario.casualties.red + '\n';
+          report += '  Yellow (Delayed): ' + scenario.casualties.yellow + '\n';
+          report += '  Green (Minor): ' + scenario.casualties.green + '\n';
+          report += '  Deceased: ' + scenario.casualties.deceased + '\n\n';
+          report += 'Resource Requirements:\n';
+          report += '  ARFF Vehicles: ' + scenario.resources.arff + '\n';
+          report += '  Ambulances: ' + scenario.resources.ambulances + '\n';
+          report += '  Fire Trucks: ' + scenario.resources.fireTrucks + '\n';
+          report += '  Buses: ' + scenario.resources.buses + '\n\n';
+          report += 'Exercise Injects:\n';
+          scenario.injects.forEach(function (inject) {
+            report += '  ' + inject + '\n';
+          });
+        } else {
+          report += 'No scenario selected.\n';
+        }
+        report += '\n';
+
+        // Section 2: ICS Forms
+        report += '-----------------------------------------------------------------\n';
+        report += 'SECTION 2: ICS FORMS\n';
+        report += '-----------------------------------------------------------------\n\n';
+        report += 'ICS 201 — INCIDENT BRIEFING\n\n';
+        report += '1. Incident Name: ' + (scenario ? scenario.name : 'Airport Emergency Exercise') + '\n';
+        report += '2. Date/Time Prepared: ' + dateStr + ' ' + timeStr + '\n';
+        report += '3. Incident Commander: _________________________\n';
+        report += '4. Agency: Airport Emergency Management\n';
+        report += '5. Incident Type: ' + (scenario ? (scenario.category || 'aircraft') : 'Exercise') + '\n\n';
+        report += '6. Current Actions:\n';
+        if (timelineEvents.length > 0) {
+          timelineEvents.forEach(function (evt) {
+            report += '   [' + evt.time + '] ' + evt.text + '\n';
+          });
+        } else {
+          report += '   No actions recorded.\n';
+        }
+        report += '\n';
+
+        report += 'ICS 202 — INCIDENT OBJECTIVES\n\n';
+        report += '1. Incident Name: ' + (scenario ? scenario.name : 'Airport Emergency Exercise') + '\n';
+        report += '2. Operational Period: ' + dateStr + ' ' + timeStr + ' — Ongoing\n\n';
+        report += '3. Objectives:\n';
+        report += '   a. Establish Incident Command Post and command structure\n';
+        report += '   b. Ensure life safety — rescue and triage casualties\n';
+        report += '   c. Contain and control the hazard\n';
+        report += '   d. Establish hot/warm/cold zones and cordons\n';
+        report += '   e. Coordinate multi-agency response\n';
+        report += '   f. Establish Family Assistance Center\n';
+        report += '   g. Manage media and public information\n';
+        report += '   h. Document all actions for After Action Report\n\n';
+
+        report += 'ICS 203 — ORGANIZATION ASSIGNMENT LIST\n\n';
+        report += '1. Incident Name: ' + (scenario ? scenario.name : 'Airport Emergency Exercise') + '\n';
+        report += '2. Date/Time Prepared: ' + dateStr + ' ' + timeStr + '\n\n';
+        report += '3. Command Staff:\n';
+        report += '   Incident Commander: _________________________\n';
+        report += '   Safety Officer: _________________________\n';
+        report += '   Public Information Officer: _________________________\n';
+        report += '   Liaison Officer: _________________________\n\n';
+        report += '4. Operations Section:\n';
+        report += '   Operations Section Chief: _________________________\n';
+        report += '   ARFF Group: _________________________\n';
+        report += '   EMS/Triage Group: _________________________\n';
+        report += '   Security/Perimeter Group: _________________________\n\n';
+        report += '5. Planning Section:\n';
+        report += '   Planning Section Chief: _________________________\n';
+        report += '   Situation Unit: _________________________\n';
+        report += '   Resources Unit: _________________________\n\n';
+        report += '6. Logistics Section:\n';
+        report += '   Logistics Section Chief: _________________________\n';
+        report += '   Staging Area Manager: _________________________\n';
+        report += '   Communications Unit: _________________________\n\n';
+
+        // Section 3: Resource Status
+        report += '-----------------------------------------------------------------\n';
+        report += 'SECTION 3: RESOURCE STATUS\n';
+        report += '-----------------------------------------------------------------\n\n';
+        if (resources.length > 0) {
+          resources.forEach(function (res) {
+            report += res.name + ' (' + res.type + ')\n';
+            report += '  Status: ' + res.status + '\n';
+            report += '  Location: ' + (res.location || 'N/A') + '\n';
+            report += '  Notes: ' + (res.notes || 'N/A') + '\n\n';
+          });
+        } else {
+          report += 'No resources tracked.\n\n';
+        }
+
+        // Section 4: Casualty Report
+        report += '-----------------------------------------------------------------\n';
+        report += 'SECTION 4: CASUALTY REPORT\n';
+        report += '-----------------------------------------------------------------\n\n';
+        if (casualties.length > 0) {
+          casualties.forEach(function (cas) {
+            report += 'Tag #' + (cas.tag || '—') + '\n';
+            report += '  Triage: ' + cas.triage + '\n';
+            report += '  Location: ' + (cas.location || 'N/A') + '\n';
+            report += '  Notes: ' + (cas.notes || 'N/A') + '\n';
+            report += '  Transported: ' + (cas.transported ? 'Yes' : 'No') + '\n\n';
+          });
+        } else {
+          report += 'No casualties recorded.\n\n';
+        }
+
+        // Section 5: Checklist
+        report += '-----------------------------------------------------------------\n';
+        report += 'SECTION 5: IC CHECKLIST\n';
+        report += '-----------------------------------------------------------------\n\n';
+        var checklistState = [];
+        try {
+          var raw = localStorage.getItem('ttx-checklist-state');
+          if (raw) checklistState = JSON.parse(raw);
+        } catch (e) {}
+        TTX_DATA.checklistItems.forEach(function (item, idx) {
+          var checked = checklistState[idx] === true;
+          report += (checked ? '[✓]' : '[ ]') + ' ' + item + '\n';
+        });
+
+        report += '\n=================================================================\n';
+        report += '  END OF EXERCISE PACKAGE\n';
+        report += '=================================================================\n';
+
+        // Create a hidden iframe and use print-to-PDF
+        var iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = '0';
+        document.body.appendChild(iframe);
+
+        var doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write('<html><head><title>Airport Emergency Exercise Package</title>');
+        doc.write('<style>');
+        doc.write('body{font-family:monospace;font-size:11px;line-height:1.5;padding:40px;color:#000;}');
+        doc.write('pre{white-space:pre-wrap;font-family:monospace;font-size:11px;}');
+        doc.write('</style></head><body>');
+        doc.write('<pre>' + report.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>');
+        doc.write('</body></html>');
+        doc.close();
+
+        // Wait for content to load, then trigger print
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+
+        // Remove iframe after print dialog closes
+        setTimeout(function () {
+          document.body.removeChild(iframe);
+        }, 1000);
+      });
+    }
+
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }
