@@ -1969,6 +1969,175 @@
       });
     }
 
+    /* ================= DATA EXPORT/IMPORT ================= */
+    var dataExportBtn = document.getElementById('dataExportBtn');
+    var dataModal = document.getElementById('dataModal');
+    var closeDataModal = document.getElementById('closeDataModal');
+    var exportAllBtn = document.getElementById('exportAllBtn');
+    var exportScenariosBtn = document.getElementById('exportScenariosBtn');
+    var importFile = document.getElementById('importFile');
+    var importBtn = document.getElementById('importBtn');
+    var dataSummary = document.getElementById('dataSummary');
+
+    var updateDataSummary = function () {
+      if (!dataSummary) return;
+      var customScenarios = allScenarios.filter(function (s) { return s.custom; }).length;
+      var totalScenarios = allScenarios.length;
+      var totalResources = resources.length;
+      var totalCasualties = casualties.length;
+      var totalEvents = timelineEvents.length;
+
+      dataSummary.innerHTML =
+        '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">' +
+        '<div><strong style="color:var(--text);">' + totalScenarios + '</strong> <span style="color:var(--muted);">Scenarios (' + customScenarios + ' custom)</span></div>' +
+        '<div><strong style="color:var(--text);">' + totalResources + '</strong> <span style="color:var(--muted);">Resources</span></div>' +
+        '<div><strong style="color:var(--text);">' + totalCasualties + '</strong> <span style="color:var(--muted);">Casualties</span></div>' +
+        '<div><strong style="color:var(--text);">' + totalEvents + '</strong> <span style="color:var(--muted);">Timeline Events</span></div>' +
+        '</div>';
+    };
+
+    var exportData = function (type) {
+      var data = {};
+      if (type === 'all') {
+        data = {
+          version: '1.0',
+          exportDate: new Date().toISOString(),
+          scenarios: allScenarios.filter(function (s) { return s.custom; }),
+          resources: resources,
+          casualties: casualties,
+          timelineEvents: timelineEvents
+        };
+      } else {
+        data = {
+          version: '1.0',
+          exportDate: new Date().toISOString(),
+          scenarios: allScenarios.filter(function (s) { return s.custom; })
+        };
+      }
+
+      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'airport-emergency-data-' + new Date().toISOString().slice(0, 10) + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    };
+
+    var importData = function (file) {
+      if (!file) {
+        alert('Please select a file to import.');
+        return;
+      }
+
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          var data = JSON.parse(e.target.result);
+
+          if (!data.version || !data.scenarios) {
+            alert('Invalid file format. Please use a valid export file.');
+            return;
+          }
+
+          // Merge scenarios
+          if (data.scenarios && Array.isArray(data.scenarios)) {
+            data.scenarios.forEach(function (sc) {
+              sc.custom = true;
+              // Check for ID conflicts
+              var existing = allScenarios.findIndex(function (s) { return s.id === sc.id; });
+              if (existing >= 0) {
+                allScenarios[existing] = sc;
+              } else {
+                allScenarios.push(sc);
+              }
+            });
+            saveCustomScenarios();
+          }
+
+          // Replace resources
+          if (data.resources && Array.isArray(data.resources)) {
+            resources = data.resources;
+            saveResources();
+          }
+
+          // Replace casualties
+          if (data.casualties && Array.isArray(data.casualties)) {
+            casualties = data.casualties;
+            saveCasualties();
+          }
+
+          // Replace timeline events
+          if (data.timelineEvents && Array.isArray(data.timelineEvents)) {
+            timelineEvents = data.timelineEvents;
+            saveTimeline();
+            timelineHistory = [snapshotTimeline()];
+            timelineHistoryIndex = 0;
+            renderTimeline();
+            updateUndoRedoButtons();
+          }
+
+          // Refresh scenario selector
+          if (scenarioSelect) {
+            scenarioSelect.innerHTML = '<option value="">— Select a scenario —</option>';
+            allScenarios.forEach(function (s) {
+              var opt = document.createElement('option');
+              opt.value = s.id;
+              opt.textContent = s.name + (s.custom ? ' (custom)' : '');
+              scenarioSelect.appendChild(opt);
+            });
+          }
+
+          updateDataSummary();
+          alert('Data imported successfully!');
+        } catch (err) {
+          alert('Failed to import data: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    if (dataExportBtn) {
+      dataExportBtn.addEventListener('click', function () {
+        dataModal.style.display = 'block';
+        updateDataSummary();
+      });
+    }
+
+    if (closeDataModal) {
+      closeDataModal.addEventListener('click', function () {
+        dataModal.style.display = 'none';
+      });
+    }
+
+    if (dataModal) {
+      dataModal.addEventListener('click', function (e) {
+        if (e.target === dataModal) dataModal.style.display = 'none';
+      });
+    }
+
+    if (exportAllBtn) {
+      exportAllBtn.addEventListener('click', function () {
+        exportData('all');
+      });
+    }
+
+    if (exportScenariosBtn) {
+      exportScenariosBtn.addEventListener('click', function () {
+        exportData('scenarios');
+      });
+    }
+
+    if (importBtn) {
+      importBtn.addEventListener('click', function () {
+        if (importFile && importFile.files.length > 0) {
+          importData(importFile.files[0]);
+        } else {
+          alert('Please select a file to import.');
+        }
+      });
+    }
+
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }
