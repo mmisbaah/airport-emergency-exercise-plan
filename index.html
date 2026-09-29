@@ -31,6 +31,7 @@
       <button id="scenarioEditorBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Open Scenario Editor">📝 Scenarios</button>
       <button id="icsBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Generate ICS Forms">📋 ICS Forms</button>
       <button id="resourceBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Track resources">🚒 Resources</button>
+      <button id="casualtyBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Track casualties">🚑 Casualties</button>
       <button id="printBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Print exercise plan">🖨️ Print</button>
       <button id="themeToggle" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Toggle light/dark mode">☀️</button>
       <div class="status-chip">
@@ -1065,6 +1066,56 @@
     <div style="display:flex;gap:8px;margin-top:16px;">
       <button id="resourceExportBtn" class="reset-btn" type="button" style="padding:8px 20px;">Export Resource Status</button>
       <button id="resourceResetBtn" class="reset-btn" type="button" style="padding:8px 20px;">Reset All Resources</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CASUALTY TRACKER MODAL ============ -->
+<div id="casualtyModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:900px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="margin:0;font-size:18px;">Casualty Tracker</h2>
+      <button id="closeCasualtyModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+    </div>
+
+    <!-- Summary -->
+    <div id="casualtySummary" style="margin-bottom:16px;"></div>
+
+    <!-- Add casualty form -->
+    <div style="padding:16px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:10px;margin-bottom:16px;">
+      <h3 style="margin:0 0 12px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Add Casualty</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end;">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Tag #</label>
+          <input id="casTag" type="text" placeholder="e.g., 001" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Triage</label>
+          <select id="casTriage" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;">
+            <option value="red">Red (Immediate)</option>
+            <option value="yellow">Yellow (Delayed)</option>
+            <option value="green">Green (Minor)</option>
+            <option value="deceased">Deceased</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Location</label>
+          <input id="casLocation" type="text" placeholder="e.g., Wreckage" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Notes</label>
+          <input id="casNotes" type="text" placeholder="Optional" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;">
+        </div>
+        <button id="addCasualtyBtn" class="reset-btn" type="button" style="padding:6px 16px;">Add</button>
+      </div>
+    </div>
+
+    <!-- Casualty list -->
+    <div id="casualtyList"></div>
+
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button id="casualtyExportBtn" class="reset-btn" type="button" style="padding:8px 20px;">Export Casualty Report</button>
+      <button id="casualtyClearBtn" class="reset-btn" type="button" style="padding:8px 20px;">Clear All Casualties</button>
     </div>
   </div>
 </div>

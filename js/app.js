@@ -1437,6 +1437,195 @@
 
     loadResources();
 
+    /* ================= CASUALTY TRACKER ================= */
+    var CASUALTY_STORAGE_KEY = 'ttx-casualty-tracker';
+    var casualtyBtn = document.getElementById('casualtyBtn');
+    var casualtyModal = document.getElementById('casualtyModal');
+    var closeCasualtyModal = document.getElementById('closeCasualtyModal');
+    var casualtySummary = document.getElementById('casualtySummary');
+    var casualtyList = document.getElementById('casualtyList');
+    var casualtyExportBtn = document.getElementById('casualtyExportBtn');
+    var casualtyClearBtn = document.getElementById('casualtyClearBtn');
+    var addCasualtyBtn = document.getElementById('addCasualtyBtn');
+
+    var casualties = [];
+
+    var loadCasualties = function () {
+      try {
+        var raw = localStorage.getItem(CASUALTY_STORAGE_KEY);
+        if (raw) {
+          var saved = JSON.parse(raw);
+          if (Array.isArray(saved)) {
+            casualties = saved;
+          }
+        }
+      } catch (e) {}
+    };
+
+    var saveCasualties = function () {
+      try { localStorage.setItem(CASUALTY_STORAGE_KEY, JSON.stringify(casualties)); } catch (e) {}
+    };
+
+    var renderCasualtySummary = function () {
+      if (!casualtySummary) return;
+      var red = casualties.filter(function (c) { return c.triage === 'red'; }).length;
+      var yellow = casualties.filter(function (c) { return c.triage === 'yellow'; }).length;
+      var green = casualties.filter(function (c) { return c.triage === 'green'; }).length;
+      var deceased = casualties.filter(function (c) { return c.triage === 'deceased'; }).length;
+      var transported = casualties.filter(function (c) { return c.transported; }).length;
+
+      casualtySummary.innerHTML =
+        '<div style="display:flex;gap:16px;padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;">' +
+        '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#dc2626;">' + red + '</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Red</div></div>' +
+        '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#d97706;">' + yellow + '</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Yellow</div></div>' +
+        '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#16a34a;">' + green + '</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Green</div></div>' +
+        '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:#64748b;">' + deceased + '</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Deceased</div></div>' +
+        '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--blue);">' + transported + '</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Transported</div></div>' +
+        '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--text);">' + casualties.length + '</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Total</div></div>' +
+        '</div>';
+    };
+
+    var renderCasualties = function () {
+      if (!casualtyList) return;
+
+      if (casualties.length === 0) {
+        casualtyList.innerHTML = '<p style="color:var(--muted);margin:0;font-size:13px;">No casualties recorded yet. Use the form above to add casualties.</p>';
+        return;
+      }
+
+      var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">';
+
+      casualties.forEach(function (cas, idx) {
+        var triageColor = cas.triage === 'red' ? '#dc2626' : cas.triage === 'yellow' ? '#d97706' : cas.triage === 'green' ? '#16a34a' : '#64748b';
+        var triageBg = cas.triage === 'red' ? 'rgba(220,38,38,.1)' : cas.triage === 'yellow' ? 'rgba(217,119,6,.1)' : cas.triage === 'green' ? 'rgba(22,163,74,.1)' : 'rgba(100,116,139,.1)';
+
+        html += '<div style="padding:14px;border:1px solid var(--line-soft);border-radius:10px;background:' + triageBg + ';">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">';
+        html += '<div>';
+        html += '<div style="font-size:13px;font-weight:600;color:var(--text);">Tag #' + (cas.tag || '—') + '</div>';
+        html += '<div style="font-size:11px;color:' + triageColor + ';font-weight:600;text-transform:uppercase;">' + cas.triage + '</div>';
+        html += '</div>';
+        html += '<button class="reset-btn" style="padding:2px 8px;font-size:11px;" onclick="window.__deleteCasualty(' + idx + ')">×</button>';
+        html += '</div>';
+
+        if (cas.location) {
+          html += '<div style="font-size:12px;color:var(--muted);margin-bottom:4px;">📍 ' + cas.location + '</div>';
+        }
+        if (cas.notes) {
+          html += '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">' + cas.notes + '</div>';
+        }
+
+        html += '<div style="display:flex;gap:6px;">';
+        html += '<button class="reset-btn" style="flex:1;padding:4px 8px;font-size:11px;' + (cas.transported ? 'background:var(--green);color:#fff;border-color:var(--green);' : '') + '" onclick="window.__toggleTransported(' + idx + ')">' + (cas.transported ? '✓ Transported' : 'Mark Transported') + '</button>';
+        html += '</div>';
+
+        html += '</div>';
+      });
+
+      html += '</div>';
+      casualtyList.innerHTML = html;
+    };
+
+    window.__deleteCasualty = function (idx) {
+      if (confirm('Delete this casualty record?')) {
+        casualties.splice(idx, 1);
+        saveCasualties();
+        renderCasualtySummary();
+        renderCasualties();
+      }
+    };
+
+    window.__toggleTransported = function (idx) {
+      if (casualties[idx]) {
+        casualties[idx].transported = !casualties[idx].transported;
+        saveCasualties();
+        renderCasualtySummary();
+        renderCasualties();
+      }
+    };
+
+    if (addCasualtyBtn) {
+      addCasualtyBtn.addEventListener('click', function () {
+        var tag = document.getElementById('casTag').value.trim();
+        var triage = document.getElementById('casTriage').value;
+        var location = document.getElementById('casLocation').value.trim();
+        var notes = document.getElementById('casNotes').value.trim();
+
+        casualties.push({
+          tag: tag,
+          triage: triage,
+          location: location,
+          notes: notes,
+          transported: false,
+          timestamp: new Date().toISOString()
+        });
+
+        saveCasualties();
+        renderCasualtySummary();
+        renderCasualties();
+
+        // Clear form
+        document.getElementById('casTag').value = '';
+        document.getElementById('casLocation').value = '';
+        document.getElementById('casNotes').value = '';
+      });
+    }
+
+    if (casualtyBtn) {
+      casualtyBtn.addEventListener('click', function () {
+        casualtyModal.style.display = 'block';
+        renderCasualtySummary();
+        renderCasualties();
+      });
+    }
+
+    if (closeCasualtyModal) {
+      closeCasualtyModal.addEventListener('click', function () {
+        casualtyModal.style.display = 'none';
+      });
+    }
+
+    if (casualtyModal) {
+      casualtyModal.addEventListener('click', function (e) {
+        if (e.target === casualtyModal) casualtyModal.style.display = 'none';
+      });
+    }
+
+    if (casualtyExportBtn) {
+      casualtyExportBtn.addEventListener('click', function () {
+        var report = 'CASUALTY REPORT\n';
+        report += 'Generated: ' + new Date().toLocaleString() + '\n';
+        report += '==========================================\n\n';
+        casualties.forEach(function (cas) {
+          report += 'Tag #' + (cas.tag || '—') + '\n';
+          report += '  Triage: ' + cas.triage + '\n';
+          report += '  Location: ' + (cas.location || 'N/A') + '\n';
+          report += '  Notes: ' + (cas.notes || 'N/A') + '\n';
+          report += '  Transported: ' + (cas.transported ? 'Yes' : 'No') + '\n\n';
+        });
+        var blob = new Blob([report], { type: 'text/plain' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'Casualty-Report-' + new Date().toISOString().slice(0, 10) + '.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    if (casualtyClearBtn) {
+      casualtyClearBtn.addEventListener('click', function () {
+        if (confirm('Clear all casualty records?')) {
+          casualties = [];
+          saveCasualties();
+          renderCasualtySummary();
+          renderCasualties();
+        }
+      });
+    }
+
+    loadCasualties();
+
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }
