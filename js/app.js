@@ -8,6 +8,25 @@
 
   try {
 
+    /* ================= STICKY HEADER OFFSET ================= */
+    // Keep the sticky tab bar pinned exactly below the header,
+    // regardless of how tall the header becomes (e.g. when the
+    // action buttons wrap onto a second row on narrow screens).
+    (function trackHeaderHeight() {
+      var header = document.querySelector('.app-header');
+      if (!header) return;
+      var apply = function () {
+        document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+      };
+      apply();
+      window.addEventListener('resize', apply);
+      if (typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(apply).observe(header);
+      }
+      // Re-measure once fonts/layout settle and after dynamic content loads
+      window.addEventListener('load', apply);
+    })();
+
     /* ================= KEYBOARD SHORTCUTS ================= */
     var TAB_IDS = ['ttx-tab-phases', 'ttx-tab-teams', 'ttx-tab-locations', 'ttx-tab-zones', 'ttx-tab-emergencies', 'ttx-tab-aircraft', 'ttx-tab-checklist'];
     var TAB_NAMES = ['IC Role', 'Team Labels', 'Key Locations', 'Incident Zones', 'Emergency Types', 'Aircraft Specs', 'TTX Flow & Checklist'];
