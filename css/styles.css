@@ -511,3 +511,142 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
   .step-sep{display:none;}
   .stat-grid{grid-template-columns:repeat(2,1fr);}
 }
+
+/* ---------- Print Styles ---------- */
+@media print{
+  body{
+    background:#fff !important;
+    color:#000 !important;
+    font-size:12px;
+  }
+  .app-header,.tabs,.reset-btn,#scenarioModal,.status-chip,
+  #scenarioEditorBtn,#printBtn,#themeToggle,.notice{
+    display:none !important;
+  }
+  .wrap{max-width:100%;padding:0;}
+  main{padding:0;}
+  .view{display:block !important;}
+  .card,.team-card,.zone-card,.emg-card,.ac-card,.diagram-card,
+  .flow-node,.legend-item,.check-item,.step-chip{
+    break-inside:avoid;
+    page-break-inside:avoid;
+    border:1px solid #ccc !important;
+    background:#fff !important;
+    color:#000 !important;
+  }
+  .card-title,.team-card h4,.zone-card h4,.emg-head h4,
+  .ac-head h4,.legend-txt b,.flow-node .fn-title,
+  .board-step b{
+    color:#000 !important;
+  }
+  ul.clean li,.team-card p,.zone-card p,.zone-card .who,
+  .flow-node .fn-sub,.legend-txt span,.board-step span,
+  .diagram-cap,.section-sub{
+    color:#333 !important;
+  }
+  ul.clean li strong,.notice strong{
+    color:#000 !important;
+  }
+  .phase-num,.step-chip b,.board-step .n{
+    background:#e0e0e0 !important;
+    color:#000 !important;
+  }
+  .swatch,.legend-num{
+    border:1px solid #999 !important;
+  }
+  .spec-table th{
+    background:#e0e0e0 !important;
+    color:#000 !important;
+  }
+  .spec-table td{
+    color:#000 !important;
+    border-bottom:1px solid #ddd !important;
+  }
+  .spec-table td.ac-name{
+    color:#000 !important;
+  }
+  .stat{
+    background:#f5f5f5 !important;
+    border:1px solid #ccc !important;
+  }
+  .stat .num{
+    color:#000 !important;
+  }
+  .stat .lbl{
+    color:#333 !important;
+  }
+  .progress-shell{
+    background:#f5f5f5 !important;
+    border:1px solid #ccc !important;
+  }
+  .progress-bar{
+    background:#e0e0e0 !important;
+  }
+  .progress-num{
+    color:#000 !important;
+  }
+  .check-box{
+    border:1.5px solid #666 !important;
+  }
+  .check-label{
+    color:#000 !important;
+  }
+  .map-shell,.diagram-card{
+    background:#fff !important;
+    border:1px solid #ccc !important;
+  }
+  .map-shell svg text,.diagram-card svg text{
+    fill:#000 !important;
+  }
+  .map-shell svg rect,.map-shell svg circle,
+  .map-shell svg polygon,.map-shell svg path,
+  .diagram-card svg rect,.diagram-card svg circle,
+  .diagram-card svg polygon,.diagram-card svg path{
+    stroke:#666 !important;
+  }
+  .flow-arrow{
+    color:#666 !important;
+  }
+  .step-sep{
+    color:#666 !important;
+  }
+  h3.sub{
+    color:#333 !important;
+  }
+  h3.sub::after{
+    background:#ccc !important;
+  }
+  .section-head{
+    color:#000 !important;
+    font-size:18px;
+  }
+  .brand h1{
+    color:#000 !important;
+  }
+  .brand p{
+    color:#333 !important;
+  }
+  .brand-mark{
+    display:none;
+  }
+  .tab-radio{
+    display:none;
+  }
+  /* Print header */
+  .print-header{
+    display:block !important;
+    margin-bottom:20px;
+    padding-bottom:10px;
+    border-bottom:2px solid #000;
+  }
+  .print-header h1{
+    margin:0;
+    font-size:20px;
+    color:#000;
+  }
+  .print-header p{
+    margin:4px 0 0;
+    font-size:12px;
+    color:#333;
+  }
+}

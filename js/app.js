@@ -935,6 +935,33 @@
       });
     }
 
+    /* ================= PRINT ================= */
+    var printBtn = document.getElementById('printBtn');
+    if (printBtn) {
+      printBtn.addEventListener('click', function () {
+        // Set print date
+        var printDate = document.getElementById('printDate');
+        if (printDate) printDate.textContent = new Date().toLocaleString();
+
+        // Temporarily show all sections for printing
+        var views = document.querySelectorAll('.view');
+        views.forEach(function (v) { v.style.display = 'block'; });
+
+        // Show print header
+        var printHeader = document.querySelector('.print-header');
+        if (printHeader) printHeader.style.display = 'block';
+
+        // Trigger print
+        window.print();
+
+        // Restore after printing
+        setTimeout(function () {
+          views.forEach(function (v) { v.style.display = ''; });
+          if (printHeader) printHeader.style.display = 'none';
+        }, 500);
+      });
+    }
+
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }

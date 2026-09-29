@@ -29,6 +29,7 @@
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
       <button id="scenarioEditorBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Open Scenario Editor">📝 Scenarios</button>
+      <button id="printBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Print exercise plan">🖨️ Print</button>
       <button id="themeToggle" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Toggle light/dark mode">☀️</button>
       <div class="status-chip">
         <span class="dot-live"></span>
@@ -57,6 +58,12 @@
 </nav>
 
 <main class="wrap">
+
+  <!-- Print-only header -->
+  <div class="print-header" style="display:none;">
+    <h1>Airport Emergency Exercise Plan</h1>
+    <p>Incident Commander EOP Exercise Tool — Generated <span id="printDate"></span></p>
+  </div>
 
   <!-- ============ IC ROLE ============ -->
   <section id="phases" class="view">
