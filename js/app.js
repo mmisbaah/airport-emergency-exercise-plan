@@ -431,6 +431,14 @@
       scenarioSelect.addEventListener('change', function () {
         var scenario = TTX_DATA.scenarios.find(function (s) { return s.id === scenarioSelect.value; });
         updateScenarioPanel(scenario);
+        var timelineSection = document.getElementById('timelineSection');
+        if (timelineSection) {
+          if (scenario) {
+            timelineSection.style.display = 'block';
+          } else {
+            timelineSection.style.display = 'none';
+          }
+        }
       });
     }
 
@@ -560,7 +568,7 @@
     /* Build timeline UI */
     var timelineSection = document.createElement('div');
     timelineSection.id = 'timelineSection';
-    timelineSection.style.cssText = 'background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:20px;margin-top:20px;color:var(--text);';
+    timelineSection.style.cssText = 'background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:20px;margin-top:20px;color:var(--text);display:none;';
 
     var timelineHTML = '<h3 style="margin:0 0 16px;font-size:16px;">Exercise Timeline</h3>';
 
