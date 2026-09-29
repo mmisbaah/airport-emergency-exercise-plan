@@ -1273,6 +1273,170 @@
       });
     }
 
+    /* ================= RESOURCE TRACKER ================= */
+    var RESOURCE_STORAGE_KEY = 'ttx-resource-tracker';
+    var resourceBtn = document.getElementById('resourceBtn');
+    var resourceModal = document.getElementById('resourceModal');
+    var closeResourceModal = document.getElementById('closeResourceModal');
+    var resourceContent = document.getElementById('resourceContent');
+    var resourceExportBtn = document.getElementById('resourceExportBtn');
+    var resourceResetBtn = document.getElementById('resourceResetBtn');
+
+    var defaultResources = [
+      { id: 'arff1', name: 'ARFF Vehicle 1', type: 'ARFF', status: 'available', location: '', notes: '' },
+      { id: 'arff2', name: 'ARFF Vehicle 2', type: 'ARFF', status: 'available', location: '', notes: '' },
+      { id: 'amb1', name: 'Ambulance 1', type: 'EMS', status: 'available', location: '', notes: '' },
+      { id: 'amb2', name: 'Ambulance 2', type: 'EMS', status: 'available', location: '', notes: '' },
+      { id: 'amb3', name: 'Ambulance 3', type: 'EMS', status: 'available', location: '', notes: '' },
+      { id: 'ft1', name: 'Fire Truck 1', type: 'Fire', status: 'available', location: '', notes: '' },
+      { id: 'ft2', name: 'Fire Truck 2', type: 'Fire', status: 'available', location: '', notes: '' },
+      { id: 'bus1', name: 'Bus 1', type: 'Transport', status: 'available', location: '', notes: '' },
+      { id: 'police1', name: 'Police Unit 1', type: 'Security', status: 'available', location: '', notes: '' },
+      { id: 'medic1', name: 'Medical Team 1', type: 'Medical', status: 'available', location: '', notes: '' }
+    ];
+
+    var resources = [];
+
+    var loadResources = function () {
+      try {
+        var raw = localStorage.getItem(RESOURCE_STORAGE_KEY);
+        if (raw) {
+          var saved = JSON.parse(raw);
+          if (Array.isArray(saved) && saved.length > 0) {
+            resources = saved;
+            return;
+          }
+        }
+      } catch (e) {}
+      resources = JSON.parse(JSON.stringify(defaultResources));
+    };
+
+    var saveResources = function () {
+      try { localStorage.setItem(RESOURCE_STORAGE_KEY, JSON.stringify(resources)); } catch (e) {}
+    };
+
+    var renderResources = function () {
+      if (!resourceContent) return;
+
+      var html = '';
+      html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">';
+
+      resources.forEach(function (res, idx) {
+        var statusColor = res.status === 'available' ? 'var(--green)' : res.status === 'deployed' ? 'var(--amber)' : 'var(--red)';
+        var statusBg = res.status === 'available' ? 'rgba(34,197,94,.1)' : res.status === 'deployed' ? 'rgba(245,158,11,.1)' : 'rgba(239,68,68,.1)';
+
+        html += '<div style="padding:14px;border:1px solid var(--line-soft);border-radius:10px;background:' + statusBg + ';">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">';
+        html += '<div>';
+        html += '<div style="font-size:13px;font-weight:600;color:var(--text);">' + res.name + '</div>';
+        html += '<div style="font-size:11px;color:var(--muted);">' + res.type + '</div>';
+        html += '</div>';
+        html += '<span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + statusColor + ';">' + res.status + '</span>';
+        html += '</div>';
+
+        html += '<div style="margin-bottom:8px;">';
+        html += '<label style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px;">Location</label>';
+        html += '<input type="text" value="' + (res.location || '') + '" placeholder="e.g., Apron, Terminal, Runway" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:4px;padding:4px 8px;color:var(--text);font:inherit;font-size:12px;" onchange="window.__updateResource(' + idx + ',\'location\',this.value)">';
+        html += '</div>';
+
+        html += '<div style="margin-bottom:10px;">';
+        html += '<label style="font-size:10px;color:var(--muted);display:block;margin-bottom:2px;">Notes</label>';
+        html += '<input type="text" value="' + (res.notes || '') + '" placeholder="Optional notes" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:4px;padding:4px 8px;color:var(--text);font:inherit;font-size:12px;" onchange="window.__updateResource(' + idx + ',\'notes\',this.value)">';
+        html += '</div>';
+
+        html += '<div style="display:flex;gap:6px;">';
+        html += '<button class="reset-btn" style="flex:1;padding:4px 8px;font-size:11px;" onclick="window.__setResourceStatus(' + idx + ',\'available\')">Available</button>';
+        html += '<button class="reset-btn" style="flex:1;padding:4px 8px;font-size:11px;" onclick="window.__setResourceStatus(' + idx + ',\'deployed\')">Deploy</button>';
+        html += '<button class="reset-btn" style="flex:1;padding:4px 8px;font-size:11px;" onclick="window.__setResourceStatus(' + idx + ',\'unavailable\')">Unavailable</button>';
+        html += '</div>';
+
+        html += '</div>';
+      });
+
+      html += '</div>';
+
+      // Summary
+      var available = resources.filter(function (r) { return r.status === 'available'; }).length;
+      var deployed = resources.filter(function (r) { return r.status === 'deployed'; }).length;
+      var unavailable = resources.filter(function (r) { return r.status === 'unavailable'; }).length;
+
+      html += '<div style="margin-top:16px;padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;display:flex;gap:20px;">';
+      html += '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--green);">' + available + '</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Available</div></div>';
+      html += '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--amber);">' + deployed + '</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Deployed</div></div>';
+      html += '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--red);">' + unavailable + '</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Unavailable</div></div>';
+      html += '<div style="text-align:center;"><div style="font-size:20px;font-weight:700;color:var(--text);">' + resources.length + '</div><div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Total</div></div>';
+      html += '</div>';
+
+      resourceContent.innerHTML = html;
+    };
+
+    window.__updateResource = function (idx, field, value) {
+      if (resources[idx]) {
+        resources[idx][field] = value;
+        saveResources();
+      }
+    };
+
+    window.__setResourceStatus = function (idx, status) {
+      if (resources[idx]) {
+        resources[idx].status = status;
+        saveResources();
+        renderResources();
+      }
+    };
+
+    if (resourceBtn) {
+      resourceBtn.addEventListener('click', function () {
+        resourceModal.style.display = 'block';
+        renderResources();
+      });
+    }
+
+    if (closeResourceModal) {
+      closeResourceModal.addEventListener('click', function () {
+        resourceModal.style.display = 'none';
+      });
+    }
+
+    if (resourceModal) {
+      resourceModal.addEventListener('click', function (e) {
+        if (e.target === resourceModal) resourceModal.style.display = 'none';
+      });
+    }
+
+    if (resourceExportBtn) {
+      resourceExportBtn.addEventListener('click', function () {
+        var report = 'RESOURCE STATUS REPORT\n';
+        report += 'Generated: ' + new Date().toLocaleString() + '\n';
+        report += '==========================================\n\n';
+        resources.forEach(function (res) {
+          report += res.name + ' (' + res.type + ')\n';
+          report += '  Status: ' + res.status + '\n';
+          report += '  Location: ' + (res.location || 'N/A') + '\n';
+          report += '  Notes: ' + (res.notes || 'N/A') + '\n\n';
+        });
+        var blob = new Blob([report], { type: 'text/plain' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'Resource-Status-' + new Date().toISOString().slice(0, 10) + '.txt';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    if (resourceResetBtn) {
+      resourceResetBtn.addEventListener('click', function () {
+        if (confirm('Reset all resources to available?')) {
+          resources = JSON.parse(JSON.stringify(defaultResources));
+          saveResources();
+          renderResources();
+        }
+      });
+    }
+
+    loadResources();
+
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }
