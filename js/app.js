@@ -53,6 +53,20 @@
         return;
       }
 
+      // Ctrl/Cmd + Z: Undo timeline
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && !e.shiftKey) {
+        e.preventDefault();
+        undoTimeline();
+        return;
+      }
+
+      // Ctrl/Cmd + Shift + Z or Ctrl+Y: Redo timeline
+      if ((e.ctrlKey || e.metaKey) && ((e.key === 'z' || e.key === 'Z') && e.shiftKey) || (e.key === 'y' || e.key === 'Y')) {
+        e.preventDefault();
+        redoTimeline();
+        return;
+      }
+
       // Escape: Close modal
       if (e.key === 'Escape') {
         var scenarioModal = document.getElementById('scenarioModal');
@@ -550,6 +564,53 @@
     var TIMELINE_STORAGE_KEY = 'ttx-timeline-events';
 
     var timelineEvents = [];
+    var timelineHistory = [];
+    var timelineHistoryIndex = -1;
+    var MAX_HISTORY = 50;
+
+    var snapshotTimeline = function () {
+      return JSON.parse(JSON.stringify(timelineEvents));
+    };
+
+    var pushHistory = function () {
+      // Remove any redo states
+      timelineHistory = timelineHistory.slice(0, timelineHistoryIndex + 1);
+      // Add new state
+      timelineHistory.push(snapshotTimeline());
+      // Limit history size
+      if (timelineHistory.length > MAX_HISTORY) {
+        timelineHistory.shift();
+      } else {
+        timelineHistoryIndex++;
+      }
+    };
+
+    var undoTimeline = function () {
+      if (timelineHistoryIndex > 0) {
+        timelineHistoryIndex--;
+        timelineEvents = JSON.parse(JSON.stringify(timelineHistory[timelineHistoryIndex]));
+        saveTimeline();
+        renderTimeline();
+        updateUndoRedoButtons();
+      }
+    };
+
+    var redoTimeline = function () {
+      if (timelineHistoryIndex < timelineHistory.length - 1) {
+        timelineHistoryIndex++;
+        timelineEvents = JSON.parse(JSON.stringify(timelineHistory[timelineHistoryIndex]));
+        saveTimeline();
+        renderTimeline();
+        updateUndoRedoButtons();
+      }
+    };
+
+    var updateUndoRedoButtons = function () {
+      var undoBtn = document.getElementById('timelineUndoBtn');
+      var redoBtn = document.getElementById('timelineRedoBtn');
+      if (undoBtn) undoBtn.disabled = timelineHistoryIndex <= 0;
+      if (redoBtn) redoBtn.disabled = timelineHistoryIndex >= timelineHistory.length - 1;
+    };
 
     var loadTimeline = function () {
       try {
@@ -567,12 +628,15 @@
     };
 
     var clearTimeline = function () {
+      pushHistory();
       timelineEvents = [];
       try { localStorage.removeItem(TIMELINE_STORAGE_KEY); } catch (e) {}
       renderTimeline();
+      updateUndoRedoButtons();
     };
 
     var addTimelineEvent = function (time, text, category) {
+      pushHistory();
       timelineEvents.push({
         id: Date.now() + Math.random().toString(36).substr(2, 9),
         time: time,
@@ -582,12 +646,15 @@
       });
       saveTimeline();
       renderTimeline();
+      updateUndoRedoButtons();
     };
 
     var deleteTimelineEvent = function (id) {
+      pushHistory();
       timelineEvents = timelineEvents.filter(function (e) { return e.id !== id; });
       saveTimeline();
       renderTimeline();
+      updateUndoRedoButtons();
     };
 
     var renderTimeline = function () {
@@ -637,6 +704,8 @@
     timelineHTML += '<div id="timelineContainer" style="max-height:400px;overflow-y:auto;"></div>';
 
     timelineHTML += '<div style="margin-top:12px;display:flex;gap:8px;">';
+    timelineHTML += '<button id="timelineUndoBtn" class="reset-btn" type="button" title="Undo (Ctrl+Z)">↩ Undo</button>';
+    timelineHTML += '<button id="timelineRedoBtn" class="reset-btn" type="button" title="Redo (Ctrl+Y)">↪ Redo</button>';
     timelineHTML += '<button id="timelineClearBtn" class="reset-btn" type="button">Clear All Events</button>';
     timelineHTML += '<button id="timelineExportBtn" class="reset-btn" type="button">Export for AAR</button>';
     timelineHTML += '</div>';
@@ -667,6 +736,21 @@
       timelineAddBtn.addEventListener('click', handleAdd);
       timelineText.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') { e.preventDefault(); handleAdd(); }
+      });
+    }
+
+    var timelineUndoBtn = document.getElementById('timelineUndoBtn');
+    var timelineRedoBtn = document.getElementById('timelineRedoBtn');
+
+    if (timelineUndoBtn) {
+      timelineUndoBtn.addEventListener('click', function () {
+        undoTimeline();
+      });
+    }
+
+    if (timelineRedoBtn) {
+      timelineRedoBtn.addEventListener('click', function () {
+        redoTimeline();
       });
     }
 
@@ -703,7 +787,11 @@
     }
 
     loadTimeline();
+    // Initialize history with loaded state
+    timelineHistory = [snapshotTimeline()];
+    timelineHistoryIndex = 0;
     renderTimeline();
+    updateUndoRedoButtons();
 
     /* ================= AAR EXPORT ================= */
     var aarBtn = document.createElement('button');
