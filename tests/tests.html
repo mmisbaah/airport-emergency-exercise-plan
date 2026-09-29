@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Airport Emergency Exercise Plan — Unit Tests</title>
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:900px;margin:0 auto;padding:40px 20px;background:#0b1526;color:#e9effb;}
+    h1{font-size:24px;margin:0 0 8px;}
+    h2{font-size:16px;margin:32px 0 12px;color:#8ea4c4;text-transform:uppercase;letter-spacing:.1em;}
+    .test-suite{margin-bottom:24px;}
+    .test-case{padding:12px 16px;margin-bottom:8px;border-radius:8px;border:1px solid #22344f;display:flex;align-items:center;gap:12px;}
+    .test-case.pass{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);}
+    .test-case.fail{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);}
+    .test-icon{font-size:18px;}
+    .test-name{flex:1;font-size:14px;}
+    .test-detail{font-size:12px;color:#8ea4c4;margin-top:2px;}
+    .summary{padding:16px 20px;border-radius:10px;margin-top:32px;font-size:14px;}
+    .summary.pass{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);}
+    .summary.fail{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);}
+    .summary strong{font-size:18px;}
+    #runBtn{background:#3b82f6;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:14px;cursor:pointer;margin-bottom:24px;}
+    #runBtn:hover{background:#2563eb;}
+    .hidden{display:none;}
+  </style>
+</head>
+<body>
+  <h1>Unit Tests</h1>
+  <p style="color:#8ea4c4;margin:0 0 24px;">Airport Emergency Exercise Plan — JavaScript Test Suite</p>
+  <button id="runBtn" onclick="runAllTests()">Run All Tests</button>
+  <div id="results"></div>
+
+  <script src="../js/data.js"></script>
+  <script>
+    var results = { pass: 0, fail: 0, total: 0 };
+
+    function assert(condition, message) {
+      if (!condition) throw new Error(message || 'Assertion failed');
+    }
+
+    function assertEqual(actual, expected, message) {
+      if (actual !== expected) {
+        throw new Error((message || 'Values not equal') + ': expected ' + JSON.stringify(expected) + ', got ' + JSON.stringify(actual));
+      }
+    }
+
+    function assertDeepEqual(actual, expected, message) {
+      if (JSON.stringify(actual) !== JSON.stringify(expected)) {
+        throw new Error((message || 'Objects not equal') + ': expected ' + JSON.stringify(expected) + ', got ' + JSON.stringify(actual));
+      }
+    }
+
+    function test(name, fn) {
+      try {
+        fn();
+        results.pass++;
+        results.total++;
+        return { name: name, pass: true, detail: '' };
+      } catch (err) {
+        results.fail++;
+        results.total++;
+        return { name: name, pass: false, detail: err.message };
+      }
+    }
+
+    function runAllTests() {
+      results = { pass: 0, fail: 0, total: 0 };
+      var html = '';
+
+      // ==================== DATA TESTS ====================
+      html += '<h2>Data Tests</h2><div class="test-suite">';
+
+      html += formatResult(test('TTX_DATA exists', function () {
+        assert(typeof TTX_DATA === 'object', 'TTX_DATA is not an object');
+      }));
+
+      html += formatResult(test('Checklist items is non-empty array', function () {
+        assert(Array.isArray(TTX_DATA.checklistItems), 'checklistItems is not an array');
+        assert(TTX_DATA.checklistItems.length > 0, 'checklistItems is empty');
+      }));
+
+      html += formatResult(test('Pin categories defined', function () {
+        assert(typeof TTX_DATA.pinCategories === 'object', 'pinCategories is not an object');
+        assert(Object.keys(TTX_DATA.pinCategories).length >= 5, 'Expected at least 5 pin categories');
+      }));
+
+      html += formatResult(test('Locations is non-empty array', function () {
+        assert(Array.isArray(TTX_DATA.locations), 'locations is not an array');
+        assert(TTX_DATA.locations.length > 0, 'locations is empty');
+      }));
+
+      html += formatResult(test('Aircraft comparison data exists', function () {
+        assert(Array.isArray(TTX_DATA.aircraftComparison), 'aircraftComparison is not an array');
+        assert(TTX_DATA.aircraftComparison.length >= 4, 'Expected at least 4 aircraft types');
+      }));
+
+      html += formatResult(test('Scenarios is non-empty array', function () {
+        assert(Array.isArray(TTX_DATA.scenarios), 'scenarios is not an array');
+        assert(TTX_DATA.scenarios.length > 0, 'scenarios is empty');
+      }));
+
+      html += formatResult(test('All scenarios have required fields', function () {
+        TTX_DATA.scenarios.forEach(function (sc) {
+          assert(sc.id, 'Scenario missing id: ' + sc.name);
+          assert(sc.name, 'Scenario missing name');
+          assert(typeof sc.soulsOnBoard === 'number', 'Scenario missing soulsOnBoard: ' + sc.name);
+          assert(sc.casualties, 'Scenario missing casualties: ' + sc.name);
+          assert(sc.resources, 'Scenario missing resources: ' + sc.name);
+          assert(Array.isArray(sc.injects), 'Scenario injects not array: ' + sc.name);
+        });
+      }));
+
+      html += formatResult(test('All scenarios have valid casualty counts', function () {
+        TTX_DATA.scenarios.forEach(function (sc) {
+          var total = sc.casualties.red + sc.casualties.yellow + sc.casualties.green + sc.casualties.deceased;
+          assert(total <= sc.soulsOnBoard, 'Casualty total exceeds souls on board for: ' + sc.name);
+        });
+      }));
+
+      html += formatResult(test('All scenarios have valid resource counts', function () {
+        TTX_DATA.scenarios.forEach(function (sc) {
+          assert(sc.resources.arff >= 0, 'Negative ARFF count for: ' + sc.name);
+          assert(sc.resources.ambulances >= 0, 'Negative ambulance count for: ' + sc.name);
+          assert(sc.resources.fireTrucks >= 0, 'Negative fire truck count for: ' + sc.name);
+          assert(sc.resources.buses >= 0, 'Negative bus count for: ' + sc.name);
+        });
+      }));
+
+      html += '</div>';
+
+      // ==================== SCENARIO EDITOR TESTS ====================
+      html += '<h2>Scenario Editor Tests</h2><div class="test-suite">';
+
+      html += formatResult(test('Scenario IDs are unique', function () {
+        var ids = TTX_DATA.scenarios.map(function (s) { return s.id; });
+        var unique = ids.filter(function (id, i) { return ids.indexOf(id) === i; });
+        assertEqual(ids.length, unique.length, 'Duplicate scenario IDs found');
+      }));
+
+      html += formatResult(test('Scenario names are unique', function () {
+        var names = TTX_DATA.scenarios.map(function (s) { return s.name; });
+        var unique = names.filter(function (n, i) { return names.indexOf(n) === i; });
+        assertEqual(names.length, unique.length, 'Duplicate scenario names found');
+      }));
+
+      html += formatResult(test('All scenarios have injects', function () {
+        TTX_DATA.scenarios.forEach(function (sc) {
+          assert(sc.injects.length > 0, 'No injects for scenario: ' + sc.name);
+        });
+      }));
+
+      html += formatResult(test('All scenarios have valid categories', function () {
+        var validCategories = ['aircraft', 'fire', 'hazmat', 'security', 'medical', 'weather', 'infrastructure', 'compound'];
+        TTX_DATA.scenarios.forEach(function (sc) {
+          var cat = sc.category || 'aircraft';
+          assert(validCategories.indexOf(cat) >= 0, 'Invalid category "' + cat + '" for scenario: ' + sc.name);
+        });
+      }));
+
+      html += '</div>';
+
+      // ==================== AIRCRAFT DATA TESTS ====================
+      html += '<h2>Aircraft Data Tests</h2><div class="test-suite">';
+
+      html += formatResult(test('Aircraft details match comparison data', function () {
+        assertEqual(TTX_DATA.aircraftDetails.length, TTX_DATA.aircraftComparison.length, 'Aircraft details count mismatch');
+      }));
+
+      html += formatResult(test('All aircraft have valid specs', function () {
+        TTX_DATA.aircraftDetails.forEach(function (ac) {
+          assert(ac.name, 'Aircraft missing name');
+          assert(ac.pax > 0, 'Invalid pax count for: ' + ac.name);
+          assert(ac.total > 0, 'Invalid total for: ' + ac.name);
+          assert(ac.wheels > 0, 'Invalid wheels for: ' + ac.name);
+          assert(ac.specs.length > 0, 'No specs for: ' + ac.name);
+        });
+      }));
+
+      html += formatResult(test('Aircraft totals match pax + crew', function () {
+        TTX_DATA.aircraftDetails.forEach(function (ac) {
+          var crewMatch = ac.crew.match(/(\d+)\+(\d+)/);
+          if (crewMatch) {
+            var crewTotal = parseInt(crewMatch[1]) + parseInt(crewMatch[2]);
+            assertEqual(ac.total, ac.pax + crewTotal, 'Total mismatch for: ' + ac.name);
+          }
+        });
+      }));
+
+      html += '</div>';
+
+      // ==================== LOCATION DATA TESTS ====================
+      html += '<h2>Location Data Tests</h2><div class="test-suite">';
+
+      html += formatResult(test('All locations have valid coordinates', function () {
+        TTX_DATA.locations.forEach(function (loc) {
+          assert(typeof loc.x === 'number', 'Invalid x coordinate for: ' + loc.name);
+          assert(typeof loc.y === 'number', 'Invalid y coordinate for: ' + loc.name);
+          assert(loc.x >= 0 && loc.x <= 1000, 'X out of range for: ' + loc.name);
+          assert(loc.y >= 0 && loc.y <= 720, 'Y out of range for: ' + loc.name);
+        });
+      }));
+
+      html += formatResult(test('All locations have valid categories', function () {
+        var validCats = ['command', 'casualty', 'family', 'staging', 'media'];
+        TTX_DATA.locations.forEach(function (loc) {
+          assert(validCats.indexOf(loc.cat) >= 0, 'Invalid category for: ' + loc.name);
+        });
+      }));
+
+      html += formatResult(test('All locations have names and descriptions', function () {
+        TTX_DATA.locations.forEach(function (loc) {
+          assert(loc.name, 'Location missing name');
+          assert(loc.desc, 'Location missing description: ' + loc.name);
+        });
+      }));
+
+      html += '</div>';
+
+      // ==================== SUMMARY ====================
+      var summaryClass = results.fail === 0 ? 'pass' : 'fail';
+      var summaryIcon = results.fail === 0 ? '✓' : '✗';
+      html += '<div class="summary ' + summaryClass + '">';
+      html += '<strong>' + summaryIcon + ' ' + results.pass + ' / ' + results.total + ' tests passed</strong>';
+      if (results.fail > 0) {
+        html += '<div style="margin-top:8px;color:#fca5a5;">' + results.fail + ' test(s) failed</div>';
+      }
+      html += '</div>';
+
+      document.getElementById('results').innerHTML = html;
+    }
+
+    function formatResult(result) {
+      var icon = result.pass ? '✓' : '✗';
+      var detail = result.detail ? '<div class="test-detail">' + result.detail + '</div>' : '';
+      return '<div class="test-case ' + (result.pass ? 'pass' : 'fail') + '">' +
+        '<span class="test-icon">' + icon + '</span>' +
+        '<div class="test-name">' + result.name + detail + '</div>' +
+        '</div>';
+    }
+
+    // Auto-run on load
+    window.addEventListener('load', runAllTests);
+  </script>
+</body>
+</html>
