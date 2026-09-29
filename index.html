@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Airport Emergency Exercise Plan — Incident Commander EOP Exercise Tool">
+  <title>Airport Emergency Exercise Plan — EOP Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- ============ TAB STATE CONTROLLERS ============ -->
+<input type="radio" name="ttx-tab" id="ttx-tab-phases" class="tab-radio" checked>
+<input type="radio" name="ttx-tab" id="ttx-tab-teams" class="tab-radio">
+<input type="radio" name="ttx-tab" id="ttx-tab-locations" class="tab-radio">
+<input type="radio" name="ttx-tab" id="ttx-tab-zones" class="tab-radio">
+<input type="radio" name="ttx-tab" id="ttx-tab-emergencies" class="tab-radio">
+<input type="radio" name="ttx-tab" id="ttx-tab-aircraft" class="tab-radio">
+<input type="radio" name="ttx-tab" id="ttx-tab-checklist" class="tab-radio">
+
+<header class="app-header">
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-mark">✈</div>
+      <div>
+        <h1>Airport Emergency Exercise Plan</h1>
+        <p>Incident Commander EOP Exercise Tool</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button id="themeToggle" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Toggle light/dark mode">☀️</button>
+      <div class="status-chip">
+        <span class="dot-live"></span>
+        Exercise Planning Mode
+      </div>
+    </div>
+  </div>
+  <div class="wrap" style="padding-top:10px;padding-bottom:10px;">
+    <label for="scenarioSelect" style="font-size:12px;color:var(--muted);margin-right:8px;">Scenario:</label>
+    <select id="scenarioSelect" style="background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;">
+      <option value="">— Select a scenario —</option>
+    </select>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="wrap">
+    <label class="tab" for="ttx-tab-phases">IC Role</label>
+    <label class="tab" for="ttx-tab-teams">Team Labels</label>
+    <label class="tab" for="ttx-tab-locations">Key Locations</label>
+    <label class="tab" for="ttx-tab-zones">Incident Zones</label>
+    <label class="tab" for="ttx-tab-emergencies">Emergency Types</label>
+    <label class="tab" for="ttx-tab-aircraft">Aircraft Specs</label>
+    <label class="tab" for="ttx-tab-checklist">TTX Flow &amp; Checklist</label>
+  </div>
+</nav>
+
+<main class="wrap">
+
+  <!-- ============ IC ROLE ============ -->
+  <section id="phases" class="view">
+    <h2 class="section-head">Incident Commander Role by Phase</h2>
+    <p class="section-sub">Your responsibilities move through three distinct phases. Preparation builds the foundation, execution tests your command decisions, and evaluation turns the exercise into real improvement.</p>
+
+    <div class="phase-grid">
+      <div class="card phase" data-c="1">
+        <span class="phase-num">01 · Before</span>
+        <h3 class="card-title">Preparation</h3>
+        <ul class="clean">
+          <li><strong>Review the AEP</strong> — confirm command structure, authorities, and agency roles.</li>
+          <li><strong>Understand scenario &amp; objectives</strong> — know the emergency type and what is being tested.</li>
+          <li><strong>Confirm your role</strong> — ensure official IC designation and ICP-to-EOC reporting lines.</li>
+          <li><strong>Join planning meetings</strong> — help design the exercise around the systems you rely on.</li>
+        </ul>
+      </div>
+
+      <div class="card phase" data-c="2">
+        <span class="phase-num">02 · During</span>
+        <h3 class="card-title">Execution</h3>
+        <ul class="clean">
+          <li><strong>Establish command &amp; the ICP</strong> — set up a clearly identifiable command location.</li>
+          <li><strong>Conduct size-up</strong> — gather information fast, prioritize, task resources.</li>
+          <li><strong>Build &amp; communicate the IAP</strong> — state objectives, strategy, critical functions.</li>
+          <li><strong>Assign command staff</strong> — Safety Officer, PIO, Liaison Officer.</li>
+          <li><strong>Coordinate multi-agency response</strong> — fire, police, EMS, ops, tenants.</li>
+        </ul>
+      </div>
+
+      <div class="card phase" data-c="3">
+        <span class="phase-num">03 · After</span>
+        <h3 class="card-title">Evaluation</h3>
+        <ul class="clean">
+          <li><strong>Hot Wash</strong> — immediate feedback on what worked and what did not.</li>
+          <li><strong>After Action Report</strong> — document strengths, gaps, corrective actions, timelines.</li>
+          <li><strong>Update the AEP</strong> — fold lessons learned back into procedures.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="notice">
+      <span class="ni">💡</span>
+      <div><strong>Command principle:</strong> the IC directs, but does not personally fight the fire. Establish the ICP early, delegate the Safety Officer, PIO and Liaison Officer, and keep your own span of control manageable.</div>
+    </div>
+  </section>
+
+  <!-- ============ TEAMS ============ -->
+  <section id="teams" class="view">
+    <h2 class="section-head">Tabletop Exercise Team Labels</h2>
+    <p class="section-sub">Two distinct sets of labels matter: the staff who <em>run</em> the drill, and the simulated response teams that <em>play</em> in it.</p>
+
+    <h3 class="sub">Exercise Staff — Who Runs the Drill</h3>
+    <div class="team-grid">
+      <div class="team-card">
+        <h4><span class="swatch sw-blue"></span>Players / Participants</h4>
+        <p>Actively role-play their real-world positions — including you as IC — and respond to the scenario.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="swatch sw-cyan"></span>Facilitators</h4>
+        <p>Present scenario updates (injects) and guide discussion. They do not participate in response decisions.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="swatch sw-purple"></span>Evaluators / Observers</h4>
+        <p>Subject matter experts who watch and document performance against objectives without intervening.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="swatch sw-amber"></span>Note-takers / Scribes</h4>
+        <p>Record the timeline, key decisions, and identified gaps for the After Action Report.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="swatch sw-green"></span>Controllers</h4>
+        <p>Ensure safety and scenario progression as scripted. More common in full-scale exercises.</p>
+      </div>
+    </div>
+
+    <h3 class="sub">Simulated Response Teams — Functional Groups</h3>
+    <div class="team-grid">
+      <div class="team-card">
+        <h4><span class="icon-badge">🎯</span>Incident / Unified Command</h4>
+        <p>Core leadership: IC, Safety Officer, Liaison Officer, PIO.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="icon-badge">🚒</span>Fire / Rescue &amp; ARFF</h4>
+        <p>Aircraft Rescue and Firefighting plus structural fire response.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="icon-badge">🚑</span>EMS / Medical / Triage</h4>
+        <p>Emergency medical services, casualty collection, hospital coordination.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="icon-badge">🚔</span>Law Enforcement / Security</h4>
+        <p>Airport police, perimeter control, scene security.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="icon-badge">🛫</span>Airport Operations / Airside</h4>
+        <p>Runway closures, NOTAMs, airfield management.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="icon-badge">👨‍👩‍👧</span>Passenger / Family Assistance</h4>
+        <p>Uninjured passenger gathering, Friends &amp; Relatives Center, reunification.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="icon-badge">📢</span>Public Information / Media</h4>
+        <p>Press briefings and public messaging.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="icon-badge">📦</span>Logistics / Finance</h4>
+        <p>Resource ordering, tracking, cost documentation.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="icon-badge">🏢</span>Airlines / Tenant Reps</h4>
+        <p>Airline operations and ground handler coordination.</p>
+      </div>
+    </div>
+
+    <div class="notice">
+      <span class="ni">💡</span>
+      <div><strong>How to choose labels:</strong> match them to your exercise objectives. Use <strong>ICS sections</strong> (Operations, Planning, Logistics, Finance/Admin) to test internal command. Use <strong>department names</strong> for smaller single-organization drills. Always mirror the terminology in your <strong>AEP</strong>.</div>
+    </div>
+  </section>
+
+  <!-- ============ LOCATIONS ============ -->
+  <section id="locations" class="view">
+    <h2 class="section-head">Key Locations — Airport Reference Layout</h2>
+    <p class="section-sub">Generic airport layout for exercise planning: <strong>Runway oriented north–south</strong>, parallel taxiway and apron on the <strong>west</strong> side, passenger terminal beyond the apron, <strong>perimeter road</strong> along the east boundary, and the airport support zone to the south. Hover any numbered marker to highlight it.</p>
+
+    <div class="map-layout">
+      <div class="map-shell">
+        <svg viewBox="0 0 1000 720" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Airport emergency locations map">
+
+          <defs>
+            <radialGradient id="oceanGrad" cx="50%" cy="50%" r="70%">
+              <stop offset="0%" stop-color="#08203a"/>
+              <stop offset="100%" stop-color="#040d1a"/>
+            </radialGradient>
+          </defs>
+
+          <rect width="1000" height="720" fill="url(#oceanGrad)"/>
+
+          <!-- airport boundary -->
+          <path d="M 60,80 C 200,-10 760,0 920,90 C 990,200 990,500 920,640 C 780,720 200,720 60,650 C -20,500 -20,220 60,80 Z"
+                fill="#0a2942" opacity="0.55"/>
+
+          <!-- airfield landmass -->
+          <path d="M 200,40 C 360,15 640,20 800,60 C 900,90 935,190 930,310 C 925,450 900,590 810,660 C 660,715 340,715 190,665 C 95,610 70,500 70,360 C 70,220 90,80 200,40 Z"
+                fill="#12202e" stroke="#1e3a5a" stroke-width="1.4"/>
+
+          <!-- runway N-S -->
+          <g>
+            <rect x="490" y="100" width="34" height="360" rx="2" fill="#2a3d58" stroke="#3a5070" stroke-width="1.2"/>
+            <line x1="507" y1="120" x2="507" y2="440" stroke="#5b7ea8" stroke-width="1.4" stroke-dasharray="14 10"/>
+            <line x1="495" y1="110" x2="519" y2="110" stroke="#7ba3d1" stroke-width="1.5"/>
+            <line x1="495" y1="116" x2="519" y2="116" stroke="#7ba3d1" stroke-width="1.5"/>
+            <line x1="495" y1="122" x2="519" y2="122" stroke="#7ba3d1" stroke-width="1.5"/>
+            <line x1="495" y1="128" x2="519" y2="128" stroke="#7ba3d1" stroke-width="1.5"/>
+            <line x1="495" y1="432" x2="519" y2="432" stroke="#7ba3d1" stroke-width="1.5"/>
+            <line x1="495" y1="438" x2="519" y2="438" stroke="#7ba3d1" stroke-width="1.5"/>
+            <line x1="495" y1="444" x2="519" y2="444" stroke="#7ba3d1" stroke-width="1.5"/>
+            <line x1="495" y1="450" x2="519" y2="450" stroke="#7ba3d1" stroke-width="1.5"/>
+            <text x="507" y="145" font-size="13" fill="#a8c4e0" text-anchor="middle" font-weight="700" letter-spacing="2">09</text>
+            <text x="507" y="420" font-size="13" fill="#a8c4e0" text-anchor="middle" font-weight="700" letter-spacing="2" transform="rotate(180,507,415)">27</text>
+          </g>
+          <text x="507" y="485" font-size="9.5" fill="#5d7a9e" text-anchor="middle" letter-spacing="2" font-weight="600">RUNWAY · ADJUST TO YOUR AIRPORT</text>
+
+          <!-- taxiway west of runway -->
+          <g>
+            <rect x="434" y="180" width="20" height="200" rx="2" fill="#1e2e48" stroke="#2a3d58" stroke-width="1"/>
+            <line x1="444" y1="190" x2="444" y2="370" stroke="#3d5a86" stroke-width="0.9" stroke-dasharray="5 5"/>
+            <rect x="454" y="205" width="36" height="10" fill="#1e2e48"/>
+            <rect x="454" y="345" width="36" height="10" fill="#1e2e48"/>
+          </g>
+          <text x="444" y="400" font-size="8.5" fill="#4d6a92" text-anchor="middle" letter-spacing="1.2">TAXIWAY</text>
+
+          <!-- apron -->
+          <rect x="300" y="215" width="134" height="92" rx="6" fill="#1e2e48" stroke="#2a3d58" stroke-width="1.1"/>
+          <text x="367" y="258" font-size="10" fill="#5d7a9e" text-anchor="middle" letter-spacing="2" font-weight="600">APRON</text>
+          <text x="367" y="275" font-size="7.5" fill="#3d5a86" text-anchor="middle">ADJUST TO YOUR AIRPORT</text>
+          <circle cx="325" cy="285" r="6" fill="none" stroke="#3d5a86" stroke-width="0.8" stroke-dasharray="2 2"/>
+          <circle cx="367" cy="285" r="6" fill="none" stroke="#3d5a86" stroke-width="0.8" stroke-dasharray="2 2"/>
+          <circle cx="409" cy="285" r="6" fill="none" stroke="#3d5a86" stroke-width="0.8" stroke-dasharray="2 2"/>
+
+          <!-- terminal -->
+          <rect x="180" y="222" width="118" height="82" rx="5" fill="#2a3d5a" stroke="#3a5070" stroke-width="1.2"/>
+          <text x="239" y="258" font-size="9.5" fill="#a8c4e0" text-anchor="middle" letter-spacing="1.6" font-weight="600">TERMINAL</text>
+          <text x="239" y="274" font-size="7.5" fill="#5d7a9e" text-anchor="middle">ADJUST TO YOUR AIRPORT</text>
+          <text x="239" y="290" font-size="7" fill="#4d6a92" text-anchor="middle">PASSENGER TERMINAL</text>
+
+          <!-- tower -->
+          <g transform="translate(165, 200)">
+            <rect x="-9" y="-9" width="18" height="18" rx="3" fill="#1e3a8a" stroke="#3b82f6" stroke-width="1.2"/>
+            <rect x="-5" y="-16" width="10" height="7" rx="2" fill="#3b82f6" opacity=".75"/>
+            <text x="0" y="30" font-size="8" fill="#7ba3d1" text-anchor="middle" letter-spacing="1.2" font-weight="600">TWR</text>
+          </g>
+
+          <!-- ARFF -->
+          <g transform="translate(255, 350)">
+            <rect x="-34" y="-18" width="68" height="36" rx="5" fill="#3a1a1a" stroke="#ef4444" stroke-width="1.4"/>
+            <text x="0" y="-2" font-size="9.5" fill="#fca5a5" text-anchor="middle" font-weight="700" letter-spacing="1.2">ARFF</text>
+            <text x="0" y="11" font-size="7" fill="#a86666" text-anchor="middle">FIRE STATION</text>
+          </g>
+          <text x="255" y="378" font-size="7.5" fill="#a86666" text-anchor="middle" letter-spacing="1">RAPID RWY ACCESS</text>
+
+          <!-- perimeter road -->
+          <path d="M 810,90 C 870,140 885,240 878,360 C 872,480 850,580 800,650"
+                stroke="#2a4166" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M 810,90 C 870,140 885,240 878,360 C 872,480 850,580 800,650"
+                stroke="#3d5a86" stroke-width="1.2" fill="none" stroke-dasharray="8 10"/>
+          <text x="895" y="380" font-size="9" fill="#5d7a9e" text-anchor="middle" letter-spacing="1.5" transform="rotate(88,895,380)">Perimeter Rd</text>
+
+          <!-- access road -->
+          <path d="M 140,680 L 200,620 L 210,510 L 230,440 L 260,400 L 290,370"
+                stroke="#22344f" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M 140,680 L 200,620 L 210,510 L 230,440 L 260,400 L 290,370"
+                stroke="#3d5a86" stroke-width="1" fill="none" stroke-dasharray="6 8"/>
+          <text x="165" y="610" font-size="8" fill="#4d6a92" letter-spacing="1.2" transform="rotate(-70,165,610)">ACCESS ROAD</text>
+
+          <!-- support zone -->
+          <g>
+            <rect x="200" y="490" width="600" height="200" rx="8" fill="#16263a" opacity="0.6"/>
+            <line x1="210" y1="510" x2="790" y2="510" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="210" y1="535" x2="790" y2="535" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="210" y1="560" x2="790" y2="560" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="210" y1="585" x2="790" y2="585" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="210" y1="610" x2="790" y2="610" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="210" y1="635" x2="790" y2="635" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="210" y1="660" x2="790" y2="660" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="240" y1="495" x2="240" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="280" y1="495" x2="280" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="320" y1="495" x2="320" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="360" y1="495" x2="360" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="400" y1="495" x2="400" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="440" y1="495" x2="440" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="480" y1="495" x2="480" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="520" y1="495" x2="520" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="560" y1="495" x2="560" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="600" y1="495" x2="600" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="640" y1="495" x2="640" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="680" y1="495" x2="680" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="720" y1="495" x2="720" y2="685" stroke="#22344f" stroke-width="1.4"/>
+            <line x1="760" y1="495" x2="760" y2="685" stroke="#22344f" stroke-width="1.4"/>
+          </g>
+          <text x="500" y="475" font-size="10" fill="#4d6a92" text-anchor="middle" letter-spacing="3" font-weight="600">AIRPORT SUPPORT ZONE</text>
+
+          <!-- compass -->
+          <g transform="translate(930, 80)">
+            <circle r="22" fill="#0a1728" stroke="#2a3d58" stroke-width="1"/>
+            <g transform="rotate(-120)">
+              <polygon points="0,-16 4,0 0,16 -4,0" fill="#5d7a9e"/>
+              <polygon points="0,-16 4,0 0,0 -4,0" fill="#a8c4e0"/>
+              <text x="0" y="-20" font-size="9" fill="#a8c4e0" text-anchor="middle" font-weight="700">N</text>
+            </g>
+          </g>
+
+          <!-- scale -->
+          <g transform="translate(60, 690)">
+            <line x1="0" y1="0" x2="80" y2="0" stroke="#5d7a9e" stroke-width="2"/>
+            <line x1="0" y1="-4" x2="0" y2="4" stroke="#5d7a9e" stroke-width="2"/>
+            <line x1="80" y1="-4" x2="80" y2="4" stroke="#5d7a9e" stroke-width="2"/>
+            <text x="40" y="-7" font-size="8" fill="#5d7a9e" text-anchor="middle">Not to scale</text>
+          </g>
+
+          <!-- crash site + zone rings (grouped for unified drag) -->
+          <g id="crashZoneGroup" transform="translate(0,0)" style="cursor:grab;">
+            <!-- zone rings -->
+            <circle id="warmZone" cx="507" cy="270" r="110" fill="none" stroke="#f59e0b" stroke-width="1.3" stroke-dasharray="6 7" opacity=".55"/>
+            <circle id="coldZone" cx="507" cy="270" r="185" fill="none" stroke="#22c55e" stroke-width="1.3" stroke-dasharray="6 7" opacity=".42"/>
+            <text id="warmZoneLabel" x="507" y="152" font-size="9" fill="#fbbf24" text-anchor="middle" opacity=".85" letter-spacing="1.6" font-weight="600">WARM ZONE</text>
+            <text id="coldZoneLabel" x="507" y="75" font-size="9" fill="#4ade80" text-anchor="middle" opacity=".85" letter-spacing="1.6" font-weight="600">COLD ZONE</text>
+            <!-- crash site -->
+            <circle cx="507" cy="270" r="38" fill="rgba(239,68,68,.10)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 5"/>
+            <circle cx="507" cy="270" r="16" fill="#ef4444" stroke="#0a1220" stroke-width="2"/>
+            <text x="507" y="275" font-size="15" fill="#fff" text-anchor="middle" font-weight="700">✕</text>
+            <text id="crashSiteLabel" x="507" y="222" font-size="10" fill="#f87171" text-anchor="middle" font-weight="700" letter-spacing="1.8">CRASH SITE</text>
+            <title>Crash Site &amp; Zones (drag to move)</title>
+          </g>
+
+          <!-- wind -->
+          <g transform="translate(660, 140)">
+            <text x="0" y="-14" font-size="8.5" fill="#5d7a9e" text-anchor="middle" letter-spacing="1.2" font-weight="600">WIND</text>
+            <line x1="-30" y1="0" x2="30" y2="0" stroke="#5d7a9e" stroke-width="1.5"/>
+            <polygon points="30,0 22,-5 22,5" fill="#5d7a9e"/>
+          </g>
+
+          <g id="pinLayer"></g>
+        </svg>
+      </div>
+
+      <div class="legend" id="legend"></div>
+    </div>
+
+    <div class="notice">
+      <span class="ni">💡</span>
+      <div><strong>Placement logic:</strong> the runway runs north–south with the apron and terminal on the west side. ARFF sits southwest of the apron for rapid runway access. The ICP is positioned upwind (west of the crash site) and outside the warm zone. Triage and CCP are further west, using the apron and ARFF zone. The FAC is in the terminal complex, off the operational area. The morgue uses a remote corner of the airfield, well away from the terminal.</div>
+    </div>
+  </section>
+
+  <!-- ============ ZONES ============ -->
+  <section id="zones" class="view">
+    <h2 class="section-head">Aircraft Incident Zones</h2>
+    <p class="section-sub">The scene is organized into three concentric safety zones, adapted from hazardous materials response. Aircraft accidents involve high fuel loads and composite materials, so the boundaries matter.</p>
+
+    <div class="zones-layout">
+      <div class="map-shell">
+        <svg viewBox="0 0 760 700" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Concentric hot, warm and cold zone diagram">
+          <circle cx="380" cy="350" r="322" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="9 9"/>
+          <text x="380" y="52" font-size="11" fill="#7d8fa8" text-anchor="middle" letter-spacing="1.6">OUTER CORDON</text>
+
+          <circle cx="380" cy="350" r="280" fill="rgba(34,197,94,.07)" stroke="#22c55e" stroke-width="1.6"/>
+          <text x="380" y="120" font-size="13" fill="#4ade80" text-anchor="middle" font-weight="700" letter-spacing="2.2">COLD ZONE</text>
+          <text x="380" y="140" font-size="10.5" fill="#5f8f74" text-anchor="middle" letter-spacing=".6">GREEN · SUPPORT</text>
+
+          <circle cx="380" cy="350" r="185" fill="rgba(245,158,11,.09)" stroke="#f59e0b" stroke-width="1.6"/>
+          <text x="380" y="208" font-size="13" fill="#fbbf24" text-anchor="middle" font-weight="700" letter-spacing="2.2">WARM ZONE</text>
+          <text x="380" y="227" font-size="10.5" fill="#a98338" text-anchor="middle" letter-spacing=".6">YELLOW · TRANSITION</text>
+
+          <circle cx="380" cy="350" r="135" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="7 7"/>
+
+          <circle cx="380" cy="350" r="92" fill="rgba(239,68,68,.14)" stroke="#ef4444" stroke-width="1.8"/>
+
+          <g transform="translate(380,332)">
+            <path d="M0,-22 L5,-6 L22,-2 L22,4 L5,4 L7,18 L14,24 L14,28 L0,24 L-14,28 L-14,24 L-7,18 L-5,4 L-22,4 L-22,-2 L-5,-6 Z"
+                  fill="#fca5a5" opacity="0.92"/>
+          </g>
+          <text x="380" y="386" font-size="13" fill="#f87171" text-anchor="middle" font-weight="700" letter-spacing="2.2">HOT ZONE</text>
+          <text x="380" y="405" font-size="10.5" fill="#a86666" text-anchor="middle" letter-spacing=".6">RED · EXCLUSION</text>
+
+          <line x1="380" y1="350" x2="700" y2="350" stroke="#1e2f4a" stroke-width="1" stroke-dasharray="3 6"/>
+          <line x1="380" y1="350" x2="380" y2="672" stroke="#1e2f4a" stroke-width="1" stroke-dasharray="3 6"/>
+
+          <text x="500" y="343" font-size="10.5" fill="#7d8fa8" text-anchor="middle" letter-spacing="1">INNER CORDON</text>
+        </svg>
+      </div>
+
+      <div>
+        <div class="zone-cards">
+          <div class="zone-card" data-z="hot">
+            <h4><span class="swatch sw-red"></span>Hot Zone</h4>
+            <p class="aka">Red / Exclusion Zone</p>
+            <p>The immediate hazard area: wreckage, active fire, fuel, structural collapse, and hazardous cargo.</p>
+            <div class="who">Only fully PPE-equipped rescue personnel (e.g. ARFF) enter — and only for life-saving missions. The IC remains outside this zone.</div>
+          </div>
+
+          <div class="zone-card" data-z="warm">
+            <h4><span class="swatch sw-amber"></span>Warm Zone</h4>
+            <p class="aka">Yellow / Transition Zone</p>
+            <p>A controlled buffer between the hazard and the safe area. Hosts triage, casualty collection, decontamination, and PPE donning/doffing.</p>
+            <div class="who">Access limited to authorized personnel. The Incident Command Post may sit here or just inside the Cold Zone.</div>
+          </div>
+
+          <div class="zone-card" data-z="cold">
+            <h4><span class="swatch sw-green"></span>Cold Zone</h4>
+            <p class="aka">Green / Support Zone</p>
+            <p>The safe area outside the hazard, free from contamination. Contains the Command Post, staging areas, media briefing area, and the temporary morgue.</p>
+            <div class="who">This is where the Incident Commander and support staff typically operate.</div>
+          </div>
+        </div>
+
+        <h3 class="sub">Perimeters</h3>
+        <div class="team-grid">
+          <div class="team-card">
+            <h4><span class="swatch sw-cyan"></span>Inner Cordon</h4>
+            <p>Controls access to the immediate hazard area — roughly the Hot / Warm boundary.</p>
+          </div>
+          <div class="team-card">
+            <h4><span class="swatch sw-blue"></span>Outer Cordon</h4>
+            <p>A larger secure perimeter for emergency vehicle movement and crowd control, encompassing the whole operation.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub">Casualty Flow Through the Zones</h3>
+    <div class="flow">
+      <div class="flow-node" data-z="hot">
+        <div class="fn-label">Hot Zone</div>
+        <div class="fn-title">Extrication &amp; Rescue</div>
+        <div class="fn-sub">ARFF removes survivors from the wreckage</div>
+      </div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-node" data-z="warm">
+        <div class="fn-label">Warm Zone</div>
+        <div class="fn-title">Triage &amp; Treatment</div>
+        <div class="fn-sub">Sorted Red / Yellow / Green, stabilised</div>
+      </div>
+      <div class="flow-arrow">➜</div>
+      <div class="flow-node" data-z="cold">
+        <div class="fn-label">Cold Zone</div>
+        <div class="fn-title">Transport &amp; Evacuation</div>
+        <div class="fn-sub">Loaded at the Transportation Area to hospitals</div>
+      </div>
+    </div>
+
+    <div class="notice">
+      <span class="ni">💡</span>
+      <div><strong>Test the zones in your TTX:</strong> inject <em>"wind shifts 45 degrees"</em> or <em>"secondary explosion"</em> to see whether your team knows how to re-establish boundaries. Inject a <em>"media breach of the Outer Cordon"</em> to test your Liaison Officer and security response.</div>
+    </div>
+  </section>
+
+  <!-- ============ EMERGENCIES ============ -->
+  <section id="emergencies" class="view">
+    <h2 class="section-head">Types of Airport Emergencies</h2>
+    <p class="section-sub">Categorizing potential emergencies helps you test specific response plans and resource coordination. Frameworks from ICAO, EASA and the FAA group them broadly like this.</p>
+
+    <div class="emg-grid">
+      <div class="emg-card">
+        <div class="emg-head">
+          <div class="emg-icon" style="background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3)">✈️</div>
+          <h4>Aircraft-Related</h4>
+        </div>
+        <ul class="clean">
+          <li>Accidents on or off the airport</li>
+          <li>In-flight emergencies — <strong>Full Emergency</strong> and <strong>Local Standby</strong></li>
+          <li>Gear-up landing, disabled aircraft on runway</li>
+          <li>Ground collisions and taxiway incidents</li>
+        </ul>
+      </div>
+
+      <div class="emg-card">
+        <div class="emg-head">
+          <div class="emg-icon" style="background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3)">🏢</div>
+          <h4>Non-Aircraft</h4>
+        </div>
+        <ul class="clean">
+          <li>Structural fires — terminal, hangar, cargo</li>
+          <li>Fuel farm / storage fires</li>
+          <li>HazMat / Dangerous Goods spills</li>
+          <li>Radiological incidents</li>
+          <li>Utility failures (e.g. movement area lighting)</li>
+          <li>Water rescue situations (airport perimeter)</li>
+        </ul>
+      </div>
+
+      <div class="emg-card">
+        <div class="emg-head">
+          <div class="emg-icon" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.3)">🔒</div>
+          <h4>Security &amp; Unlawful Interference</h4>
+        </div>
+        <ul class="clean">
+          <li>Sabotage and bomb threats</li>
+          <li>Unlawfully seized aircraft (hijack)</li>
+          <li>Armed attacks and hostage situations</li>
+          <li>Acts of sabotage at airport installations</li>
+        </ul>
+      </div>
+
+      <div class="emg-card">
+        <div class="emg-head">
+          <div class="emg-icon" style="background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3)">🩺</div>
+          <h4>Public Health &amp; Environmental</h4>
+        </div>
+        <ul class="clean">
+          <li>Communicable disease spread via air travel</li>
+          <li>Severe outbreak affecting airport staff</li>
+          <li>Natural disasters — earthquake, flood, tornado</li>
+          <li>Volcanic ash events</li>
+        </ul>
+      </div>
+
+      <div class="emg-card">
+        <div class="emg-head">
+          <div class="emg-icon" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3)">⚡</div>
+          <h4>Compound Emergencies</h4>
+        </div>
+        <ul class="clean">
+          <li>Two or more emergencies simultaneously or in quick succession</li>
+          <li>Example: aircraft accident + fuel fire + HazMat spill</li>
+          <li>Excellent stress test for your Incident Command System and resource management</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AIRCRAFT SPECIFICATIONS ============ -->
+  <section id="aircraft" class="view">
+    <h2 class="section-head">Aircraft Reference Specifications</h2>
+    <p class="section-sub">Reference specifications for common regional aircraft types used in airport emergency planning. Figures are typical published values — always confirm against the operator's current type manual before an exercise.</p>
+
+    <h3 class="sub">Quick Comparison</h3>
+    <div class="spec-table-wrap">
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Aircraft</th>
+            <th>Pax</th>
+            <th>Crew</th>
+            <th>Total</th>
+            <th>Fuel Capacity</th>
+            <th>Wheels</th>
+            <th>Boarding Door</th>
+            <th>Baggage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ac-name">ATR 72-600</td>
+            <td class="num">70</td>
+            <td class="num">2 + 2</td>
+            <td class="num">74</td>
+            <td>5,000 kg</td>
+            <td class="num">4</td>
+            <td>Rear left</td>
+            <td>Fwd + aft holds</td>
+          </tr>
+          <tr>
+            <td class="ac-name">ATR 42-600</td>
+            <td class="num">48</td>
+            <td class="num">2 + 2</td>
+            <td class="num">52</td>
+            <td>4,000 kg</td>
+            <td class="num">4</td>
+            <td>Rear left</td>
+            <td>Fwd + aft holds</td>
+          </tr>
+          <tr>
+            <td class="ac-name">Dash 8 Q400</td>
+            <td class="num">78</td>
+            <td class="num">2 + 2</td>
+            <td class="num">82</td>
+            <td>6,530 L</td>
+            <td class="num">4</td>
+            <td>Forward left</td>
+            <td>Fwd + aft holds</td>
+          </tr>
+          <tr>
+            <td class="ac-name">Dash 8-300</td>
+            <td class="num">50</td>
+            <td class="num">2 + 2</td>
+            <td class="num">54</td>
+            <td>3,160 L</td>
+            <td class="num">4</td>
+            <td>Forward left</td>
+            <td>Fwd + aft holds</td>
+          </tr>
+          <tr>
+            <td class="ac-name">Dash 8-200</td>
+            <td class="num">37</td>
+            <td class="num">2 + 1</td>
+            <td class="num">40</td>
+            <td>3,160 L</td>
+            <td class="num">4</td>
+            <td>Forward left</td>
+            <td>Fwd + aft holds</td>
+          </tr>
+          <tr>
+            <td class="ac-name">Dornier 228</td>
+            <td class="num">19</td>
+            <td class="num">2 + 1</td>
+            <td class="num">22</td>
+            <td>1,885 kg</td>
+            <td class="num">4</td>
+            <td>Left main door</td>
+            <td>Fwd + aft holds</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="notice">
+      <span class="ni">⚠️</span>
+      <div><strong>Verify before the exercise:</strong> seat counts vary by operator and cabin fit. Confirm exact pax/crew numbers and fuel figures with the operator's load sheet or type manual, and use those numbers in your casualty-count planning.</div>
+    </div>
+
+    <h3 class="sub">Aircraft Detail Cards</h3>
+    <div class="ac-grid">
+
+      <!-- ATR 72-600 -->
+      <div class="ac-card">
+        <div class="ac-head">
+          <div class="ac-badge">✈️</div>
+          <div>
+            <h4>ATR 72-600</h4>
+            <p>Common regional turboprop — workhorse of many domestic networks</p>
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><span class="num">70</span><span class="lbl">Pax</span></div>
+          <div class="stat"><span class="num">2+2</span><span class="lbl">Crew</span></div>
+          <div class="stat"><span class="num">74</span><span class="lbl">Total</span></div>
+          <div class="stat"><span class="num">4</span><span class="lbl">Wheels</span></div>
+        </div>
+        <div class="spec-rows">
+          <div class="spec-row"><span class="k">Fuel capacity</span><span class="v">5,000 kg</span></div>
+          <div class="spec-row"><span class="k">Fuel storage</span><span class="v">Integral wing tanks</span></div>
+          <div class="spec-row"><span class="k">Boarding door</span><span class="v">Rear left (main)</span></div>
+          <div class="spec-row"><span class="k">Baggage holds</span><span class="v">Forward + aft</span></div>
+          <div class="spec-row"><span class="k">Landing gear</span><span class="v">Tricycle, retractable</span></div>
+          <div class="spec-row"><span class="k">Emergency exits</span><span class="v">4 main + overwing</span></div>
+        </div>
+      </div>
+
+      <!-- ATR 42-600 -->
+      <div class="ac-card">
+        <div class="ac-head">
+          <div class="ac-badge">✈️</div>
+          <div>
+            <h4>ATR 42-600</h4>
+            <p>Shorter-fuselage regional variant</p>
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><span class="num">48</span><span class="lbl">Pax</span></div>
+          <div class="stat"><span class="num">2+2</span><span class="lbl">Crew</span></div>
+          <div class="stat"><span class="num">52</span><span class="lbl">Total</span></div>
+          <div class="stat"><span class="num">4</span><span class="lbl">Wheels</span></div>
+        </div>
+        <div class="spec-rows">
+          <div class="spec-row"><span class="k">Fuel capacity</span><span class="v">4,000 kg</span></div>
+          <div class="spec-row"><span class="k">Fuel storage</span><span class="v">Integral wing tanks</span></div>
+          <div class="spec-row"><span class="k">Boarding door</span><span class="v">Rear left (main)</span></div>
+          <div class="spec-row"><span class="k">Baggage holds</span><span class="v">Forward + aft</span></div>
+          <div class="spec-row"><span class="k">Landing gear</span><span class="v">Tricycle, retractable</span></div>
+          <div class="spec-row"><span class="k">Emergency exits</span><span class="v">4 main + overwing</span></div>
+        </div>
+      </div>
+
+      <!-- Dash 8 Q400 -->
+      <div class="ac-card">
+        <div class="ac-head">
+          <div class="ac-badge">🛫</div>
+          <div>
+            <h4>Dash 8 Q400</h4>
+            <p>High-speed, high-capacity turboprop</p>
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><span class="num">78</span><span class="lbl">Pax</span></div>
+          <div class="stat"><span class="num">2+2</span><span class="lbl">Crew</span></div>
+          <div class="stat"><span class="num">82</span><span class="lbl">Total</span></div>
+          <div class="stat"><span class="num">4</span><span class="lbl">Wheels</span></div>
+        </div>
+        <div class="spec-rows">
+          <div class="spec-row"><span class="k">Fuel capacity</span><span class="v">6,530 L</span></div>
+          <div class="spec-row"><span class="k">Fuel storage</span><span class="v">Wing tanks</span></div>
+          <div class="spec-row"><span class="k">Boarding door</span><span class="v">Forward left</span></div>
+          <div class="spec-row"><span class="k">Baggage holds</span><span class="v">Forward + aft</span></div>
+          <div class="spec-row"><span class="k">Landing gear</span><span class="v">Tricycle, retractable</span></div>
+          <div class="spec-row"><span class="k">Emergency exits</span><span class="v">2 doors + overwing</span></div>
+        </div>
+      </div>
+
+      <!-- Dornier 228 -->
+      <div class="ac-card">
+        <div class="ac-head">
+          <div class="ac-badge">🛩️</div>
+          <div>
+            <h4>Dornier 228</h4>
+            <p>Short-field utility aircraft for regional routes</p>
+          </div>
+        </div>
+        <div class="stat-grid">
+          <div class="stat"><span class="num">19</span><span class="lbl">Pax</span></div>
+          <div class="stat"><span class="num">2+1</span><span class="lbl">Crew</span></div>
+          <div class="stat"><span class="num">22</span><span class="lbl">Total</span></div>
+          <div class="stat"><span class="num">4</span><span class="lbl">Wheels</span></div>
+        </div>
+        <div class="spec-rows">
+          <div class="spec-row"><span class="k">Fuel capacity</span><span class="v">1,885 kg</span></div>
+          <div class="spec-row"><span class="k">Fuel storage</span><span class="v">Wing tanks</span></div>
+          <div class="spec-row"><span class="k">Boarding door</span><span class="v">Left main / cargo door</span></div>
+          <div class="spec-row"><span class="k">Baggage holds</span><span class="v">Fwd 90–120 kg · Aft 150–210 kg</span></div>
+          <div class="spec-row"><span class="k">Landing gear</span><span class="v">Tricycle, retractable</span></div>
+          <div class="spec-row"><span class="k">Emergency exits</span><span class="v">Main door + rear</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <h3 class="sub">Where Everything Is — Diagrams</h3>
+    <div class="diagram-grid">
+
+      <!-- SIDE PROFILE -->
+      <div class="diagram-card">
+        <svg viewBox="0 0 900 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Aircraft side profile showing doors, baggage holds and landing gear">
+          <!-- ground -->
+          <line x1="20" y1="312" x2="880" y2="312" stroke="#22344f" stroke-width="2" stroke-dasharray="10 8"/>
+
+          <!-- tail fin -->
+          <polygon points="95,140 45,42 92,42 132,140" fill="#233850" stroke="#4a6791" stroke-width="1.3"/>
+          <!-- horizontal stabiliser -->
+          <polygon points="82,152 14,178 14,188 88,174" fill="#233850" stroke="#4a6791" stroke-width="1.2"/>
+
+          <!-- fuselage -->
+          <path d="M 92,140 L 780,140 Q 862,146 872,175 Q 862,204 780,210 L 92,210 Z" fill="#233850" stroke="#4a6791" stroke-width="1.4"/>
+
+          <!-- cabin window strip -->
+          <line x1="310" y1="168" x2="720" y2="168" stroke="#7ba3d1" stroke-width="3" stroke-dasharray="2 10" opacity=".6"/>
+
+          <!-- cockpit windows -->
+          <path d="M 790,150 L 840,158 L 838,170 L 788,168 Z" fill="#7ba3d1" opacity=".35"/>
+
+          <!-- forward door -->
+          <rect x="640" y="146" width="46" height="44" rx="3" fill="rgba(59,130,246,.22)" stroke="#3b82f6" stroke-width="1.6"/>
+          <!-- rear door (boarding) -->
+          <rect x="250" y="146" width="46" height="44" rx="3" fill="rgba(34,197,94,.25)" stroke="#22c55e" stroke-width="1.6"/>
+
+          <!-- forward baggage hold -->
+          <rect x="560" y="182" width="70" height="22" rx="3" fill="rgba(245,158,11,.22)" stroke="#f59e0b" stroke-width="1.2"/>
+          <!-- rear baggage hold -->
+          <rect x="140" y="182" width="70" height="22" rx="3" fill="rgba(245,158,11,.22)" stroke="#f59e0b" stroke-width="1.2"/>
+
+          <!-- wing fairing -->
+          <path d="M 330,208 Q 318,252 380,256 L 510,256 Q 552,252 538,208 Z" fill="#1e3050" stroke="#3a5070" stroke-width="1.2"/>
+          <!-- engine nacelle -->
+          <rect x="400" y="232" width="112" height="46" rx="21" fill="#16263a" stroke="#3a5070" stroke-width="1.3"/>
+          <!-- propeller disc -->
+          <ellipse cx="516" cy="255" rx="5" ry="42" fill="#7ba3d1" opacity=".55"/>
+
+          <!-- nose gear -->
+          <line x1="742" y1="210" x2="742" y2="284" stroke="#3a5070" stroke-width="3.5"/>
+          <circle cx="742" cy="292" r="13" fill="#16263a" stroke="#7ba3d1" stroke-width="2"/>
+          <!-- main gear -->
+          <line x1="452" y1="256" x2="452" y2="284" stroke="#3a5070" stroke-width="3.5"/>
+          <circle cx="452" cy="292" r="15" fill="#16263a" stroke="#7ba3d1" stroke-width="2"/>
+
+          <!-- leader lines + labels -->
+          <line x1="273" y1="120" x2="273" y2="144" stroke="#22c55e" stroke-width="1" opacity=".7"/>
+          <text x="273" y="112" font-size="10.5" fill="#4ade80" text-anchor="middle" font-weight="600" letter-spacing=".8">REAR DOOR — BOARDING</text>
+
+          <line x1="663" y1="120" x2="663" y2="144" stroke="#3b82f6" stroke-width="1" opacity=".7"/>
+          <text x="663" y="112" font-size="10.5" fill="#93c5fd" text-anchor="middle" font-weight="600" letter-spacing=".8">FWD DOOR / CARGO</text>
+
+          <line x1="595" y1="222" x2="595" y2="206" stroke="#f59e0b" stroke-width="1" opacity=".7"/>
+          <text x="595" y="238" font-size="10.5" fill="#fbbf24" text-anchor="middle" font-weight="600" letter-spacing=".8">FWD BAGGAGE HOLD</text>
+
+          <line x1="175" y1="222" x2="175" y2="206" stroke="#f59e0b" stroke-width="1" opacity=".7"/>
+          <text x="175" y="238" font-size="10.5" fill="#fbbf24" text-anchor="middle" font-weight="600" letter-spacing=".8">REAR BAGGAGE HOLD</text>
+
+          <line x1="600" y1="255" x2="540" y2="255" stroke="#7ba3d1" stroke-width="1" opacity=".6"/>
+          <text x="672" y="259" font-size="10.5" fill="#7ba3d1" text-anchor="middle" font-weight="600" letter-spacing=".8">PROPELLER</text>
+
+          <text x="742" y="334" font-size="10.5" fill="#f59e0b" text-anchor="middle" font-weight="600" letter-spacing=".8">NOSE GEAR · 2 WHEELS</text>
+          <text x="452" y="334" font-size="10.5" fill="#f59e0b" text-anchor="middle" font-weight="600" letter-spacing=".8">MAIN GEAR · 2 WHEELS</text>
+
+          <!-- title -->
+          <text x="450" y="24" font-size="11" fill="#8ea4c4" text-anchor="middle" letter-spacing="2.4" font-weight="600">SIDE PROFILE — DOORS · HOLDS · GEAR</text>
+        </svg>
+        <div class="diagram-cap">Typical turboprop layout (ATR / Dash 8 family). Rear door is the normal boarding point on ATR types.</div>
+      </div>
+
+      <!-- TOP-DOWN VIEW -->
+      <div class="diagram-card">
+        <svg viewBox="0 0 900 360" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Aircraft top-down view showing wing fuel tanks, engines and landing gear positions">
+          <!-- tailplane -->
+          <polygon points="140,168 40,105 70,105 165,168" fill="#233850" stroke="#4a6791" stroke-width="1.2"/>
+          <polygon points="140,192 40,255 70,255 165,192" fill="#233850" stroke="#4a6791" stroke-width="1.2"/>
+
+          <!-- wings -->
+          <polygon points="500,152 360,152 330,45 450,45" fill="#233850" stroke="#4a6791" stroke-width="1.3"/>
+          <polygon points="500,208 360,208 330,315 450,315" fill="#233850" stroke="#4a6791" stroke-width="1.3"/>
+
+          <!-- fuel tanks inside wings -->
+          <polygon points="460,130 380,130 355,70 420,70" fill="rgba(6,182,212,.30)" stroke="#06b6d4" stroke-width="1.2" stroke-dasharray="4 3"/>
+          <polygon points="460,230 380,230 355,290 420,290" fill="rgba(6,182,212,.30)" stroke="#06b6d4" stroke-width="1.2" stroke-dasharray="4 3"/>
+
+          <!-- fuselage -->
+          <path d="M 110,150 L 780,150 Q 862,156 872,180 Q 862,204 780,210 L 110,210 Z" fill="#233850" stroke="#4a6791" stroke-width="1.4"/>
+
+          <!-- engines -->
+          <rect x="370" y="75" width="50" height="30" rx="12" fill="#16263a" stroke="#3a5070" stroke-width="1.3"/>
+          <rect x="370" y="255" width="50" height="30" rx="12" fill="#16263a" stroke="#3a5070" stroke-width="1.3"/>
+
+          <!-- propellers -->
+          <circle cx="425" cy="90" r="28" fill="none" stroke="#7ba3d1" stroke-width="1.6" stroke-dasharray="4 4" opacity=".65"/>
+          <circle cx="425" cy="270" r="28" fill="none" stroke="#7ba3d1" stroke-width="1.6" stroke-dasharray="4 4" opacity=".65"/>
+
+          <!-- landing gear positions (retracted) -->
+          <circle cx="790" cy="180" r="8" fill="rgba(245,158,11,.15)" stroke="#f59e0b" stroke-width="1.6" stroke-dasharray="3 3"/>
+          <circle cx="475" cy="162" r="9" fill="rgba(245,158,11,.15)" stroke="#f59e0b" stroke-width="1.6" stroke-dasharray="3 3"/>
+          <circle cx="475" cy="198" r="9" fill="rgba(245,158,11,.15)" stroke="#f59e0b" stroke-width="1.6" stroke-dasharray="3 3"/>
+
+          <!-- gear leader lines -->
+          <line x1="790" y1="192" x2="790" y2="232" stroke="#f59e0b" stroke-width="1" opacity=".6"/>
+          <text x="790" y="248" font-size="10.5" fill="#fbbf24" text-anchor="middle" font-weight="600" letter-spacing=".8">NOSE GEAR</text>
+
+          <line x1="475" y1="212" x2="475" y2="252" stroke="#f59e0b" stroke-width="1" opacity=".6"/>
+          <text x="475" y="268" font-size="10.5" fill="#fbbf24" text-anchor="middle" font-weight="600" letter-spacing=".8">MAIN GEAR</text>
+
+          <!-- tank labels -->
+          <line x1="300" y1="90" x2="358" y2="95" stroke="#06b6d4" stroke-width="1" opacity=".7"/>
+          <text x="180" y="86" font-size="10.5" fill="#22d3ee" text-anchor="middle" font-weight="600" letter-spacing=".8">PORT WING FUEL TANK</text>
+
+          <line x1="300" y1="270" x2="358" y2="265" stroke="#06b6d4" stroke-width="1" opacity=".7"/>
+          <text x="180" y="274" font-size="10.5" fill="#22d3ee" text-anchor="middle" font-weight="600" letter-spacing=".8">STBD WING FUEL TANK</text>
+
+          <!-- legend box -->
+          <rect x="30" y="300" width="330" height="50" rx="8" fill="rgba(10,18,32,.9)" stroke="#2a3d58" stroke-width="1"/>
+          <circle cx="50" cy="318" r="6" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2 2"/>
+          <text x="64" y="322" font-size="10" fill="#8ea4c4">Landing gear positions (retracted)</text>
+          <rect x="44" y="330" width="14" height="10" rx="2" fill="rgba(6,182,212,.30)" stroke="#06b6d4" stroke-width="1"/>
+          <text x="64" y="339" font-size="10" fill="#8ea4c4">Integral wing fuel tanks</text>
+
+          <!-- title -->
+          <text x="450" y="24" font-size="11" fill="#8ea4c4" text-anchor="middle" letter-spacing="2.4" font-weight="600">TOP VIEW — WINGS · FUEL · GEAR POSITIONS</text>
+        </svg>
+        <div class="diagram-cap">Fuel is carried inside the wing structure (integral tanks). Landing gear retracts into the fuselage and wing roots.</div>
+      </div>
+
+    </div>
+
+    <h3 class="sub">Fuel &amp; Airport Considerations</h3>
+    <div class="notice warn">
+      <span class="ni">⛽</span>
+      <div>
+        <strong>Check your airport's fuel storage and refuelling capability.</strong> Some smaller airports have no aviation fuel storage or refuelling facility on-site. Aircraft arriving must carry sufficient fuel for the return leg, or fuel must be pre-positioned by the operator.
+        <br><br>
+        Consider how your national supply chain works: where is jet fuel stored, how is it distributed to your airport, and what happens if that supply chain is disrupted during an emergency?
+      </div>
+    </div>
+
+    <div class="notice">
+      <span class="ni">💡</span>
+      <div><strong>Exercise injects this enables:</strong> "Aircraft declares minimum fuel and requests priority landing — no fuel available for turn-around." Or "Operator requests emergency fuel bowser delivery by road/sea." Both test your logistics and liaison functions hard.</div>
+    </div>
+  </section>
+
+  <!-- ============ CHECKLIST ============ -->
+  <section id="checklist" class="view">
+    <h2 class="section-head">TTX Flow &amp; IC Checklist</h2>
+    <p class="section-sub">Use this checklist during your tabletop exercise to track the Incident Commander's progress through the emergency response sequence.</p>
+
+    <h3 class="sub">Exercise Flow</h3>
+    <div class="steps">
+      <div class="step-chip"><b>1</b> Alert &amp; Notification</div>
+      <span class="step-sep">→</span>
+      <div class="step-chip"><b>2</b> Size-Up &amp; Assessment</div>
+      <span class="step-sep">→</span>
+      <div class="step-chip"><b>3</b> ICP Establishment</div>
+      <span class="step-sep">→</span>
+      <div class="step-chip"><b>4</b> IAP Development</div>
+      <span class="step-sep">→</span>
+      <div class="step-chip"><b>5</b> Resource Tasking</div>
+      <span class="step-sep">→</span>
+      <div class="step-chip"><b>6</b> Zone Establishment</div>
+      <span class="step-sep">→</span>
+      <div class="step-chip"><b>7</b> Casualty Management</div>
+      <span class="step-sep">→</span>
+      <div class="step-chip"><b>8</b> Family Assistance</div>
+      <span class="step-sep">→</span>
+      <div class="step-chip"><b>9</b> Media Management</div>
+      <span class="step-sep">→</span>
+      <div class="step-chip"><b>10</b> Recovery &amp; AAR</div>
+    </div>
+
+    <h3 class="sub">IC Checklist</h3>
+    <div class="progress-shell">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-num" id="progressNum">0 / 11</div>
+      <button id="resetBtn" class="reset-btn" type="button">Reset</button>
+    </div>
+
+    <div class="check-grid" id="checkGrid"></div>
+
+    <div class="notice">
+      <span class="ni">💡</span>
+      <div><strong>How to use:</strong> check off each item as the IC completes it during the exercise. The progress bar tracks completion. Use the Reset button to start over. State is saved in your browser between sessions.</div>
+    </div>
+  </section>
+
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
