@@ -28,6 +28,7 @@
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
+      <button id="scenarioEditorBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Open Scenario Editor">📝 Scenarios</button>
       <button id="themeToggle" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Toggle light/dark mode">☀️</button>
       <div class="status-chip">
         <span class="dot-live"></span>
@@ -916,6 +917,114 @@
   </section>
 
 </main>
+
+<!-- ============ SCENARIO EDITOR MODAL ============ -->
+<div id="scenarioModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:800px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="margin:0;font-size:18px;">Scenario Editor</h2>
+      <button id="closeScenarioModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+    </div>
+
+    <!-- Scenario List -->
+    <div id="scenarioList" style="margin-bottom:20px;"></div>
+
+    <!-- Editor Form -->
+    <div id="scenarioForm" style="display:none;">
+      <h3 style="margin:0 0 16px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;" id="formTitle">New Scenario</h3>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Scenario Name</label>
+          <input id="editName" type="text" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="e.g., ATR 72 Crash on Runway">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Aircraft Type</label>
+          <input id="editAircraft" type="text" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="e.g., ATR 72-600">
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Souls on Board</label>
+          <input id="editSouls" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="74">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Fuel Load</label>
+          <input id="editFuel" type="text" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="5,000 kg">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Fire Involved</label>
+          <select id="editFire" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Category</label>
+          <select id="editCategory" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;">
+            <option value="aircraft">Aircraft Accident</option>
+            <option value="fire">Fire</option>
+            <option value="hazmat">HazMat</option>
+            <option value="security">Security</option>
+            <option value="medical">Medical</option>
+            <option value="weather">Weather</option>
+            <option value="infrastructure">Infrastructure</option>
+            <option value="compound">Compound</option>
+          </select>
+        </div>
+      </div>
+
+      <h4 style="margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Estimated Casualties</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Red (Immediate)</label>
+          <input id="editRed" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="8">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Yellow (Delayed)</label>
+          <input id="editYellow" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="22">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Green (Minor)</label>
+          <input id="editGreen" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="34">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Deceased</label>
+          <input id="editDeceased" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="10">
+        </div>
+      </div>
+
+      <h4 style="margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Resource Requirements</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">ARFF Vehicles</label>
+          <input id="editArff" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="2">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Ambulances</label>
+          <input id="editAmbulances" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="6">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Fire Trucks</label>
+          <input id="editFireTrucks" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="2">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Buses</label>
+          <input id="editBuses" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="2">
+        </div>
+      </div>
+
+      <h4 style="margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Exercise Injects (one per line)</h4>
+      <textarea id="editInjects" rows="6" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;resize:vertical;" placeholder="09:00 — Aircraft reports gear malfunction&#10;09:05 — Aircraft crashes short of runway"></textarea>
+
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button id="saveScenarioBtn" class="reset-btn" type="button" style="padding:8px 20px;background:var(--blue);color:#fff;border-color:var(--blue);">Save Scenario</button>
+        <button id="cancelScenarioBtn" class="reset-btn" type="button" style="padding:8px 20px;">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>

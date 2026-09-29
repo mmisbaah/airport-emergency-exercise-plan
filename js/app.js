@@ -716,6 +716,225 @@
     });
     timelineSection.appendChild(aarBtn);
 
+    /* ================= SCENARIO EDITOR ================= */
+    var SCENARIO_STORAGE_KEY = 'ttx-custom-scenarios';
+    var allScenarios = TTX_DATA.scenarios.slice(); // copy
+
+    var loadCustomScenarios = function () {
+      try {
+        var raw = localStorage.getItem(SCENARIO_STORAGE_KEY);
+        if (raw) {
+          var custom = JSON.parse(raw);
+          if (Array.isArray(custom)) {
+            // Remove old custom scenarios, then add fresh ones
+            allScenarios = TTX_DATA.scenarios.concat(custom);
+          }
+        }
+      } catch (e) {}
+    };
+
+    var saveCustomScenarios = function () {
+      var custom = allScenarios.filter(function (s) { return s.custom; });
+      try { localStorage.setItem(SCENARIO_STORAGE_KEY, JSON.stringify(custom)); } catch (e) {}
+    };
+
+    loadCustomScenarios();
+
+    // Populate scenario selector with all scenarios
+    var scenarioSelect = document.getElementById('scenarioSelect');
+    if (scenarioSelect) {
+      scenarioSelect.innerHTML = '<option value="">— Select a scenario —</option>';
+      allScenarios.forEach(function (sc) {
+        var opt = document.createElement('option');
+        opt.value = sc.id;
+        opt.textContent = sc.name + (sc.custom ? ' (custom)' : '');
+        scenarioSelect.appendChild(opt);
+      });
+    }
+
+    // Modal elements
+    var scenarioModal = document.getElementById('scenarioModal');
+    var scenarioEditorBtn = document.getElementById('scenarioEditorBtn');
+    var closeScenarioModal = document.getElementById('closeScenarioModal');
+    var scenarioList = document.getElementById('scenarioList');
+    var scenarioForm = document.getElementById('scenarioForm');
+    var formTitle = document.getElementById('formTitle');
+
+    if (scenarioEditorBtn) {
+      scenarioEditorBtn.addEventListener('click', function () {
+        scenarioModal.style.display = 'block';
+        renderScenarioList();
+      });
+    }
+
+    if (closeScenarioModal) {
+      closeScenarioModal.addEventListener('click', function () {
+        scenarioModal.style.display = 'none';
+      });
+    }
+
+    // Close modal when clicking outside
+    if (scenarioModal) {
+      scenarioModal.addEventListener('click', function (e) {
+        if (e.target === scenarioModal) scenarioModal.style.display = 'none';
+      });
+    }
+
+    function renderScenarioList() {
+      if (!scenarioList) return;
+      var html = '<h3 style="margin:0 0 12px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Your Scenarios</h3>';
+      html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+
+      allScenarios.forEach(function (sc, idx) {
+        var isCustom = !!sc.custom;
+        html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;">';
+        html += '<div style="flex:1;min-width:0;">';
+        html += '<div style="font-size:13px;font-weight:600;color:var(--text);">' + sc.name + (isCustom ? ' <span style="font-size:10px;color:var(--blue);text-transform:uppercase;">custom</span>' : '') + '</div>';
+        html += '<div style="font-size:11px;color:var(--muted);">' + (sc.aircraft || 'No aircraft') + ' · ' + sc.soulsOnBoard + ' souls</div>';
+        html += '</div>';
+        html += '<button class="reset-btn" style="padding:4px 10px;font-size:11px;" onclick="window.__editScenario(' + idx + ')">Edit</button>';
+        if (isCustom) {
+          html += '<button class="reset-btn" style="padding:4px 10px;font-size:11px;color:var(--red);" onclick="window.__deleteScenario(' + idx + ')">Delete</button>';
+        }
+        html += '</div>';
+      });
+
+      html += '</div>';
+
+      // Add new scenario button
+      html += '<button id="newScenarioBtn" class="reset-btn" type="button" style="margin-top:12px;padding:8px 16px;width:100%;">+ New Scenario</button>';
+
+      scenarioList.innerHTML = html;
+
+      var newBtn = document.getElementById('newScenarioBtn');
+      if (newBtn) {
+        newBtn.addEventListener('click', function () {
+          scenarioForm.style.display = 'block';
+          formTitle.textContent = 'New Scenario';
+          scenarioForm.dataset.index = '';
+          document.getElementById('editName').value = '';
+          document.getElementById('editAircraft').value = '';
+          document.getElementById('editSouls').value = '';
+          document.getElementById('editFuel').value = '';
+          document.getElementById('editFire').value = 'false';
+          document.getElementById('editCategory').value = 'aircraft';
+          document.getElementById('editRed').value = '';
+          document.getElementById('editYellow').value = '';
+          document.getElementById('editGreen').value = '';
+          document.getElementById('editDeceased').value = '';
+          document.getElementById('editArff').value = '';
+          document.getElementById('editAmbulances').value = '';
+          document.getElementById('editFireTrucks').value = '';
+          document.getElementById('editBuses').value = '';
+          document.getElementById('editInjects').value = '';
+        });
+      }
+    }
+
+    window.__editScenario = function (idx) {
+      var sc = allScenarios[idx];
+      if (!sc) return;
+      scenarioForm.style.display = 'block';
+      formTitle.textContent = 'Edit: ' + sc.name;
+      scenarioForm.dataset.index = idx;
+      document.getElementById('editName').value = sc.name;
+      document.getElementById('editAircraft').value = sc.aircraft || '';
+      document.getElementById('editSouls').value = sc.soulsOnBoard;
+      document.getElementById('editFuel').value = sc.fuelLoad || '';
+      document.getElementById('editFire').value = sc.fireInvolved ? 'true' : 'false';
+      document.getElementById('editCategory').value = sc.category || 'aircraft';
+      document.getElementById('editRed').value = sc.casualties.red;
+      document.getElementById('editYellow').value = sc.casualties.yellow;
+      document.getElementById('editGreen').value = sc.casualties.green;
+      document.getElementById('editDeceased').value = sc.casualties.deceased;
+      document.getElementById('editArff').value = sc.resources.arff;
+      document.getElementById('editAmbulances').value = sc.resources.ambulances;
+      document.getElementById('editFireTrucks').value = sc.resources.fireTrucks;
+      document.getElementById('editBuses').value = sc.resources.buses;
+      document.getElementById('editInjects').value = sc.injects.join('\n');
+    };
+
+    window.__deleteScenario = function (idx) {
+      var sc = allScenarios[idx];
+      if (!sc) return;
+      if (!confirm('Delete scenario "' + sc.name + '"?')) return;
+      allScenarios.splice(idx, 1);
+      saveCustomScenarios();
+      renderScenarioList();
+      // Refresh selector
+      if (scenarioSelect) {
+        scenarioSelect.innerHTML = '<option value="">— Select a scenario —</option>';
+        allScenarios.forEach(function (s) {
+          var opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = s.name + (s.custom ? ' (custom)' : '');
+          scenarioSelect.appendChild(opt);
+        });
+      }
+    };
+
+    var saveScenarioBtn = document.getElementById('saveScenarioBtn');
+    var cancelScenarioBtn = document.getElementById('cancelScenarioBtn');
+
+    if (saveScenarioBtn) {
+      saveScenarioBtn.addEventListener('click', function () {
+        var name = document.getElementById('editName').value.trim();
+        if (!name) { alert('Please enter a scenario name.'); return; }
+
+        var idx = scenarioForm.dataset.index;
+        var scenario = {
+          id: idx !== '' ? allScenarios[idx].id : 'custom-' + Date.now(),
+          name: name,
+          aircraft: document.getElementById('editAircraft').value.trim() || null,
+          soulsOnBoard: parseInt(document.getElementById('editSouls').value) || 0,
+          fuelLoad: document.getElementById('editFuel').value.trim() || 'N/A',
+          fireInvolved: document.getElementById('editFire').value === 'true',
+          category: document.getElementById('editCategory').value,
+          casualties: {
+            red: parseInt(document.getElementById('editRed').value) || 0,
+            yellow: parseInt(document.getElementById('editYellow').value) || 0,
+            green: parseInt(document.getElementById('editGreen').value) || 0,
+            deceased: parseInt(document.getElementById('editDeceased').value) || 0
+          },
+          resources: {
+            arff: parseInt(document.getElementById('editArff').value) || 0,
+            ambulances: parseInt(document.getElementById('editAmbulances').value) || 0,
+            fireTrucks: parseInt(document.getElementById('editFireTrucks').value) || 0,
+            buses: parseInt(document.getElementById('editBuses').value) || 0
+          },
+          injects: document.getElementById('editInjects').value.split('\n').filter(function (l) { return l.trim(); }),
+          custom: true
+        };
+
+        if (idx !== '') {
+          allScenarios[idx] = scenario;
+        } else {
+          allScenarios.push(scenario);
+        }
+
+        saveCustomScenarios();
+        scenarioForm.style.display = 'none';
+        renderScenarioList();
+
+        // Refresh selector
+        if (scenarioSelect) {
+          scenarioSelect.innerHTML = '<option value="">— Select a scenario —</option>';
+          allScenarios.forEach(function (s) {
+            var opt = document.createElement('option');
+            opt.value = s.id;
+            opt.textContent = s.name + (s.custom ? ' (custom)' : '');
+            scenarioSelect.appendChild(opt);
+          });
+        }
+      });
+    }
+
+    if (cancelScenarioBtn) {
+      cancelScenarioBtn.addEventListener('click', function () {
+        scenarioForm.style.display = 'none';
+      });
+    }
+
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }
