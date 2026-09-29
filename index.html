@@ -32,6 +32,7 @@
       <button id="icsBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Generate ICS Forms">📋 ICS Forms</button>
       <button id="resourceBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Track resources">🚒 Resources</button>
       <button id="casualtyBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Track casualties">🚑 Casualties</button>
+      <button id="weatherBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Check weather">🌤️ Weather</button>
       <button id="printBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Print exercise plan">🖨️ Print</button>
       <button id="themeToggle" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Toggle light/dark mode">☀️</button>
       <div class="status-chip">
@@ -1116,6 +1117,28 @@
     <div style="display:flex;gap:8px;margin-top:16px;">
       <button id="casualtyExportBtn" class="reset-btn" type="button" style="padding:8px 20px;">Export Casualty Report</button>
       <button id="casualtyClearBtn" class="reset-btn" type="button" style="padding:8px 20px;">Clear All Casualties</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WEATHER MODAL ============ -->
+<div id="weatherModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:600px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="margin:0;font-size:18px;">Weather Conditions</h2>
+      <button id="closeWeatherModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+    </div>
+
+    <div id="weatherContent">
+      <div style="text-align:center;padding:40px;color:var(--muted);">
+        <div style="font-size:48px;margin-bottom:12px;">🌤️</div>
+        <p>Enter your airport location to fetch current weather conditions.</p>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <input id="weatherLocation" type="text" placeholder="City or airport name (e.g., Kulhudhuffushi)" style="flex:1;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 12px;color:var(--text);font:inherit;font-size:13px;">
+        <button id="fetchWeatherBtn" class="reset-btn" type="button" style="padding:8px 20px;">Get Weather</button>
+      </div>
+      <div id="weatherResult" style="margin-top:20px;"></div>
     </div>
   </div>
 </div>

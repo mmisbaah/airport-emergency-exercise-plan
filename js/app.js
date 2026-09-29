@@ -1626,6 +1626,159 @@
 
     loadCasualties();
 
+    /* ================= WEATHER INTEGRATION ================= */
+    var weatherBtn = document.getElementById('weatherBtn');
+    var weatherModal = document.getElementById('weatherModal');
+    var closeWeatherModal = document.getElementById('closeWeatherModal');
+    var weatherLocation = document.getElementById('weatherLocation');
+    var fetchWeatherBtn = document.getElementById('fetchWeatherBtn');
+    var weatherResult = document.getElementById('weatherResult');
+
+    var getWeatherIcon = function (code) {
+      if (code >= 200 && code < 300) return '⛈️';
+      if (code >= 300 && code < 400) return '🌦️';
+      if (code >= 500 && code < 600) return '🌧️';
+      if (code >= 600 && code < 700) return '🌨️';
+      if (code >= 700 && code < 800) return '🌫️';
+      if (code === 800) return '☀️';
+      if (code === 801) return '🌤️';
+      if (code === 802) return '⛅';
+      if (code >= 803) return '☁️';
+      return '🌡️';
+    };
+
+    var fetchWeather = function (location) {
+      if (!location) {
+        weatherResult.innerHTML = '<p style="color:var(--red);margin:0;">Please enter a location.</p>';
+        return;
+      }
+
+      weatherResult.innerHTML = '<p style="color:var(--muted);margin:0;">Fetching weather data...</p>';
+
+      // Use Open-Meteo API (free, no API key required)
+      var geoUrl = 'https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(location) + '&count=1&language=en&format=json';
+
+      fetch(geoUrl)
+        .then(function (res) { return res.json(); })
+        .then(function (geoData) {
+          if (!geoData.results || geoData.results.length === 0) {
+            weatherResult.innerHTML = '<p style="color:var(--red);margin:0;">Location not found. Try a different city or airport name.</p>';
+            return;
+          }
+
+          var lat = geoData.results[0].latitude;
+          var lon = geoData.results[0].longitude;
+          var name = geoData.results[0].name;
+          var country = geoData.results[0].country || '';
+
+          var weatherUrl = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl&timezone=auto';
+
+          return fetch(weatherUrl)
+            .then(function (res) { return res.json(); })
+            .then(function (weatherData) {
+              var current = weatherData.current;
+              var temp = current.temperature_2m;
+              var feelsLike = current.apparent_temperature;
+              var humidity = current.relative_humidity_2m;
+              var windSpeed = current.wind_speed_10m;
+              var windDir = current.wind_direction_10m;
+              var pressure = current.pressure_msl;
+              var weatherCode = current.weather_code;
+              var icon = getWeatherIcon(weatherCode);
+
+              var windDirText = '';
+              if (windDir >= 337.5 || windDir < 22.5) windDirText = 'N';
+              else if (windDir >= 22.5 && windDir < 67.5) windDirText = 'NE';
+              else if (windDir >= 67.5 && windDir < 112.5) windDirText = 'E';
+              else if (windDir >= 112.5 && windDir < 157.5) windDirText = 'SE';
+              else if (windDir >= 157.5 && windDir < 202.5) windDirText = 'S';
+              else if (windDir >= 202.5 && windDir < 247.5) windDirText = 'SW';
+              else if (windDir >= 247.5 && windDir < 292.5) windDirText = 'W';
+              else windDirText = 'NW';
+
+              var html = '';
+              html += '<div style="text-align:center;padding:20px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:10px;">';
+              html += '<div style="font-size:48px;margin-bottom:8px;">' + icon + '</div>';
+              html += '<div style="font-size:14px;font-weight:600;color:var(--text);">' + name + (country ? ', ' + country : '') + '</div>';
+              html += '<div style="font-size:32px;font-weight:700;color:var(--text);margin:8px 0;">' + temp + '°C</div>';
+              html += '<div style="font-size:12px;color:var(--muted);">Feels like ' + feelsLike + '°C</div>';
+              html += '</div>';
+
+              html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">';
+              html += '<div style="padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;">';
+              html += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Wind</div>';
+              html += '<div style="font-size:16px;font-weight:600;color:var(--text);">' + windSpeed + ' km/h ' + windDirText + '</div>';
+              html += '</div>';
+              html += '<div style="padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;">';
+              html += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Humidity</div>';
+              html += '<div style="font-size:16px;font-weight:600;color:var(--text);">' + humidity + '%</div>';
+              html += '</div>';
+              html += '<div style="padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;">';
+              html += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Pressure</div>';
+              html += '<div style="font-size:16px;font-weight:600;color:var(--text);">' + pressure + ' hPa</div>';
+              html += '</div>';
+              html += '<div style="padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;">';
+              html += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;">Wind Direction</div>';
+              html += '<div style="font-size:16px;font-weight:600;color:var(--text);">' + windDir + '° ' + windDirText + '</div>';
+              html += '</div>';
+              html += '</div>';
+
+              // Exercise impact assessment
+              html += '<div style="margin-top:12px;padding:12px;background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.28);border-left:3px solid var(--blue);border-radius:8px;">';
+              html += '<div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px;">Exercise Impact Assessment</div>';
+              var impacts = [];
+              if (windSpeed > 30) impacts.push('⚠️ High winds may affect smoke drift and helicopter operations');
+              if (temp > 35) impacts.push('⚠️ Extreme heat — monitor responders for heat stress');
+              if (temp < 5) impacts.push('⚠️ Cold conditions — consider hypothermia risk for casualties');
+              if (weatherCode >= 500 && weatherCode < 600) impacts.push('🌧️ Rain may affect visibility and runway conditions');
+              if (weatherCode >= 200 && weatherCode < 300) impacts.push('⛈️ Thunderstorms — consider lightning safety for outdoor operations');
+              if (impacts.length === 0) impacts.push('✅ Weather conditions are favorable for exercise operations');
+              impacts.forEach(function (imp) {
+                html += '<div style="font-size:12px;color:var(--card-text);margin-top:4px;">' + imp + '</div>';
+              });
+              html += '</div>';
+
+              weatherResult.innerHTML = html;
+            });
+        })
+        .catch(function (err) {
+          weatherResult.innerHTML = '<p style="color:var(--red);margin:0;">Failed to fetch weather data. Please check your internet connection and try again.</p>';
+        });
+    };
+
+    if (weatherBtn) {
+      weatherBtn.addEventListener('click', function () {
+        weatherModal.style.display = 'block';
+      });
+    }
+
+    if (closeWeatherModal) {
+      closeWeatherModal.addEventListener('click', function () {
+        weatherModal.style.display = 'none';
+      });
+    }
+
+    if (weatherModal) {
+      weatherModal.addEventListener('click', function (e) {
+        if (e.target === weatherModal) weatherModal.style.display = 'none';
+      });
+    }
+
+    if (fetchWeatherBtn) {
+      fetchWeatherBtn.addEventListener('click', function () {
+        fetchWeather(weatherLocation.value.trim());
+      });
+    }
+
+    if (weatherLocation) {
+      weatherLocation.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          fetchWeather(weatherLocation.value.trim());
+        }
+      });
+    }
+
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }
