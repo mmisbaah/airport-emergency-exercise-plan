@@ -15,10 +15,10 @@
     var setTheme = function (theme) {
       if (theme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
-        if (themeToggle) themeToggle.textContent = '☀️';
+        if (themeToggle) themeToggle.textContent = '🌙';
       } else {
         document.documentElement.removeAttribute('data-theme');
-        if (themeToggle) themeToggle.textContent = '🌙';
+        if (themeToggle) themeToggle.textContent = '☀️';
       }
       try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
     };
@@ -439,7 +439,7 @@
       if (!panel) {
         panel = document.createElement('div');
         panel.id = 'scenarioPanel';
-        panel.style.cssText = 'background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:20px;margin-top:20px;';
+        panel.style.cssText = 'background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:20px;margin-top:20px;color:var(--text);';
         var main = document.querySelector('main.wrap');
         if (main) main.insertBefore(panel, main.firstChild);
       }
@@ -449,34 +449,34 @@
         return;
       }
 
-      var html = '<h3 style="margin:0 0 16px;font-size:16px;">' + scenario.name + '</h3>';
+      var html = '<h3 style="margin:0 0 16px;font-size:16px;color:var(--text);">' + scenario.name + '</h3>';
 
       html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px;">';
-      html += '<div class="stat" style="background:#0a1220;border:1px solid var(--line-soft);border-radius:9px;padding:12px;text-align:center;"><span class="num" style="font-size:20px;font-weight:700;color:#fff;">' + scenario.soulsOnBoard + '</span><span class="lbl" style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:4px;">Souls on Board</span></div>';
-      html += '<div class="stat" style="background:#0a1220;border:1px solid var(--line-soft);border-radius:9px;padding:12px;text-align:center;"><span class="num" style="font-size:20px;font-weight:700;color:#fff;">' + scenario.fuelLoad + '</span><span class="lbl" style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:4px;">Fuel Load</span></div>';
-      html += '<div class="stat" style="background:#0a1220;border:1px solid var(--line-soft);border-radius:9px;padding:12px;text-align:center;"><span class="num" style="font-size:20px;font-weight:700;color:' + (scenario.fireInvolved ? '#ef4444' : '#22c55e') + ';">' + (scenario.fireInvolved ? 'Yes' : 'No') + '</span><span class="lbl" style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:4px;">Fire Involved</span></div>';
+      html += '<div class="stat" style="background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:9px;padding:12px;text-align:center;"><span class="num" style="font-size:20px;font-weight:700;color:var(--stat-text);">' + scenario.soulsOnBoard + '</span><span class="lbl" style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:4px;">Souls on Board</span></div>';
+      html += '<div class="stat" style="background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:9px;padding:12px;text-align:center;"><span class="num" style="font-size:20px;font-weight:700;color:var(--stat-text);">' + scenario.fuelLoad + '</span><span class="lbl" style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:4px;">Fuel Load</span></div>';
+      html += '<div class="stat" style="background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:9px;padding:12px;text-align:center;"><span class="num" style="font-size:20px;font-weight:700;color:' + (scenario.fireInvolved ? '#ef4444' : '#22c55e') + ';">' + (scenario.fireInvolved ? 'Yes' : 'No') + '</span><span class="lbl" style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:4px;">Fire Involved</span></div>';
       html += '</div>';
 
       html += '<h4 style="margin:0 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Estimated Casualties</h4>';
       html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:16px;">';
-      html += '<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:18px;font-weight:700;color:#fca5a5;">' + scenario.casualties.red + '</span><span style="font-size:10px;color:#fca5a5;text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Red (Immediate)</span></div>';
-      html += '<div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:18px;font-weight:700;color:#fcd34d;">' + scenario.casualties.yellow + '</span><span style="font-size:10px;color:#fcd34d;text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Yellow (Delayed)</span></div>';
-      html += '<div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:18px;font-weight:700;color:#86efac;">' + scenario.casualties.green + '</span><span style="font-size:10px;color:#86efac;text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Green (Minor)</span></div>';
-      html += '<div style="background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.3);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:18px;font-weight:700;color:#94a3b8;">' + scenario.casualties.deceased + '</span><span style="font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Deceased</span></div>';
+      html += '<div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:18px;font-weight:700;color:#dc2626;">' + scenario.casualties.red + '</span><span style="font-size:10px;color:#dc2626;text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Red (Immediate)</span></div>';
+      html += '<div style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:18px;font-weight:700;color:#d97706;">' + scenario.casualties.yellow + '</span><span style="font-size:10px;color:#d97706;text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Yellow (Delayed)</span></div>';
+      html += '<div style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:18px;font-weight:700;color:#16a34a;">' + scenario.casualties.green + '</span><span style="font-size:10px;color:#16a34a;text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Green (Minor)</span></div>';
+      html += '<div style="background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.3);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:18px;font-weight:700;color:#64748b;">' + scenario.casualties.deceased + '</span><span style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Deceased</span></div>';
       html += '</div>';
 
       html += '<h4 style="margin:0 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Resource Requirements</h4>';
       html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px;">';
-      html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:#fff;">' + scenario.resources.arff + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">ARFF Vehicles</span></div>';
-      html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:#fff;">' + scenario.resources.ambulances + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Ambulances</span></div>';
-      html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:#fff;">' + scenario.resources.fireTrucks + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Fire Trucks</span></div>';
-      html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:#fff;">' + scenario.resources.buses + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Buses</span></div>';
+      html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:var(--stat-text);">' + scenario.resources.arff + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">ARFF Vehicles</span></div>';
+      html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:var(--stat-text);">' + scenario.resources.ambulances + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Ambulances</span></div>';
+      html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:var(--stat-text);">' + scenario.resources.fireTrucks + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Fire Trucks</span></div>';
+      html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:var(--stat-text);">' + scenario.resources.buses + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Buses</span></div>';
       html += '</div>';
 
       html += '<h4 style="margin:0 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Exercise Injects</h4>';
       html += '<ul class="clean" style="margin:0;">';
       scenario.injects.forEach(function (inject) {
-        html += '<li style="padding-left:20px;margin-bottom:8px;font-size:13px;color:#c4d3e8;position:relative;"><span style="position:absolute;left:4px;top:8px;width:6px;height:6px;border-radius:2px;background:var(--blue);transform:rotate(45deg);"></span>' + inject + '</li>';
+        html += '<li style="padding-left:20px;margin-bottom:8px;font-size:13px;color:var(--card-text);position:relative;"><span style="position:absolute;left:4px;top:8px;width:6px;height:6px;border-radius:2px;background:var(--blue);transform:rotate(45deg);"></span>' + inject + '</li>';
       });
       html += '</ul>';
 
@@ -546,7 +546,7 @@
 
         html += '<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-soft);">';
         html += '<div style="flex:0 0 60px;font-size:12px;font-weight:700;color:' + catColor + ';font-variant-numeric:tabular-nums;">' + evt.time + '</div>';
-        html += '<div style="flex:1;font-size:13px;color:#c4d3e8;">' + evt.text + '</div>';
+        html += '<div style="flex:1;font-size:13px;color:var(--card-text);">' + evt.text + '</div>';
         html += '<button class="reset-btn" style="flex:0 0 auto;padding:2px 8px;font-size:11px;" onclick="deleteTimelineEvent(\'' + evt.id + '\')">×</button>';
         html += '</div>';
       });
@@ -560,14 +560,14 @@
     /* Build timeline UI */
     var timelineSection = document.createElement('div');
     timelineSection.id = 'timelineSection';
-    timelineSection.style.cssText = 'background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:20px;margin-top:20px;';
+    timelineSection.style.cssText = 'background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:20px;margin-top:20px;color:var(--text);';
 
     var timelineHTML = '<h3 style="margin:0 0 16px;font-size:16px;">Exercise Timeline</h3>';
 
     timelineHTML += '<div style="display:grid;grid-template-columns:100px 1fr 120px auto;gap:8px;margin-bottom:16px;align-items:end;">';
-    timelineHTML += '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Time</label><input id="timelineTime" type="text" placeholder="09:30" style="width:100%;background:#0a1220;border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;"></div>';
-    timelineHTML += '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Event / Inject</label><input id="timelineText" type="text" placeholder="Describe the event..." style="width:100%;background:#0a1220;border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;"></div>';
-    timelineHTML += '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Category</label><select id="timelineCategory" style="width:100%;background:#0a1220;border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;"><option value="info">Info</option><option value="inject">Inject</option><option value="decision">Decision</option><option value="milestone">Milestone</option><option value="casualty">Casualty</option></select></div>';
+    timelineHTML += '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Time</label><input id="timelineTime" type="text" placeholder="09:30" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;"></div>';
+    timelineHTML += '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Event / Inject</label><input id="timelineText" type="text" placeholder="Describe the event..." style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;"></div>';
+    timelineHTML += '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Category</label><select id="timelineCategory" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;"><option value="info">Info</option><option value="inject">Inject</option><option value="decision">Decision</option><option value="milestone">Milestone</option><option value="casualty">Casualty</option></select></div>';
     timelineHTML += '<button id="timelineAddBtn" class="reset-btn" style="padding:6px 16px;">Add</button>';
     timelineHTML += '</div>';
 
