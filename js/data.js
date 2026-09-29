@@ -158,6 +158,182 @@ var TTX_DATA = {
         '16:15 — Runway blocked, airport closed to all traffic',
         '16:20 — Recovery equipment requested from nearest major airport'
       ]
+    },
+    {
+      id: 'bomb-threat',
+      name: 'Bomb Threat — Terminal Evacuation',
+      aircraft: null,
+      soulsOnBoard: 0,
+      fuelLoad: 'N/A',
+      fireInvolved: false,
+      casualties: { red: 0, yellow: 1, green: 8, deceased: 0 },
+      resources: { arff: 0, ambulances: 2, fireTrucks: 1, buses: 3 },
+      injects: [
+        '10:00 — Anonymous call claims explosive device in terminal',
+        '10:05 — Threat assessed as credible by security',
+        '10:10 — Terminal evacuation initiated, passengers moved to assembly area',
+        '10:15 — Bomb disposal unit requested from nearest city',
+        '10:20 — All flights suspended, airport in lockdown',
+        '10:25 — Media arrives, PIO must manage public messaging',
+        '10:30 — Secondary screening of all outbound baggage required'
+      ]
+    },
+    {
+      id: 'power-failure',
+      name: 'Total Power Failure',
+      aircraft: null,
+      soulsOnBoard: 0,
+      fuelLoad: 'N/A',
+      fireInvolved: false,
+      casualties: { red: 0, yellow: 2, green: 5, deceased: 0 },
+      resources: { arff: 1, ambulances: 2, fireTrucks: 1, buses: 2 },
+      injects: [
+        '22:00 — Complete power failure across airport',
+        '22:02 — Emergency lighting activates, runway lights offline',
+        '22:05 — All arriving flights diverted to alternate airports',
+        '22:10 — Passengers stranded in terminal, no HVAC',
+        '22:15 — Backup generator fails to start for critical systems',
+        '22:20 — Water pressure drops, sanitation systems affected',
+        '22:25 — Coordinate with power utility for restoration timeline'
+      ]
+    },
+    {
+      id: 'medical-emergency',
+      name: 'Medical Emergency — Aircraft Onboard',
+      aircraft: 'ATR 72-600',
+      soulsOnBoard: 74,
+      fuelLoad: '5,000 kg',
+      fireInvolved: false,
+      casualties: { red: 1, yellow: 3, green: 10, deceased: 0 },
+      resources: { arff: 0, ambulances: 2, fireTrucks: 0, buses: 0 },
+      injects: [
+        '13:00 — Pilot reports passenger in cardiac arrest, requests priority landing',
+        '13:05 — Aircraft cleared for immediate landing',
+        '13:10 — Aircraft on ground, EMS boarding at gate',
+        '13:12 — Passenger unconscious, CPR in progress',
+        '13:15 — Ambulance transports passenger to hospital',
+        '13:20 — Remaining passengers held for questioning and care',
+        '13:25 — Aircraft inspection required before next departure'
+      ]
+    },
+    {
+      id: 'runway-incursion',
+      name: 'Runway Incursion — Vehicle on Runway',
+      aircraft: 'Dash 8 Q400',
+      soulsOnBoard: 82,
+      fuelLoad: '6,530 L',
+      fireInvolved: false,
+      casualties: { red: 0, yellow: 1, green: 3, deceased: 0 },
+      resources: { arff: 1, ambulances: 1, fireTrucks: 1, buses: 0 },
+      injects: [
+        '08:00 — Maintenance vehicle enters active runway without clearance',
+        '08:01 — Tower instructs arriving aircraft to go around',
+        '08:02 — Aircraft executes go-around, minimum separation 200 feet',
+        '08:05 — Vehicle located and escorted off runway',
+        '08:10 — Runway inspection for debris and damage',
+        '08:15 — Operations resume, significant delays expected',
+        '08:20 — Investigation launched, driver interviewed'
+      ]
+    },
+    {
+      id: 'severe-weather',
+      name: 'Severe Weather — Microburst',
+      aircraft: null,
+      soulsOnBoard: 0,
+      fuelLoad: 'N/A',
+      fireInvolved: false,
+      casualties: { red: 0, yellow: 0, green: 2, deceased: 0 },
+      resources: { arff: 1, ambulances: 1, fireTrucks: 1, buses: 2 },
+      injects: [
+        '15:00 — Weather alert: microburst warning for airport area',
+        '15:05 — Wind shear detected on final approach',
+        '15:08 — Arriving aircraft executes go-around',
+        '15:10 — All operations suspended, aircraft hold at alternate airports',
+        '15:15 — Terminal passengers moved away from windows',
+        '15:20 — Debris reported on runway and taxiways',
+        '15:25 — Damage assessment of infrastructure begins',
+        '15:30 — Coordinate with meteorological service for all-clear'
+      ]
+    },
+    {
+      id: 'hijack-threat',
+      name: 'Unlawful Interference — Hijack Threat',
+      aircraft: 'ATR 42-600',
+      soulsOnBoard: 52,
+      fuelLoad: '4,000 kg',
+      fireInvolved: false,
+      casualties: { red: 0, yellow: 0, green: 0, deceased: 0 },
+      resources: { arff: 1, ambulances: 1, fireTrucks: 1, buses: 0 },
+      injects: [
+        '11:00 — Pilot reports possible hijacker onboard, squawks 7500',
+        '11:02 — Aircraft cleared for priority landing, isolated parking assigned',
+        '11:05 — Law enforcement notified, tactical team mobilized',
+        '11:10 — Aircraft on ground at remote stand, engines running',
+        '11:15 — Negotiation team establishes contact',
+        '11:20 — Passengers report demands being made',
+        '11:25 — Fuel exhaustion risk if situation prolonged',
+        '11:30 — Coordinate with national security agencies'
+      ]
+    },
+    {
+      id: 'mass-casualty',
+      name: 'Mass Casualty — Multi-Incident',
+      aircraft: 'ATR 72-600',
+      soulsOnBoard: 74,
+      fuelLoad: '5,000 kg',
+      fireInvolved: true,
+      casualties: { red: 15, yellow: 30, green: 20, deceased: 9 },
+      resources: { arff: 3, ambulances: 10, fireTrucks: 4, buses: 5 },
+      injects: [
+        '17:00 — Aircraft crashes on landing, breaks into three sections',
+        '17:02 — Fire erupts in center fuselage section',
+        '17:05 — Multiple casualties reported across wreckage',
+        '17:08 — Mutual aid requested from all regional services',
+        '17:10 — Triage overwhelmed, request additional medical teams',
+        '17:15 — Hospital capacity reached, activate mass casualty plan',
+        '17:20 — Family reception center overwhelmed, request additional staff',
+        '17:25 — Media presence growing, establish remote briefing area'
+      ]
+    },
+    {
+      id: 'chemical-spill',
+      name: 'HazMat Spill — Cargo Area',
+      aircraft: null,
+      soulsOnBoard: 0,
+      fuelLoad: 'N/A',
+      fireInvolved: false,
+      casualties: { red: 1, yellow: 4, green: 6, deceased: 0 },
+      resources: { arff: 1, ambulances: 2, fireTrucks: 2, buses: 1 },
+      injects: [
+        '09:00 — Cargo handler reports chemical leak in freight terminal',
+        '09:02 — Substance identified as corrosive liquid',
+        '09:05 — Area evacuated, two workers showing symptoms',
+        '09:10 — HazMat team dispatched, PPE required',
+        '09:15 — Wind direction shifts, vapor drifts toward terminal',
+        '09:20 — Terminal ventilation shut down to prevent ingress',
+        '09:25 — Decontamination corridor established',
+        '09:30 — Environmental agency notified'
+      ]
+    },
+    {
+      id: 'security-breach',
+      name: 'Security Breach — Perimeter Intrusion',
+      aircraft: null,
+      soulsOnBoard: 0,
+      fuelLoad: 'N/A',
+      fireInvolved: false,
+      casualties: { red: 0, yellow: 0, green: 1, deceased: 0 },
+      resources: { arff: 0, ambulances: 1, fireTrucks: 0, buses: 0 },
+      injects: [
+        '02:00 — Motion sensors detect perimeter breach near runway 09 threshold',
+        '02:02 — Security patrols dispatched to investigate',
+        '02:05 — Two individuals spotted on airside, fleeing toward fence',
+        '02:08 — All departures suspended, aircraft held at gates',
+        '02:10 — Individuals apprehended by security',
+        '02:15 — Perimeter inspection for additional breaches',
+        '02:20 — Operations resume with enhanced security patrols',
+        '02:25 — Review CCTV footage and access control logs'
+      ]
     }
   ],
 
