@@ -2138,6 +2138,122 @@
       });
     }
 
+    /* ================= VERSION HISTORY ================= */
+    var HISTORY_STORAGE_KEY = 'ttx-version-history';
+    var historyBtn = document.getElementById('historyBtn');
+    var historyModal = document.getElementById('historyModal');
+    var closeHistoryModal = document.getElementById('closeHistoryModal');
+    var historyScenarioSelect = document.getElementById('historyScenarioSelect');
+    var historyList = document.getElementById('historyList');
+
+    var historyData = {};
+
+    var loadHistory = function () {
+      try {
+        var raw = localStorage.getItem(HISTORY_STORAGE_KEY);
+        if (raw) {
+          historyData = JSON.parse(raw);
+        }
+      } catch (e) {}
+    };
+
+    var saveHistory = function () {
+      try { localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(historyData)); } catch (e) {}
+    };
+
+    var addHistoryEntry = function (scenarioId, action, details) {
+      if (!historyData[scenarioId]) {
+        historyData[scenarioId] = [];
+      }
+      historyData[scenarioId].push({
+        timestamp: new Date().toISOString(),
+        action: action,
+        details: details
+      });
+      // Keep only last 50 entries per scenario
+      if (historyData[scenarioId].length > 50) {
+        historyData[scenarioId] = historyData[scenarioId].slice(-50);
+      }
+      saveHistory();
+    };
+
+    var renderHistoryScenarioSelect = function () {
+      if (!historyScenarioSelect) return;
+      var html = '<select id="historyScenarioDropdown" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 12px;color:var(--text);font:inherit;font-size:13px;">';
+      html += '<option value="">— Select a scenario —</option>';
+      allScenarios.forEach(function (sc) {
+        html += '<option value="' + sc.id + '">' + sc.name + (sc.custom ? ' (custom)' : '') + '</option>';
+      });
+      html += '</select>';
+      historyScenarioSelect.innerHTML = html;
+
+      var dropdown = document.getElementById('historyScenarioDropdown');
+      if (dropdown) {
+        dropdown.addEventListener('change', function () {
+          renderHistoryList(this.value);
+        });
+      }
+    };
+
+    var renderHistoryList = function (scenarioId) {
+      if (!historyList) return;
+
+      if (!scenarioId) {
+        historyList.innerHTML = '<p style="color:var(--muted);margin:0;">Select a scenario above to view its history.</p>';
+        return;
+      }
+
+      var entries = historyData[scenarioId] || [];
+      if (entries.length === 0) {
+        historyList.innerHTML = '<p style="color:var(--muted);margin:0;">No history recorded for this scenario.</p>';
+        return;
+      }
+
+      var html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+      // Show newest first
+      entries.slice().reverse().forEach(function (entry) {
+        var date = new Date(entry.timestamp);
+        var dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        var actionColor = entry.action === 'created' ? 'var(--green)' : entry.action === 'updated' ? 'var(--blue)' : entry.action === 'deleted' ? 'var(--red)' : 'var(--muted)';
+
+        html += '<div style="padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;">';
+        html += '<div>';
+        html += '<span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:' + actionColor + ';">' + entry.action + '</span>';
+        html += '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + dateStr + '</div>';
+        html += '</div>';
+        html += '</div>';
+        if (entry.details) {
+          html += '<div style="font-size:12px;color:var(--card-text);margin-top:8px;">' + entry.details + '</div>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+      historyList.innerHTML = html;
+    };
+
+    if (historyBtn) {
+      historyBtn.addEventListener('click', function () {
+        historyModal.style.display = 'block';
+        renderHistoryScenarioSelect();
+        renderHistoryList('');
+      });
+    }
+
+    if (closeHistoryModal) {
+      closeHistoryModal.addEventListener('click', function () {
+        historyModal.style.display = 'none';
+      });
+    }
+
+    if (historyModal) {
+      historyModal.addEventListener('click', function (e) {
+        if (e.target === historyModal) historyModal.style.display = 'none';
+      });
+    }
+
+    loadHistory();
+
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }
