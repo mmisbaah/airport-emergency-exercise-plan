@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#0b1526">
   <title>Airport Emergency Exercise Plan — EOP Dashboard</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/styles.css?v=20260929.3">
+  <link rel="stylesheet" href="css/styles.css?v=20260929.4">
 </head>
 <body>
 
@@ -30,6 +30,7 @@
       </div>
     </div>
     <div class="header-actions">
+      <button id="guideBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="How to use this app">❔ Guide</button>
       <button id="scenarioEditorBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Open Scenario Editor">📝 Scenarios</button>
       <button id="icsBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Generate ICS Forms">📋 ICS Forms</button>
       <button id="resourceBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Track resources">🚒 Resources</button>
@@ -951,6 +952,7 @@
     </div>
     <div class="dock-right">
       <span class="dock-kbd">Ctrl+1–7 tabs · Ctrl+T theme · Ctrl+P print</span>
+      <a href="#" id="guideDockLink">Guide</a>
       <a href="https://github.com/mmisbaah/airport-emergency-exercise-plan" target="_blank" rel="noopener">GitHub</a>
       <a href="tests/tests.html" target="_blank">Tests</a>
     </div>
@@ -1223,7 +1225,169 @@
   </div>
 </div>
 
-<script src="js/data.js?v=20260929.3"></script>
-<script src="js/app.js?v=20260929.3"></script>
+<!-- ============ USER GUIDE ============ -->
+<div id="guideModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:860px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+      <h2 style="margin:0;font-size:18px;">❔ User Guide — How to Use This App</h2>
+      <button id="closeGuideModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+    </div>
+    <p class="section-sub" style="margin:0 0 14px;">A browser-based tool for running airport emergency tabletop exercises (TTX). Everything runs locally — no account, no server — and your data stays on this device.</p>
+
+    <div class="guide-toc">
+      <a href="#g-start">Quick start</a>
+      <a href="#g-layout">Screen layout</a>
+      <a href="#g-tabs">The 7 sections</a>
+      <a href="#g-scenario">Scenarios &amp; timeline</a>
+      <a href="#g-tools">Header tools</a>
+      <a href="#g-map">Interactive map</a>
+      <a href="#g-checklist">Checklist</a>
+      <a href="#g-keys">Shortcuts</a>
+      <a href="#g-data">Saving &amp; backup</a>
+      <a href="#g-mobile">Mobile &amp; touch</a>
+      <a href="#g-export">Print &amp; exports</a>
+    </div>
+
+    <div class="guide-sec" id="g-start">
+      <h3>🚀 Quick start</h3>
+      <ol>
+        <li><strong>Pick a scenario</strong> — choose one in the <strong>Scenario</strong> dropdown in the header. The scenario panel (key facts &amp; injects) and the <strong>Exercise Timeline</strong> appear at the top of the page.</li>
+        <li><strong>Review the reference tabs</strong> — use the <strong>7 tabs</strong> below the header to walk through your IC role, team labels, the airport map, incident zones, emergency types and aircraft specs.</li>
+        <li><strong>Run the exercise</strong> — log injects and decisions in the <strong>Timeline</strong>, check off the <strong>IC Checklist</strong>, and keep <strong>Resources</strong> and <strong>Casualties</strong> up to date as the play unfolds.</li>
+        <li><strong>Wrap up</strong> — review <strong>History</strong>, back up with <strong>Data</strong>, then <strong>Print</strong> or export the <strong>PDF</strong> package for your After-Action Report.</li>
+      </ol>
+    </div>
+
+    <div class="guide-sec" id="g-layout">
+      <h3>🧭 Screen layout</h3>
+      <ul>
+        <li><strong>Header (top)</strong> — app title plus the tool buttons. It scrolls away as you read, giving the content full space.</li>
+        <li><strong>Scenario row</strong> — the dropdown that selects the active exercise scenario.</li>
+        <li><strong>Tab bar</strong> — the 7 sections. It stays <strong>pinned to the top</strong> of the screen while you scroll. On phones it scrolls sideways and keeps the active tab in view.</li>
+        <li><strong>Main content</strong> — everything belonging to the selected section.</li>
+        <li><strong>Bottom dock</strong> — app info, live scenario count, shortcut hints, and the <em>Guide · GitHub · Tests</em> links.</li>
+      </ul>
+    </div>
+
+    <div class="guide-sec" id="g-tabs">
+      <h3>📑 The 7 sections</h3>
+      <table class="guide-table">
+        <tr><th style="width:1%;">Tab</th><th>What's inside</th></tr>
+        <tr><td>IC Role</td><td>Incident Commander responsibilities across three phases: <strong>Before</strong> (Preparation), <strong>During</strong> (Execution) and <strong>After</strong> (Evaluation).</td></tr>
+        <tr><td>Team Labels</td><td>14 label cards for assigning tabletop roles to players and participating agencies.</td></tr>
+        <tr><td>Key Locations</td><td>Interactive airport map with draggable numbered pins, the crash site, zone rings and a legend.</td></tr>
+        <tr><td>Incident Zones</td><td>Concentric hot, warm and cold zone diagram with guidance for each ring.</td></tr>
+        <tr><td>Emergency Types</td><td>Cards covering the airport emergency categories used in exercises.</td></tr>
+        <tr><td>Aircraft Specs</td><td>Reference specifications plus side and top aircraft diagrams (doors, baggage holds, fuel tanks, landing gear).</td></tr>
+        <tr><td>TTX Flow &amp; Checklist</td><td>The 10-step exercise flow and the 11-item IC checklist with a live progress bar.</td></tr>
+      </table>
+    </div>
+
+    <div class="guide-sec" id="g-scenario">
+      <h3>📝 Scenarios &amp; the Exercise Timeline</h3>
+      <ul>
+        <li><strong>13 built-in scenarios</strong> cover a range of emergency types — just pick one from the dropdown.</li>
+        <li><strong>📝 Scenarios (Ctrl+E)</strong> opens the scenario editor: create your own with name, aircraft, souls on board, fuel load, fire involvement, category, estimated casualties (red / yellow / green / deceased), required resources (ARFF, ambulances, fire trucks, buses) and exercise injects. Custom scenarios are saved on your device and appear in the dropdown.</li>
+        <li><strong>Exercise Timeline</strong> (appears once a scenario is selected):
+          <ul>
+            <li>Add events: <strong>time</strong>, <strong>description</strong> and a <strong>category</strong> — Info, Inject, Decision, Milestone or Casualty (colour-coded).</li>
+            <li>Delete a single event with its <strong>×</strong> button.</li>
+            <li><strong>↩ Undo / ↪ Redo</strong> (<span class="kg">Ctrl+Z</span> / <span class="kg">Ctrl+Shift+Z</span> or <span class="kg">Ctrl+Y</span>).</li>
+            <li><strong>Clear All Events</strong>, or <strong>Export for AAR</strong> to download the log as a timestamped .txt file.</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="guide-sec" id="g-tools">
+      <h3>🧰 Header tools</h3>
+      <ul>
+        <li><strong>❔ Guide</strong> — this help page, always available here and from the dock.</li>
+        <li><strong>📝 Scenarios</strong> — scenario editor (<span class="kg">Ctrl+E</span>): build and manage custom scenarios.</li>
+        <li><strong>📋 ICS Forms</strong> — generates ICS 201 (Incident Briefing), 202 (Incident Objectives) and 203 (Organization Assignment List); download as .txt or copy to clipboard.</li>
+        <li><strong>🚒 Resources</strong> — track the 10 default units (ARFF, EMS, fire, transport, security, medical) with status, location and notes. Export a status report or reset everything.</li>
+        <li><strong>🚑 Casualties</strong> — log tagged casualties with triage category, location, notes and transported flag; export a casualty report or clear all.</li>
+        <li><strong>🌤️ Weather</strong> — current weather for any place worldwide (Open-Meteo; needs internet): temperature, feels-like, wind, humidity and pressure.</li>
+        <li><strong>📄 PDF</strong> — builds a complete exercise package (scenario, ICS forms, resources, casualties, checklist) and opens the print dialog — choose "Save as PDF".</li>
+        <li><strong>💾 Data</strong> — export everything (or scenarios only) as JSON, and import a file to restore or move data to another device.</li>
+        <li><strong>📜 History</strong> — a timestamped audit trail of the last 50 changes per scenario.</li>
+        <li><strong>🖨️ Print</strong> — prints the whole plan (<span class="kg">Ctrl+P</span>); header, tabs and dock are left out of printouts.</li>
+        <li><strong>☀️ / 🌙</strong> — light/dark theme toggle (<span class="kg">Ctrl+T</span>); your choice is remembered.</li>
+      </ul>
+    </div>
+
+    <div class="guide-sec" id="g-map">
+      <h3>🗺️ Interactive map (Key Locations tab)</h3>
+      <ul>
+        <li>Drag the <strong>numbered pins</strong> with a mouse <em>or a finger</em> to match your airport's layout.</li>
+        <li>Drag the <strong>crash site and zone rings</strong> together as one group.</li>
+        <li>The <strong>legend</strong> explains each pin category and includes reset buttons to restore the defaults.</li>
+        <li>Positions are <strong>saved automatically</strong> on this device.</li>
+      </ul>
+    </div>
+
+    <div class="guide-sec" id="g-checklist">
+      <h3>✅ Exercise flow &amp; IC checklist (last tab)</h3>
+      <ul>
+        <li>The <strong>Exercise Flow</strong> shows the 10-step sequence: Alert → Size-Up → ICP → IAP → Resources → Zones → Casualties → Family Assistance → Media → Recovery &amp; AAR.</li>
+        <li>Check off each of the <strong>11 IC checklist items</strong> as it is completed; the progress bar and counter track completion.</li>
+        <li><strong>Reset</strong> starts over — and your ticks are saved in the browser between sessions.</li>
+      </ul>
+    </div>
+
+    <div class="guide-sec" id="g-keys">
+      <h3>⌨️ Keyboard shortcuts</h3>
+      <table class="guide-table">
+        <tr><th style="width:1%;">Keys</th><th>Action</th></tr>
+        <tr><td><span class="kg">Ctrl + 1–7</span></td><td>Switch section (tabs left to right)</td></tr>
+        <tr><td><span class="kg">Ctrl + E</span></td><td>Open the scenario editor</td></tr>
+        <tr><td><span class="kg">Ctrl + P</span></td><td>Print the exercise plan</td></tr>
+        <tr><td><span class="kg">Ctrl + T</span></td><td>Toggle light / dark theme</td></tr>
+        <tr><td><span class="kg">Ctrl + Z</span></td><td>Undo the last timeline change</td></tr>
+        <tr><td><span class="kg">Ctrl + Shift + Z</span> / <span class="kg">Ctrl + Y</span></td><td>Redo</td></tr>
+        <tr><td><span class="kg">Esc</span></td><td>Close this guide (or the scenario window)</td></tr>
+      </table>
+      <p style="font-size:12.5px;color:var(--muted);margin:8px 0 0;">Shortcuts are ignored while you are typing in a field. On Mac use ⌘ in place of Ctrl.</p>
+    </div>
+
+    <div class="guide-sec" id="g-data">
+      <h3>💾 Saving, privacy &amp; backup</h3>
+      <ul>
+        <li><strong>No account, no server</strong> — everything is stored in this browser on this device.</li>
+        <li>Same device and browser = your scenarios, checklist, map positions and trackers <strong>persist</strong> after you close the tab.</li>
+        <li>Clearing site data — or switching browser/device — <strong>erases it</strong>, so export regularly.</li>
+        <li><strong>💾 Data → Export All</strong> creates a JSON backup; <strong>Import</strong> restores it anywhere.</li>
+        <li><strong>📜 History</strong> keeps an audit trail of scenario changes.</li>
+      </ul>
+    </div>
+
+    <div class="guide-sec" id="g-mobile">
+      <h3>📱 Mobile &amp; touch</h3>
+      <ul>
+        <li>The tool buttons become <strong>one swipeable row</strong> under the title; the tab bar scrolls sideways and auto-scrolls so the active tab is always visible.</li>
+        <li>Buttons, tabs and checklist items use <strong>larger tap targets</strong>.</li>
+        <li>Drag the map pins with your <strong>finger</strong> — dragging never scrolls the page.</li>
+        <li>Form fields use larger text so iOS Safari doesn't zoom when you tap them.</li>
+      </ul>
+    </div>
+
+    <div class="guide-sec" id="g-export">
+      <h3>🖨️ Printing &amp; exports</h3>
+      <ul>
+        <li><strong>🖨️ Print</strong> — the full plan in a clean paper layout (app chrome hidden).</li>
+        <li><strong>📄 PDF</strong> — a monochrome "complete exercise package" for the record.</li>
+        <li><strong>.txt exports</strong> — timeline, AAR summary, ICS forms, resource status and casualty report.</li>
+        <li><strong>JSON exports</strong> — full data or scenarios only, for backup and transfer (<strong>💾 Data</strong>).</li>
+      </ul>
+      <div class="notice" style="margin-top:12px;">
+        <span class="ni">💡</span>
+        <div><strong>Tip:</strong> this guide is always one tap away — the <strong>❔ Guide</strong> button in the header or the <strong>Guide</strong> link in the bottom dock. The <strong>Tests</strong> link runs the app's automated checks, and <strong>GitHub</strong> hosts the source.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js?v=20260929.4"></script>
+<script src="js/app.js?v=20260929.4"></script>
 </body>
 </html>

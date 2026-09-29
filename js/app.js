@@ -67,8 +67,13 @@
         return;
       }
 
-      // Escape: Close modal
+      // Escape: Close modal (guide first, then scenario editor)
       if (e.key === 'Escape') {
+        var openGuideModal = document.getElementById('guideModal');
+        if (openGuideModal && openGuideModal.style.display !== 'none') {
+          openGuideModal.style.display = 'none';
+          return;
+        }
         var scenarioModal = document.getElementById('scenarioModal');
         if (scenarioModal && scenarioModal.style.display !== 'none') {
           scenarioModal.style.display = 'none';
@@ -130,6 +135,25 @@
         }
       });
     });
+
+    /* ================= USER GUIDE ================= */
+    var guideBtn = document.getElementById('guideBtn');
+    var guideDockLink = document.getElementById('guideDockLink');
+    var guideModalEl = document.getElementById('guideModal');
+    var closeGuideModal = document.getElementById('closeGuideModal');
+
+    var openGuide = function (e) {
+      if (e) e.preventDefault();
+      if (guideModalEl) guideModalEl.style.display = 'block';
+    };
+
+    if (guideBtn) guideBtn.addEventListener('click', openGuide);
+    if (guideDockLink) guideDockLink.addEventListener('click', openGuide);
+    if (closeGuideModal) {
+      closeGuideModal.addEventListener('click', function () {
+        if (guideModalEl) guideModalEl.style.display = 'none';
+      });
+    }
 
     /* ================= CHECKLIST ================= */
     var STORAGE_KEY = 'ttx-checklist-state';

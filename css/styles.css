@@ -600,11 +600,53 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
   .check-box{width:22px;height:22px;flex-basis:22px;}
   .legend-item{padding:12px 13px;}
   .dock-right a{display:inline-flex;align-items:center;min-height:40px;}
+  .guide-toc a{display:inline-flex;align-items:center;min-height:40px;padding:8px 12px;}
   /* 16px input font stops iOS Safari from zooming when focusing fields */
   input:not([type="checkbox"]),select,textarea{font-size:16px !important;min-height:40px;}
 }
 /* Tactile press feedback */
 .reset-btn:active,.tab:active,.check-item:active,.legend-item:active{transform:scale(.97);}
+
+/* ---------- User Guide ---------- */
+.guide-toc{
+  display:flex;flex-wrap:wrap;gap:8px;
+  padding:12px;margin:0 0 18px;
+  background:var(--panel2);border:1px solid var(--line-soft);border-radius:10px;
+}
+.guide-toc a{
+  font-size:12px;color:var(--blue);text-decoration:none;
+  padding:5px 11px;border:1px solid var(--line);border-radius:999px;
+  background:var(--panel);white-space:nowrap;
+}
+.guide-toc a:hover{text-decoration:underline;border-color:var(--blue);}
+.guide-sec{margin-bottom:22px;scroll-margin-top:14px;}
+.guide-sec h3{margin:0 0 10px;font-size:14.5px;color:var(--text);}
+.guide-sec p{margin:0 0 8px;}
+.guide-sec ul,.guide-sec ol{margin:0 0 8px;padding-left:22px;font-size:13.5px;color:var(--card-text);}
+.guide-sec li{margin-bottom:7px;line-height:1.55;}
+.guide-sec li ul{margin-top:7px;}
+.guide-sec li b,.guide-sec li strong,.guide-sec ol strong{color:var(--text);}
+.guide-table{
+  width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 4px;
+}
+.guide-table th{
+  text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);
+}
+.guide-table td{
+  padding:9px 10px;border-bottom:1px solid var(--line-soft);
+  color:var(--card-text);vertical-align:top;line-height:1.5;
+}
+.guide-table td:first-child{font-weight:600;color:var(--text);white-space:nowrap;width:1%;}
+.kg{
+  display:inline-block;font-size:12px;font-weight:700;color:var(--text);
+  background:var(--stat-bg);border:1px solid var(--line);border-bottom-width:2px;
+  border-radius:6px;padding:1px 8px;margin:0 2px;white-space:nowrap;
+}
+@media (max-width:520px){
+  .guide-table td:first-child{white-space:normal;}
+  .guide-toc a{font-size:11.5px;padding:4px 9px;}
+}
 
 /* ---------- Print Styles ---------- */
 @media print{
@@ -613,7 +655,7 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
     color:#000 !important;
     font-size:12px;
   }
-  .app-header,.tabs,.reset-btn,#scenarioModal,.status-chip,.app-dock,
+  .app-header,.tabs,.reset-btn,#scenarioModal,#guideModal,.status-chip,.app-dock,
   #scenarioEditorBtn,#printBtn,#themeToggle,.notice{
     display:none !important;
   }
