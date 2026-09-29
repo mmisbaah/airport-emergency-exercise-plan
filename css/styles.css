@@ -263,7 +263,8 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
 .legend-txt b{display:block;font-size:13px;font-weight:600;line-height:1.35;}
 .legend-txt span{display:block;font-size:11.6px;color:var(--muted);margin-top:2px;line-height:1.45;}
 
-.pin{cursor:grab;}
+.pin{cursor:grab;touch-action:none;}
+#crashZoneGroup{touch-action:none;}
 .pin .halo{fill:none;stroke-width:2;opacity:0;transition:opacity .2s ease;}
 .pin:hover .halo{opacity:.9;}
 .pin .dot{transition:fill .2s ease, stroke .2s ease;}
@@ -526,6 +527,13 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
 .dock-kbd{color:var(--muted2);white-space:nowrap;}
 .dock-sep{color:var(--muted2);}
 
+/* ---------- Form grids (stack on small screens) ---------- */
+.form-grid{display:grid;gap:12px;margin-bottom:12px;}
+.form-grid-2{grid-template-columns:1fr 1fr;}
+.form-grid-4{grid-template-columns:repeat(4,1fr);}
+.form-grid-4-auto{grid-template-columns:repeat(4,1fr) auto;gap:10px;align-items:end;}
+.timeline-form{display:grid;grid-template-columns:100px 1fr 120px auto;gap:8px;margin-bottom:16px;align-items:end;}
+
 /* ---------- Responsive ---------- */
 @media (max-width:1000px){
   .map-layout{grid-template-columns:1fr;}
@@ -549,6 +557,54 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
   .stat-grid{grid-template-columns:repeat(2,1fr);}
   .dock-center{display:none;}
 }
+
+/* ---------- Mobile / Touch ---------- */
+@media (max-width:700px){
+  .app-header .wrap{gap:8px 10px;padding-top:10px;padding-bottom:10px;}
+  /* Title gets its own full-width row */
+  .brand{flex:1 1 100%;}
+  /* Action buttons become ONE horizontally scrollable strip (no 4-row header) */
+  .header-actions{
+    flex:1 1 100%; margin-left:0;
+    flex-wrap:nowrap; justify-content:flex-start;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding-bottom:2px;
+  }
+  .header-actions::-webkit-scrollbar{display:none;}
+  .header-actions .reset-btn{flex:0 0 auto;}
+  /* Scenario selector fills its row */
+  .scenario-row{display:flex;align-items:center;gap:8px;}
+  .scenario-row label{flex:0 0 auto;margin-right:0 !important;}
+  .scenario-row select{flex:1;min-width:0;}
+}
+@media (max-width:640px){
+  .timeline-form{grid-template-columns:1fr 1fr;}
+  .form-grid-4,.form-grid-4-auto{grid-template-columns:1fr 1fr;}
+  /* Modals: tighter padding so content fits small screens */
+  [id$="Modal"]{padding:14px 8px !important;}
+  [id$="Modal"] > div{padding:16px !important;}
+}
+@media (max-width:430px){
+  .timeline-form,.form-grid-2,.form-grid-4,.form-grid-4-auto{grid-template-columns:1fr;}
+  .form-grid-4-auto .reset-btn{width:100%;}
+  .section-head{font-size:18px;}
+}
+@media (pointer:coarse){
+  /* Comfortable touch targets */
+  .reset-btn{min-height:42px;padding:10px 16px;font-size:13.5px;}
+  .header-actions .reset-btn{min-height:40px;padding:8px 14px;}
+  .tab{padding:11px 16px;}
+  .check-item{padding:15px 16px;}
+  .check-box{width:22px;height:22px;flex-basis:22px;}
+  .legend-item{padding:12px 13px;}
+  .dock-right a{display:inline-flex;align-items:center;min-height:40px;}
+  /* 16px input font stops iOS Safari from zooming when focusing fields */
+  input:not([type="checkbox"]),select,textarea{font-size:16px !important;min-height:40px;}
+}
+/* Tactile press feedback */
+.reset-btn:active,.tab:active,.check-item:active,.legend-item:active{transform:scale(.97);}
 
 /* ---------- Print Styles ---------- */
 @media print{

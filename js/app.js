@@ -110,6 +110,27 @@
 
     loadTheme();
 
+    /* ================= MOBILE TAB SCROLL ================= */
+    // On narrow screens the tab bar scrolls horizontally — keep the
+    // active tab in view whenever it changes (tap or Ctrl+1-7).
+    TAB_IDS.forEach(function (id) {
+      var radio = document.getElementById(id);
+      if (!radio) return;
+      radio.addEventListener('change', function () {
+        var label = document.querySelector('.tab[for="' + id + '"]');
+        var scroller = document.querySelector('.tabs .wrap');
+        if (!label || !scroller) return;
+        if (scroller.scrollWidth > scroller.clientWidth + 4) {
+          var target = Math.max(0, label.offsetLeft - 16);
+          if (typeof scroller.scrollTo === 'function') {
+            scroller.scrollTo({ left: target, behavior: 'smooth' });
+          } else {
+            scroller.scrollLeft = target;
+          }
+        }
+      });
+    });
+
     /* ================= CHECKLIST ================= */
     var STORAGE_KEY = 'ttx-checklist-state';
 
@@ -229,7 +250,9 @@
     };
 
     var onPinMouseDown = function (e) {
-      if (e.button !== 0) return;
+      /* Mouse: primary button only. Touch/pen: always allow. */
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (e.isPrimary === false) return;
       e.preventDefault();
       var pin = e.currentTarget;
       var svg = pin.closest('svg');
@@ -248,6 +271,8 @@
       dragOffset.y = svgPt.y - pinY;
 
       pin.classList.add('dragging');
+      /* Keep receiving move/up events even if the finger leaves the pin */
+      try { pin.setPointerCapture(e.pointerId); } catch (err) {}
     };
 
     var onMouseMove = function (e) {
@@ -332,11 +357,12 @@
         pinLayer.appendChild(pin);
         pin.addEventListener('mouseenter', function () { highlight(loc.id, true); });
         pin.addEventListener('mouseleave', function () { highlight(loc.id, false); });
-        pin.addEventListener('mousedown', onPinMouseDown);
+        pin.addEventListener('pointerdown', onPinMouseDown);
       });
 
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
+      document.addEventListener('pointermove', onMouseMove);
+      document.addEventListener('pointerup', onMouseUp);
+      document.addEventListener('pointercancel', onMouseUp);
 
       Object.keys(CATS).forEach(function (catKey) {
         var cat = CATS[catKey];
@@ -416,7 +442,9 @@
     var dragStartPos = { x: 0, y: 0 };
 
     var onCrashZoneMouseDown = function (e) {
-      if (e.button !== 0) return;
+      /* Mouse: primary button only. Touch/pen: always allow. */
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      if (e.isPrimary === false) return;
       e.preventDefault();
       var el = e.currentTarget;
       var svg = el.closest('svg');
@@ -437,6 +465,8 @@
       dragStartPos.y = elY;
 
       el.style.cursor = 'grabbing';
+      /* Keep receiving move/up events even if the finger leaves the group */
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
     };
 
     var onCrashZoneMouseMove = function (e) {
@@ -470,9 +500,10 @@
         crashZoneGroup.setAttribute('transform', 'translate(' + savedCrashZone.x + ',' + savedCrashZone.y + ')');
       }
 
-      crashZoneGroup.addEventListener('mousedown', onCrashZoneMouseDown);
-      document.addEventListener('mousemove', onCrashZoneMouseMove);
-      document.addEventListener('mouseup', onCrashZoneMouseUp);
+      crashZoneGroup.addEventListener('pointerdown', onCrashZoneMouseDown);
+      document.addEventListener('pointermove', onCrashZoneMouseMove);
+      document.addEventListener('pointerup', onCrashZoneMouseUp);
+      document.addEventListener('pointercancel', onCrashZoneMouseUp);
 
       /* Add reset button for crash site and zone positions */
       var resetCrashZoneBtn = document.createElement('button');
@@ -485,6 +516,14 @@
       });
       legend.appendChild(resetCrashZoneBtn);
     }
+
+    /* Touch devices: never scroll the page while dragging a pin or the
+       crash-zone group (belt-and-braces alongside touch-action:none). */
+    document.addEventListener('touchmove', function (e) {
+      if (draggedPin || draggedCrashGroup) {
+        if (e.cancelable) e.preventDefault();
+      }
+    }, { passive: false });
 
     /* ================= SCENARIO SELECTOR ================= */
     var scenarioSelect = document.getElementById('scenarioSelect');
@@ -694,7 +733,7 @@
 
     var timelineHTML = '<h3 style="margin:0 0 16px;font-size:16px;">Exercise Timeline</h3>';
 
-    timelineHTML += '<div style="display:grid;grid-template-columns:100px 1fr 120px auto;gap:8px;margin-bottom:16px;align-items:end;">';
+    timelineHTML += '<div class="timeline-form">';
     timelineHTML += '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Time</label><input id="timelineTime" type="text" placeholder="09:30" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;"></div>';
     timelineHTML += '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Event / Inject</label><input id="timelineText" type="text" placeholder="Describe the event..." style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;"></div>';
     timelineHTML += '<div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Category</label><select id="timelineCategory" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;"><option value="info">Info</option><option value="inject">Inject</option><option value="decision">Decision</option><option value="milestone">Milestone</option><option value="casualty">Casualty</option></select></div>';

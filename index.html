@@ -4,9 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Airport Emergency Exercise Plan — Incident Commander EOP Exercise Tool">
+  <meta name="theme-color" content="#0b1526">
   <title>Airport Emergency Exercise Plan — EOP Dashboard</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link rel="stylesheet" href="css/styles.css?v=20260929.2">
+  <link rel="stylesheet" href="css/styles.css?v=20260929.3">
 </head>
 <body>
 
@@ -45,7 +46,7 @@
       </div>
     </div>
   </div>
-  <div class="wrap" style="padding-top:10px;padding-bottom:10px;">
+  <div class="wrap scenario-row" style="padding-top:10px;padding-bottom:10px;">
     <label for="scenarioSelect" style="font-size:12px;color:var(--muted);margin-right:8px;">Scenario:</label>
     <select id="scenarioSelect" style="background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;">
       <option value="">— Select a scenario —</option>
@@ -971,7 +972,7 @@
     <div id="scenarioForm" style="display:none;">
       <h3 style="margin:0 0 16px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;" id="formTitle">New Scenario</h3>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div class="form-grid form-grid-2">
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Scenario Name</label>
           <input id="editName" type="text" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="e.g., ATR 72 Crash on Runway">
@@ -982,7 +983,7 @@
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div class="form-grid form-grid-4">
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Souls on Board</label>
           <input id="editSouls" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="74">
@@ -1014,7 +1015,7 @@
       </div>
 
       <h4 style="margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Estimated Casualties</h4>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div class="form-grid form-grid-4">
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Red (Immediate)</label>
           <input id="editRed" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="8">
@@ -1034,7 +1035,7 @@
       </div>
 
       <h4 style="margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Resource Requirements</h4>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div class="form-grid form-grid-4">
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">ARFF Vehicles</label>
           <input id="editArff" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="2">
@@ -1112,7 +1113,7 @@
     <!-- Add casualty form -->
     <div style="padding:16px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:10px;margin-bottom:16px;">
       <h3 style="margin:0 0 12px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Add Casualty</h3>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr auto;gap:10px;align-items:end;">
+      <div class="form-grid form-grid-4-auto">
         <div>
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Tag #</label>
           <input id="casTag" type="text" placeholder="e.g., 001" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:6px 10px;color:var(--text);font:inherit;font-size:13px;">
@@ -1222,7 +1223,7 @@
   </div>
 </div>
 
-<script src="js/data.js?v=20260929.2"></script>
-<script src="js/app.js?v=20260929.2"></script>
+<script src="js/data.js?v=20260929.3"></script>
+<script src="js/app.js?v=20260929.3"></script>
 </body>
 </html>
