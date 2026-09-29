@@ -8,6 +8,61 @@
 
   try {
 
+    /* ================= KEYBOARD SHORTCUTS ================= */
+    var TAB_IDS = ['ttx-tab-phases', 'ttx-tab-teams', 'ttx-tab-locations', 'ttx-tab-zones', 'ttx-tab-emergencies', 'ttx-tab-aircraft', 'ttx-tab-checklist'];
+    var TAB_NAMES = ['IC Role', 'Team Labels', 'Key Locations', 'Incident Zones', 'Emergency Types', 'Aircraft Specs', 'TTX Flow & Checklist'];
+
+    document.addEventListener('keydown', function (e) {
+      // Don't trigger shortcuts when typing in inputs
+      var tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+
+      // Ctrl/Cmd + 1-7: Switch tabs
+      if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '7') {
+        e.preventDefault();
+        var idx = parseInt(e.key) - 1;
+        if (TAB_IDS[idx]) {
+          var radio = document.getElementById(TAB_IDS[idx]);
+          if (radio) radio.checked = true;
+        }
+        return;
+      }
+
+      // Ctrl/Cmd + T: Toggle theme
+      if ((e.ctrlKey || e.metaKey) && (e.key === 't' || e.key === 'T')) {
+        e.preventDefault();
+        var current = document.documentElement.getAttribute('data-theme');
+        if (current === 'light') setTheme('dark');
+        else setTheme('light');
+        return;
+      }
+
+      // Ctrl/Cmd + P: Print
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
+        e.preventDefault();
+        var printBtn = document.getElementById('printBtn');
+        if (printBtn) printBtn.click();
+        return;
+      }
+
+      // Ctrl/Cmd + E: Open scenario editor
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'e' || e.key === 'E')) {
+        e.preventDefault();
+        var scenarioEditorBtn = document.getElementById('scenarioEditorBtn');
+        if (scenarioEditorBtn) scenarioEditorBtn.click();
+        return;
+      }
+
+      // Escape: Close modal
+      if (e.key === 'Escape') {
+        var scenarioModal = document.getElementById('scenarioModal');
+        if (scenarioModal && scenarioModal.style.display !== 'none') {
+          scenarioModal.style.display = 'none';
+        }
+        return;
+      }
+    });
+
     /* ================= THEME TOGGLE ================= */
     var THEME_KEY = 'ttx-theme';
     var themeToggle = document.getElementById('themeToggle');
