@@ -83,7 +83,9 @@ try {
   app.on('console', (msg) => { if (msg.type() === 'error') appErrors.push('console: ' + msg.text()); });
 
   await app.goto(`${base}/index.html`, { waitUntil: 'load' });
-  await app.waitForSelector('#checkGrid .check-item', { timeout: 15000 });
+  // attached (not visible): the checklist lives on a tab that is hidden
+  // until selected — rendering the items proves the app booted
+  await app.waitForSelector('#checkGrid .check-item', { state: 'attached', timeout: 15000 });
 
   const boot = await app.evaluate(() => ({
     checklist: document.querySelectorAll('#checkGrid .check-item').length,
