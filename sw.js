@@ -5,7 +5,7 @@
    VERSION must be bumped whenever index.html / css / js change so the
    update toast fires (keep it in step with the ?v= asset versions). */
 
-var VERSION = 'eop-20260930.3';
+var VERSION = 'eop-20260930.4';
 var SHELL_CACHE = 'eop-shell-' + VERSION;
 
 var SHELL = [
@@ -53,7 +53,10 @@ self.addEventListener('fetch', function (event) {
   // captive portals answer 5xx instead of failing the connection).
   if (req.mode === 'navigate') {
     event.respondWith(
-      fetch(req).then(function (resp) {
+      // fetch by URL (not req) — navigation requests carry redirect:'manual',
+      // which would surface Pages' 308 (e.g. tests.html -> /tests/tests) as a
+      // non-ok response and wrongly trigger the offline shell fallback
+      fetch(req.url, { redirect: 'follow' }).then(function (resp) {
         if (resp && resp.ok) {
           // only the app shell itself may overwrite the cached index.html —
           // visits to /tests/ etc. must not corrupt the offline fallback
