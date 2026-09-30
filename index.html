@@ -206,6 +206,11 @@
     <h2 class="section-head">Key Locations — Airport Reference Layout</h2>
     <p class="section-sub">Generic airport layout for exercise planning: <strong>Runway oriented north–south</strong>, parallel taxiway and apron on the <strong>west</strong> side, passenger terminal beyond the apron, <strong>perimeter road</strong> along the east boundary, and the airport support zone to the south. Hover any numbered marker to highlight it.</p>
 
+    <div class="map-toolbar">
+      <button id="editMapBtn" class="reset-btn" type="button">✏️ Customize Map</button>
+      <span class="map-toolbar-hint">Rename or add locations, adjust zone rings — saved in this browser.</span>
+    </div>
+
     <div class="map-layout">
       <div class="map-shell">
         <svg viewBox="0 0 1000 720" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Airport emergency locations map">
@@ -349,7 +354,7 @@
             <text id="warmZoneLabel" x="507" y="152" font-size="9" fill="#fbbf24" text-anchor="middle" opacity=".85" letter-spacing="1.6" font-weight="600">WARM ZONE</text>
             <text id="coldZoneLabel" x="507" y="75" font-size="9" fill="#4ade80" text-anchor="middle" opacity=".85" letter-spacing="1.6" font-weight="600">COLD ZONE</text>
             <!-- crash site -->
-            <circle cx="507" cy="270" r="38" fill="rgba(239,68,68,.10)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 5"/>
+            <circle id="hotZone" cx="507" cy="270" r="38" fill="rgba(239,68,68,.10)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 5"/>
             <circle cx="507" cy="270" r="16" fill="#ef4444" stroke="#0a1220" stroke-width="2"/>
             <text x="507" y="275" font-size="15" fill="#fff" text-anchor="middle" font-weight="700">✕</text>
             <text id="crashSiteLabel" x="507" y="222" font-size="10" fill="#f87171" text-anchor="middle" font-weight="700" letter-spacing="1.8">CRASH SITE</text>
@@ -384,20 +389,20 @@
     <div class="zones-layout">
       <div class="map-shell">
         <svg viewBox="0 0 760 700" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Concentric hot, warm and cold zone diagram">
-          <circle cx="380" cy="350" r="322" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="9 9"/>
-          <text x="380" y="52" font-size="11" fill="#7d8fa8" text-anchor="middle" letter-spacing="1.6">OUTER CORDON</text>
+          <circle id="zoneOuter" cx="380" cy="350" r="322" fill="none" stroke="#475569" stroke-width="1.6" stroke-dasharray="9 9"/>
+          <text id="zoneOuterLabel" x="380" y="52" font-size="11" fill="#7d8fa8" text-anchor="middle" letter-spacing="1.6">OUTER CORDON</text>
 
-          <circle cx="380" cy="350" r="280" fill="rgba(34,197,94,.07)" stroke="#22c55e" stroke-width="1.6"/>
-          <text x="380" y="120" font-size="13" fill="#4ade80" text-anchor="middle" font-weight="700" letter-spacing="2.2">COLD ZONE</text>
-          <text x="380" y="140" font-size="10.5" fill="#5f8f74" text-anchor="middle" letter-spacing=".6">GREEN · SUPPORT</text>
+          <circle id="zoneCold" cx="380" cy="350" r="280" fill="rgba(34,197,94,.07)" stroke="#22c55e" stroke-width="1.6"/>
+          <text id="zoneColdLabel" x="380" y="120" font-size="13" fill="#4ade80" text-anchor="middle" font-weight="700" letter-spacing="2.2">COLD ZONE</text>
+          <text id="zoneColdSub" x="380" y="140" font-size="10.5" fill="#5f8f74" text-anchor="middle" letter-spacing=".6">GREEN · SUPPORT</text>
 
-          <circle cx="380" cy="350" r="185" fill="rgba(245,158,11,.09)" stroke="#f59e0b" stroke-width="1.6"/>
-          <text x="380" y="208" font-size="13" fill="#fbbf24" text-anchor="middle" font-weight="700" letter-spacing="2.2">WARM ZONE</text>
-          <text x="380" y="227" font-size="10.5" fill="#a98338" text-anchor="middle" letter-spacing=".6">YELLOW · TRANSITION</text>
+          <circle id="zoneWarm" cx="380" cy="350" r="185" fill="rgba(245,158,11,.09)" stroke="#f59e0b" stroke-width="1.6"/>
+          <text id="zoneWarmLabel" x="380" y="208" font-size="13" fill="#fbbf24" text-anchor="middle" font-weight="700" letter-spacing="2.2">WARM ZONE</text>
+          <text id="zoneWarmSub" x="380" y="227" font-size="10.5" fill="#a98338" text-anchor="middle" letter-spacing=".6">YELLOW · TRANSITION</text>
 
-          <circle cx="380" cy="350" r="135" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="7 7"/>
+          <circle id="zoneInner" cx="380" cy="350" r="135" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="7 7"/>
 
-          <circle cx="380" cy="350" r="92" fill="rgba(239,68,68,.14)" stroke="#ef4444" stroke-width="1.8"/>
+          <circle id="zoneHot" cx="380" cy="350" r="92" fill="rgba(239,68,68,.14)" stroke="#ef4444" stroke-width="1.8"/>
 
           <g transform="translate(380,332)">
             <path d="M0,-22 L5,-6 L22,-2 L22,4 L5,4 L7,18 L14,24 L14,28 L0,24 L-14,28 L-14,24 L-7,18 L-5,4 L-22,4 L-22,-2 L-5,-6 Z"
@@ -409,7 +414,7 @@
           <line x1="380" y1="350" x2="700" y2="350" stroke="#1e2f4a" stroke-width="1" stroke-dasharray="3 6"/>
           <line x1="380" y1="350" x2="380" y2="672" stroke="#1e2f4a" stroke-width="1" stroke-dasharray="3 6"/>
 
-          <text x="500" y="343" font-size="10.5" fill="#7d8fa8" text-anchor="middle" letter-spacing="1">INNER CORDON</text>
+          <text id="zoneInnerLabel" x="500" y="343" font-size="10.5" fill="#7d8fa8" text-anchor="middle" letter-spacing="1">INNER CORDON</text>
         </svg>
       </div>
 
@@ -1175,6 +1180,30 @@
       </div>
       <div id="weatherResult" style="margin-top:20px;"></div>
     </div>
+  </div>
+</div>
+
+<!-- ============ MAP CUSTOMIZATION MODAL ============ -->
+<div id="mapModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:780px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <h2 style="margin:0;font-size:18px;">✏️ Customize Map</h2>
+      <button id="closeMapModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+    </div>
+
+    <div id="mapZoneEditor"></div>
+    <div id="mapLocEditor"></div>
+
+    <div class="map-modal-actions">
+      <input type="file" id="mapImportFile" accept=".json,application/json" style="display:none;">
+      <button id="mapResetBtn" class="reset-btn" type="button">↺ Reset all to defaults</button>
+      <span style="flex:1;"></span>
+      <button id="mapImportBtn" class="reset-btn" type="button">⤓ Import</button>
+      <button id="mapExportBtn" class="reset-btn" type="button">⤒ Export JSON</button>
+      <button id="mapCancelBtn" class="reset-btn" type="button">Cancel</button>
+      <button id="mapSaveBtn" class="reset-btn" type="button" style="background:var(--blue);color:#fff;border-color:transparent;">💾 Save changes</button>
+    </div>
+    <p style="font-size:12px;color:var(--muted);margin:14px 0 0;">Changes apply to this browser only (stored in local storage). Pins you drag afterwards keep their own saved positions.</p>
   </div>
 </div>
 

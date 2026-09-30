@@ -317,6 +317,82 @@
     var LOCATIONS = TTX_DATA.locations;
     var PIN_STORAGE_KEY = 'ttx-pin-positions';
 
+    /* ---------- Map customization (locations + zone radii) ---------- */
+    var MAP_CFG_KEY = 'ttx-map-config';
+    var ZONE_DEFAULTS = {
+      map:     { hot: 38,  warm: 110, cold: 185 },
+      diagram: { hot: 92,  warm: 185, cold: 280 }
+    };
+    var mapConfig = { locations: null, zones: null };
+
+    var clampNum = function (v, lo, hi, fallback) {
+      var n = parseInt(v, 10);
+      if (isNaN(n)) return fallback;
+      return Math.max(lo, Math.min(hi, n));
+    };
+
+    var zoneVal = function (side, which) {
+      var z = (mapConfig.zones && mapConfig.zones[side]) || {};
+      return clampNum(z[which], 8, 500, ZONE_DEFAULTS[side][which]);
+    };
+
+    var applyZoneRadii = function () {
+      var setR = function (id, r) { var el = document.getElementById(id); if (el) el.setAttribute('r', r); };
+      var setY = function (id, y) { var el = document.getElementById(id); if (el) el.setAttribute('y', y); };
+      var setX = function (id, x) { var el = document.getElementById(id); if (el) el.setAttribute('x', x); };
+      var mz = { hot: zoneVal('map', 'hot'), warm: zoneVal('map', 'warm'), cold: zoneVal('map', 'cold') };
+      var dz = { hot: zoneVal('diagram', 'hot'), warm: zoneVal('diagram', 'warm'), cold: zoneVal('diagram', 'cold') };
+
+      // Map rings (crash site group, centre 507,270 — viewBox 1000x720)
+      setR('hotZone', mz.hot);
+      setR('warmZone', mz.warm);
+      setY('warmZoneLabel', Math.max(14, 270 - mz.warm - 8));
+      setR('coldZone', mz.cold);
+      setY('coldZoneLabel', Math.max(14, 270 - mz.cold - 10));
+      setY('crashSiteLabel', Math.max(14, 270 - mz.hot - 10));
+
+      // Zones diagram (concentric circles centred 380,350 — viewBox 760x700)
+      setR('zoneHot', dz.hot);
+      setR('zoneWarm', dz.warm);
+      setY('zoneWarmLabel', Math.max(14, 350 - dz.warm + 43));
+      setY('zoneWarmSub', Math.max(30, 350 - dz.warm + 62));
+      var inner = Math.round(dz.warm * 0.73);
+      setR('zoneInner', inner);
+      setX('zoneInnerLabel', 380 + inner - 15);
+      setR('zoneCold', dz.cold);
+      setY('zoneColdLabel', Math.max(14, 350 - dz.cold + 50));
+      setY('zoneColdSub', Math.max(30, 350 - dz.cold + 70));
+      var outer = Math.round(dz.cold * 1.15);
+      setR('zoneOuter', outer);
+      setY('zoneOuterLabel', Math.max(14, 350 - outer + 22));
+    };
+
+    var applyMapConfig = function () {
+      LOCATIONS = Array.isArray(mapConfig.locations)
+        ? mapConfig.locations
+        : TTX_DATA.locations;
+      applyZoneRadii();
+    };
+
+    var loadMapConfig = function () {
+      try {
+        var raw = localStorage.getItem(MAP_CFG_KEY);
+        if (raw) {
+          var c = JSON.parse(raw);
+          if (c && typeof c === 'object') {
+            if (Array.isArray(c.locations)) mapConfig.locations = c.locations;
+            if (c.zones && typeof c.zones === 'object') mapConfig.zones = c.zones;
+          }
+        }
+      } catch (e) {}
+      applyMapConfig();
+    };
+
+    var saveMapConfig = function () {
+      try { localStorage.setItem(MAP_CFG_KEY, JSON.stringify(mapConfig)); } catch (e) {}
+      flashSaved('map saved');
+    };
+
     var pinLayer = document.getElementById('pinLayer');
     var legend   = document.getElementById('legend');
     var NS = 'http://www.w3.org/2000/svg';
@@ -474,7 +550,16 @@
 
     var itemEls = {};
 
-    if (pinLayer && legend) {
+    /* Rebuild pins + legend — called at startup and again whenever the
+       map configuration (locations) changes. Document-level pointer
+       listeners stay outside so re-renders never duplicate them. */
+    var buildMapUI = function () {
+      if (!pinLayer || !legend) return;
+
+      while (pinLayer.firstChild) pinLayer.removeChild(pinLayer.firstChild);
+      legend.innerHTML = '';
+      itemEls = {};
+
       LOCATIONS.forEach(function (loc) {
         var pin = makePin(loc);
         pinLayer.appendChild(pin);
@@ -482,10 +567,6 @@
         pin.addEventListener('mouseleave', function () { highlight(loc.id, false); });
         pin.addEventListener('pointerdown', onPinMouseDown);
       });
-
-      document.addEventListener('pointermove', onMouseMove);
-      document.addEventListener('pointerup', onMouseUp);
-      document.addEventListener('pointercancel', onMouseUp);
 
       Object.keys(CATS).forEach(function (catKey) {
         var cat = CATS[catKey];
@@ -520,7 +601,28 @@
         resetPinPositions();
       });
       legend.appendChild(resetPinsBtn);
-    }
+
+      /* Reset for crash site + zone rings (created here too so a legend
+         rebuild after map edits never loses it) */
+      var resetCrashZoneBtn = document.createElement('button');
+      resetCrashZoneBtn.className = 'reset-btn';
+      resetCrashZoneBtn.type = 'button';
+      resetCrashZoneBtn.textContent = 'Reset Crash Site & Zones';
+      resetCrashZoneBtn.style.marginTop = '8px';
+      resetCrashZoneBtn.addEventListener('click', function () {
+        resetCrashZonePositions();
+      });
+      legend.appendChild(resetCrashZoneBtn);
+    };
+
+    /* pointer drag listeners — registered exactly once */
+    document.addEventListener('pointermove', onMouseMove);
+    document.addEventListener('pointerup', onMouseUp);
+    document.addEventListener('pointercancel', onMouseUp);
+
+    /* Load custom map config (if any), then render pins + legend + zones */
+    loadMapConfig();
+    buildMapUI();
 
     function highlight(id, on) {
       var pin  = pinLayer.querySelector('.pin[data-id="' + id + '"]');
@@ -629,16 +731,7 @@
       document.addEventListener('pointerup', onCrashZoneMouseUp);
       document.addEventListener('pointercancel', onCrashZoneMouseUp);
 
-      /* Add reset button for crash site and zone positions */
-      var resetCrashZoneBtn = document.createElement('button');
-      resetCrashZoneBtn.className = 'reset-btn';
-      resetCrashZoneBtn.type = 'button';
-      resetCrashZoneBtn.textContent = 'Reset Crash Site & Zones';
-      resetCrashZoneBtn.style.marginTop = '8px';
-      resetCrashZoneBtn.addEventListener('click', function () {
-        resetCrashZonePositions();
-      });
-      legend.appendChild(resetCrashZoneBtn);
+      /* Reset button lives in buildMapUI (legend rebuilds with it) */
     }
 
     /* Touch devices: never scroll the page while dragging a pin or the
@@ -648,6 +741,263 @@
         if (e.cancelable) e.preventDefault();
       }
     }, { passive: false });
+
+    /* ================= MAP CUSTOMIZATION MODAL ================= */
+    (function () {
+      var mapModal = document.getElementById('mapModal');
+      var editMapBtn = document.getElementById('editMapBtn');
+      if (!mapModal || !editMapBtn) return;
+
+      var zoneEditor = document.getElementById('mapZoneEditor');
+      var locEditor  = document.getElementById('mapLocEditor');
+      var importFile = document.getElementById('mapImportFile');
+
+      var escAttr = function (s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+      };
+
+      var effectiveLocations = function () {
+        return Array.isArray(mapConfig.locations) ? mapConfig.locations : TTX_DATA.locations;
+      };
+
+      var catKeys = function () { return Object.keys(CATS); };
+
+      var catOptions = function (selected) {
+        return catKeys().map(function (k) {
+          return '<option value="' + k + '"' + (k === selected ? ' selected' : '') + '>' +
+            escAttr(CATS[k].label) + '</option>';
+        }).join('');
+      };
+
+      /* ---------- zone radii fields ---------- */
+      var renderZoneEditor = function () {
+        var sides = [
+          { side: 'map', title: 'Map rings — Key Locations', sub: 'Crash hot ring, warm & cold perimeters (map units)' },
+          { side: 'diagram', title: 'Zone diagram — Incident Zones', sub: 'Concentric hot / warm / cold cordon' }
+        ];
+        var html = '<h3 class="maped-h">Zone radii</h3><div class="maped-grid">';
+        sides.forEach(function (g) {
+          html += '<fieldset class="maped-field"><legend>' + g.title + '</legend>';
+          ['hot', 'warm', 'cold'].forEach(function (which) {
+            var v = zoneVal(g.side, which);
+            html += '<label class="maped-num">' +
+              '<span>' + which.charAt(0).toUpperCase() + which.slice(1) + '</span>' +
+              '<input type="number" id="mz-' + g.side + '-' + which + '" min="8" max="500" step="1" value="' + v + '">' +
+              '<em>u</em></label>';
+          });
+          html += '<p class="maped-note">' + g.sub + '</p></fieldset>';
+        });
+        html += '</div>';
+        zoneEditor.innerHTML = html;
+      };
+
+      /* ---------- location rows ---------- */
+      var locRowHtml = function (idAttr, id, cat, name, desc) {
+        var safeCat = CATS[cat] ? cat : catKeys()[0];
+        var badge = (id == null) ? '＋' : id;
+        var badgeColor = (id == null) ? '#475569' : CATS[safeCat].color;
+        return '<div class="maploc-row" data-id="' + escAttr(idAttr) + '">' +
+          '<span class="maploc-num" style="background:' + badgeColor + '">' + badge + '</span>' +
+          '<select class="maploc-cat" aria-label="Category">' + catOptions(safeCat) + '</select>' +
+          '<input class="maploc-name" type="text" aria-label="Location name" placeholder="Name" value="' + escAttr(name) + '">' +
+          '<input class="maploc-desc" type="text" aria-label="Location description" placeholder="Description" value="' + escAttr(desc) + '">' +
+          '<button type="button" class="maploc-del" aria-label="Delete this location">✕</button>' +
+          '</div>';
+      };
+
+      var renderLocEditor = function () {
+        var locs = effectiveLocations();
+        var html = '<h3 class="maped-h">Locations <span class="maped-count">' + locs.length + '</span></h3>' +
+          '<div class="maploc-rows">';
+        locs.forEach(function (loc) {
+          html += locRowHtml(String(loc.id), loc.id, loc.cat, loc.name, loc.desc);
+        });
+        if (!locs.length) {
+          html += '<p class="maped-note" style="padding:10px 2px;">No locations — use ＋ Add to place some.</p>';
+        }
+        html += '</div>';
+        html += '<button type="button" id="mapLocAdd" class="reset-btn">＋ Add location</button>';
+        locEditor.innerHTML = html;
+      };
+
+      /* ---------- collect from DOM ---------- */
+      var collectLocations = function () {
+        var rows = locEditor.querySelectorAll('.maploc-row');
+        var existing = {};
+        effectiveLocations().forEach(function (l) { existing[l.id] = l; });
+
+        var base = 0;
+        Array.prototype.forEach.call(rows, function (row) {
+          var i = parseInt(row.getAttribute('data-id'), 10);
+          if (!isNaN(i) && i > base) base = i;
+        });
+
+        var out = [];
+        Array.prototype.forEach.call(rows, function (row) {
+          var id = parseInt(row.getAttribute('data-id'), 10);
+          if (isNaN(id)) id = ++base;
+          var sel = row.querySelector('.maploc-cat');
+          var cat = sel && CATS[sel.value] ? sel.value : catKeys()[0];
+          var nameEl = row.querySelector('.maploc-name');
+          var descEl = row.querySelector('.maploc-desc');
+          var name = (nameEl && nameEl.value || '').trim() || ('Location ' + id);
+          var desc = (descEl && descEl.value || '').trim();
+          var prev = existing[id];
+          out.push({
+            id: id, cat: cat, name: name, desc: desc,
+            x: prev ? prev.x : 500, y: prev ? prev.y : 360
+          });
+        });
+        return out;
+      };
+
+      var collectZones = function () {
+        var grab = function (side) {
+          var vals = ['hot', 'warm', 'cold'].map(function (w) {
+            var el = document.getElementById('mz-' + side + '-' + w);
+            return clampNum(el ? el.value : '', 8, 500, ZONE_DEFAULTS[side][w]);
+          }).sort(function (a, b) { return a - b; });
+          // keep rings nested: warm >= hot+10, cold >= warm+10
+          vals[1] = Math.min(500, Math.max(vals[1], vals[0] + 10));
+          vals[2] = Math.min(500, Math.max(vals[2], vals[1] + 10));
+          return { hot: vals[0], warm: vals[1], cold: vals[2] };
+        };
+        return { map: grab('map'), diagram: grab('diagram') };
+      };
+
+      /* ---------- actions ---------- */
+      var open = function () {
+        renderZoneEditor();
+        renderLocEditor();
+        mapModal.style.display = 'block';
+      };
+      var close = function () { mapModal.style.display = 'none'; };
+
+      var save = function () {
+        mapConfig.locations = collectLocations();
+        mapConfig.zones = collectZones();
+        saveMapConfig();
+        applyMapConfig();
+        buildMapUI();
+        close();
+      };
+
+      var reset = function () {
+        if (!window.confirm('Reset map layout and zone radii to factory defaults?')) return;
+        mapConfig.locations = null;
+        mapConfig.zones = null;
+        try { localStorage.removeItem(MAP_CFG_KEY); } catch (e) {}
+        applyMapConfig();
+        buildMapUI();
+        renderZoneEditor();
+        renderLocEditor();
+        flashSaved('map reset');
+      };
+
+      var exportMap = function () {
+        var data = { locations: effectiveLocations(), zones: collectZones() };
+        var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'map-layout.json';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function () {
+          URL.revokeObjectURL(a.href);
+          if (a.parentNode) a.parentNode.removeChild(a);
+        }, 1000);
+      };
+
+      /* ---------- wiring ---------- */
+      editMapBtn.addEventListener('click', open);
+      document.getElementById('closeMapModal').addEventListener('click', close);
+      document.getElementById('mapCancelBtn').addEventListener('click', close);
+      mapModal.addEventListener('click', function (e) { if (e.target === mapModal) close(); });
+      document.getElementById('mapSaveBtn').addEventListener('click', save);
+      document.getElementById('mapResetBtn').addEventListener('click', reset);
+      document.getElementById('mapExportBtn').addEventListener('click', exportMap);
+      document.getElementById('mapImportBtn').addEventListener('click', function () {
+        importFile.click();
+      });
+
+      locEditor.addEventListener('click', function (e) {
+        var del = e.target.closest ? e.target.closest('.maploc-del') : null;
+        if (del) {
+          var row = del.closest('.maploc-row');
+          if (row && row.parentNode) row.parentNode.removeChild(row);
+          var count = locEditor.querySelectorAll('.maploc-row').length;
+          var countEl = locEditor.querySelector('.maped-count');
+          if (countEl) countEl.textContent = count;
+          return;
+        }
+        if (e.target.id === 'mapLocAdd') {
+          var rowsWrap = locEditor.querySelector('.maploc-rows');
+          if (!rowsWrap) return;
+          var empty = rowsWrap.querySelector('.maped-note');
+          if (empty) empty.parentNode.removeChild(empty);
+          rowsWrap.insertAdjacentHTML('beforeend',
+            locRowHtml('', null, catKeys()[0], '', ''));
+          var added = rowsWrap.lastElementChild;
+          var countEl2 = locEditor.querySelector('.maped-count');
+          if (countEl2) countEl2.textContent = rowsWrap.querySelectorAll('.maploc-row').length;
+          var nameInput = added ? added.querySelector('.maploc-name') : null;
+          if (nameInput) nameInput.focus();
+        }
+      });
+
+      locEditor.addEventListener('change', function (e) {
+        if (e.target.classList && e.target.classList.contains('maploc-cat')) {
+          var row = e.target.closest('.maploc-row');
+          var badge = row ? row.querySelector('.maploc-num') : null;
+          if (badge && CATS[e.target.value]) badge.style.background = CATS[e.target.value].color;
+        }
+      });
+
+      importFile.addEventListener('change', function () {
+        var f = importFile.files && importFile.files[0];
+        if (!f) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          try {
+            var data = JSON.parse(reader.result);
+            if (data && Array.isArray(data.locations)) {
+              var seen = {};
+              var locs = [];
+              data.locations.forEach(function (l, i) {
+                if (!l || typeof l !== 'object') return;
+                var id = clampNum(l.id, 1, 9999, i + 1);
+                if (seen[id]) return; // drop duplicate ids
+                seen[id] = true;
+                locs.push({
+                  id: id,
+                  cat: CATS[l.cat] ? l.cat : catKeys()[0],
+                  name: String(l.name || ('Location ' + id)).slice(0, 80),
+                  desc: String(l.desc || '').slice(0, 140),
+                  x: clampNum(l.x, 0, 1000, 500),
+                  y: clampNum(l.y, 0, 720, 360)
+                });
+              });
+              mapConfig.locations = locs;
+            }
+            if (data && data.zones && typeof data.zones === 'object') {
+              mapConfig.zones = data.zones;
+            }
+            saveMapConfig();
+            applyMapConfig();
+            buildMapUI();
+            renderZoneEditor();
+            renderLocEditor();
+            flashSaved('map imported');
+          } catch (err) {
+            window.alert('Could not import: that file is not valid map JSON.');
+          }
+        };
+        reader.readAsText(f);
+        importFile.value = '';
+      });
+    })();
 
     /* ================= SCENARIO SELECTOR ================= */
     var scenarioSelect = document.getElementById('scenarioSelect');
