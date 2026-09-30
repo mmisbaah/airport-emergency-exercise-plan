@@ -1,0 +1,8 @@
+# not needed at runtime — keeps uploads small
+node_modules
+.wrangler
+.github
+scripts
+package.json
+package-lock.json
+.gitignore
