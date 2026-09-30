@@ -6,14 +6,26 @@
   <meta name="description" content="Airport Emergency Exercise Plan — Incident Commander EOP Exercise Tool">
   <meta name="theme-color" content="#0b1526">
   <title>Airport Emergency Exercise Plan — EOP Dashboard</title>
+  <script>
+    /* Apply saved theme/text-size before first paint to avoid a flash */
+    try {
+      var th = localStorage.getItem('ttx-theme');
+      if (th === 'light') document.documentElement.setAttribute('data-theme','light');
+      else if (th === 'hc') document.documentElement.setAttribute('data-theme','hc');
+      var fs = parseFloat(localStorage.getItem('ttx-font-scale'));
+      if (fs >= 0.8 && fs <= 1.6) document.documentElement.style.zoom = fs;
+    } catch (e) {}
+  </script>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" href="css/styles.css?v=20260929.9">
+  <link rel="stylesheet" href="css/styles.css?v=20260929.10">
 </head>
 <body>
+
+<a class="skip-link" href="#mainContent">Skip to main content</a>
 
 <!-- ============ TAB STATE CONTROLLERS ============ -->
 <input type="radio" name="ttx-tab" id="ttx-tab-phases" class="tab-radio" checked>
@@ -35,6 +47,11 @@
     </div>
     <div class="header-actions">
       <button id="guideBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="How to use this app">❔ Guide</button>
+      <div class="font-controls" role="group" aria-label="Text size">
+        <button id="fontDec" class="reset-btn font-btn" type="button" title="Decrease text size" aria-label="Decrease text size">A−</button>
+        <button id="fontReset" class="reset-btn font-btn font-scale" type="button" title="Reset text size to 100%">100%</button>
+        <button id="fontInc" class="reset-btn font-btn" type="button" title="Increase text size" aria-label="Increase text size">A+</button>
+      </div>
       <button id="scenarioEditorBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Open Scenario Editor">📝 Scenarios</button>
       <button id="icsBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Generate ICS Forms">📋 ICS Forms</button>
       <button id="resourceBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Track resources">🚒 Resources</button>
@@ -42,6 +59,9 @@
       <button id="weatherBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Check weather">🌤️ Weather</button>
       <button id="exportPdfBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Export to PDF">📄 PDF</button>
       <button id="dataExportBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Export/Import data">💾 Data</button>
+      <button id="backupBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Download all dashboard data (scenarios, timeline, checklist, map, theme) as a JSON backup file">💾 Backup</button>
+      <button id="restoreBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Restore dashboard data from a JSON backup file">📂 Restore</button>
+      <input type="file" id="restoreFile" accept="application/json,.json" style="display:none">
       <button id="historyBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="View version history">📜 History</button>
       <button id="printBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Print exercise plan">🖨️ Print</button>
       <button id="themeToggle" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Toggle light/dark mode">☀️</button>
@@ -57,6 +77,7 @@
       <option value="">— Select a scenario —</option>
     </select>
     <span id="saveChip" class="save-chip" role="status" aria-live="polite"></span>
+    <div class="weather" id="weatherWidget" title="Current conditions (Open-Meteo) — tap to search a location" aria-live="polite"></div>
   </div>
 </header>
 
@@ -72,7 +93,7 @@
   </div>
 </nav>
 
-<main class="wrap">
+<main class="wrap" id="mainContent">
 
   <!-- Print-only header -->
   <div class="print-header" style="display:none;">
@@ -123,6 +144,11 @@
     <div class="notice">
       <span class="ni">💡</span>
       <div><strong>Command principle:</strong> the IC directs, but does not personally fight the fire. Establish the ICP early, delegate the Safety Officer, PIO and Liaison Officer, and keep your own span of control manageable.</div>
+    </div>
+
+    <h3 class="sub" id="role-cards">IC Role Cards — Command &amp; General Staff</h3>
+    <div class="role-grid" id="roleGrid">
+      <!-- cards rendered from TTX_DATA.roleCards -->
     </div>
   </section>
 
@@ -564,7 +590,16 @@
     <h2 class="section-head">Aircraft Reference Specifications</h2>
     <p class="section-sub">Reference specifications for common regional aircraft types used in airport emergency planning. Figures are typical published values — always confirm against the operator's current type manual before an exercise.</p>
 
-    <h3 class="sub">Quick Comparison</h3>
+    <nav class="sub-nav" id="aircraftSubNav">
+      <a href="#ac-comparison" class="sub-nav-link">Comparison</a>
+      <a href="#ac-details" class="sub-nav-link">Detail Cards</a>
+      <a href="#ac-diagrams" class="sub-nav-link">Diagrams</a>
+      <a href="#ac-fuel" class="sub-nav-link">Fuel</a>
+      <a href="#ac-flow" class="sub-nav-link">Pax Flow</a>
+      <a href="#ac-implications" class="sub-nav-link">Implications</a>
+    </nav>
+
+    <h3 class="sub" id="ac-comparison">Quick Comparison</h3>
     <div class="spec-table-wrap">
       <table class="spec-table">
         <thead>
@@ -579,67 +614,8 @@
             <th>Baggage</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td class="ac-name">ATR 72-600</td>
-            <td class="num">70</td>
-            <td class="num">2 + 2</td>
-            <td class="num">74</td>
-            <td>5,000 kg</td>
-            <td class="num">4</td>
-            <td>Rear left</td>
-            <td>Fwd + aft holds</td>
-          </tr>
-          <tr>
-            <td class="ac-name">ATR 42-600</td>
-            <td class="num">48</td>
-            <td class="num">2 + 2</td>
-            <td class="num">52</td>
-            <td>4,000 kg</td>
-            <td class="num">4</td>
-            <td>Rear left</td>
-            <td>Fwd + aft holds</td>
-          </tr>
-          <tr>
-            <td class="ac-name">Dash 8 Q400</td>
-            <td class="num">78</td>
-            <td class="num">2 + 2</td>
-            <td class="num">82</td>
-            <td>6,530 L</td>
-            <td class="num">4</td>
-            <td>Forward left</td>
-            <td>Fwd + aft holds</td>
-          </tr>
-          <tr>
-            <td class="ac-name">Dash 8-300</td>
-            <td class="num">50</td>
-            <td class="num">2 + 2</td>
-            <td class="num">54</td>
-            <td>3,160 L</td>
-            <td class="num">4</td>
-            <td>Forward left</td>
-            <td>Fwd + aft holds</td>
-          </tr>
-          <tr>
-            <td class="ac-name">Dash 8-200</td>
-            <td class="num">37</td>
-            <td class="num">2 + 1</td>
-            <td class="num">40</td>
-            <td>3,160 L</td>
-            <td class="num">4</td>
-            <td>Forward left</td>
-            <td>Fwd + aft holds</td>
-          </tr>
-          <tr>
-            <td class="ac-name">Dornier 228</td>
-            <td class="num">19</td>
-            <td class="num">2 + 1</td>
-            <td class="num">22</td>
-            <td>1,885 kg</td>
-            <td class="num">4</td>
-            <td>Left main door</td>
-            <td>Fwd + aft holds</td>
-          </tr>
+        <tbody id="acTableBody">
+          <!-- rows rendered from TTX_DATA.aircraftComparison -->
         </tbody>
       </table>
     </div>
@@ -649,109 +625,9 @@
       <div><strong>Verify before the exercise:</strong> seat counts vary by operator and cabin fit. Confirm exact pax/crew numbers and fuel figures with the operator's load sheet or type manual, and use those numbers in your casualty-count planning.</div>
     </div>
 
-    <h3 class="sub">Aircraft Detail Cards</h3>
-    <div class="ac-grid">
-
-      <!-- ATR 72-600 -->
-      <div class="ac-card">
-        <div class="ac-head">
-          <div class="ac-badge">✈️</div>
-          <div>
-            <h4>ATR 72-600</h4>
-            <p>Common regional turboprop — workhorse of many domestic networks</p>
-          </div>
-        </div>
-        <div class="stat-grid">
-          <div class="stat"><span class="num">70</span><span class="lbl">Pax</span></div>
-          <div class="stat"><span class="num">2+2</span><span class="lbl">Crew</span></div>
-          <div class="stat"><span class="num">74</span><span class="lbl">Total</span></div>
-          <div class="stat"><span class="num">4</span><span class="lbl">Wheels</span></div>
-        </div>
-        <div class="spec-rows">
-          <div class="spec-row"><span class="k">Fuel capacity</span><span class="v">5,000 kg</span></div>
-          <div class="spec-row"><span class="k">Fuel storage</span><span class="v">Integral wing tanks</span></div>
-          <div class="spec-row"><span class="k">Boarding door</span><span class="v">Rear left (main)</span></div>
-          <div class="spec-row"><span class="k">Baggage holds</span><span class="v">Forward + aft</span></div>
-          <div class="spec-row"><span class="k">Landing gear</span><span class="v">Tricycle, retractable</span></div>
-          <div class="spec-row"><span class="k">Emergency exits</span><span class="v">4 main + overwing</span></div>
-        </div>
-      </div>
-
-      <!-- ATR 42-600 -->
-      <div class="ac-card">
-        <div class="ac-head">
-          <div class="ac-badge">✈️</div>
-          <div>
-            <h4>ATR 42-600</h4>
-            <p>Shorter-fuselage regional variant</p>
-          </div>
-        </div>
-        <div class="stat-grid">
-          <div class="stat"><span class="num">48</span><span class="lbl">Pax</span></div>
-          <div class="stat"><span class="num">2+2</span><span class="lbl">Crew</span></div>
-          <div class="stat"><span class="num">52</span><span class="lbl">Total</span></div>
-          <div class="stat"><span class="num">4</span><span class="lbl">Wheels</span></div>
-        </div>
-        <div class="spec-rows">
-          <div class="spec-row"><span class="k">Fuel capacity</span><span class="v">4,000 kg</span></div>
-          <div class="spec-row"><span class="k">Fuel storage</span><span class="v">Integral wing tanks</span></div>
-          <div class="spec-row"><span class="k">Boarding door</span><span class="v">Rear left (main)</span></div>
-          <div class="spec-row"><span class="k">Baggage holds</span><span class="v">Forward + aft</span></div>
-          <div class="spec-row"><span class="k">Landing gear</span><span class="v">Tricycle, retractable</span></div>
-          <div class="spec-row"><span class="k">Emergency exits</span><span class="v">4 main + overwing</span></div>
-        </div>
-      </div>
-
-      <!-- Dash 8 Q400 -->
-      <div class="ac-card">
-        <div class="ac-head">
-          <div class="ac-badge">🛫</div>
-          <div>
-            <h4>Dash 8 Q400</h4>
-            <p>High-speed, high-capacity turboprop</p>
-          </div>
-        </div>
-        <div class="stat-grid">
-          <div class="stat"><span class="num">78</span><span class="lbl">Pax</span></div>
-          <div class="stat"><span class="num">2+2</span><span class="lbl">Crew</span></div>
-          <div class="stat"><span class="num">82</span><span class="lbl">Total</span></div>
-          <div class="stat"><span class="num">4</span><span class="lbl">Wheels</span></div>
-        </div>
-        <div class="spec-rows">
-          <div class="spec-row"><span class="k">Fuel capacity</span><span class="v">6,530 L</span></div>
-          <div class="spec-row"><span class="k">Fuel storage</span><span class="v">Wing tanks</span></div>
-          <div class="spec-row"><span class="k">Boarding door</span><span class="v">Forward left</span></div>
-          <div class="spec-row"><span class="k">Baggage holds</span><span class="v">Forward + aft</span></div>
-          <div class="spec-row"><span class="k">Landing gear</span><span class="v">Tricycle, retractable</span></div>
-          <div class="spec-row"><span class="k">Emergency exits</span><span class="v">2 doors + overwing</span></div>
-        </div>
-      </div>
-
-      <!-- Dornier 228 -->
-      <div class="ac-card">
-        <div class="ac-head">
-          <div class="ac-badge">🛩️</div>
-          <div>
-            <h4>Dornier 228</h4>
-            <p>Short-field utility aircraft for regional routes</p>
-          </div>
-        </div>
-        <div class="stat-grid">
-          <div class="stat"><span class="num">19</span><span class="lbl">Pax</span></div>
-          <div class="stat"><span class="num">2+1</span><span class="lbl">Crew</span></div>
-          <div class="stat"><span class="num">22</span><span class="lbl">Total</span></div>
-          <div class="stat"><span class="num">4</span><span class="lbl">Wheels</span></div>
-        </div>
-        <div class="spec-rows">
-          <div class="spec-row"><span class="k">Fuel capacity</span><span class="v">1,885 kg</span></div>
-          <div class="spec-row"><span class="k">Fuel storage</span><span class="v">Wing tanks</span></div>
-          <div class="spec-row"><span class="k">Boarding door</span><span class="v">Left main / cargo door</span></div>
-          <div class="spec-row"><span class="k">Baggage holds</span><span class="v">Fwd 90–120 kg · Aft 150–210 kg</span></div>
-          <div class="spec-row"><span class="k">Landing gear</span><span class="v">Tricycle, retractable</span></div>
-          <div class="spec-row"><span class="k">Emergency exits</span><span class="v">Main door + rear</span></div>
-        </div>
-      </div>
-
+    <h3 class="sub" id="ac-details">Aircraft Detail Cards</h3>
+    <div class="ac-grid" id="acGrid">
+      <!-- cards rendered from TTX_DATA.aircraftDetails -->
     </div>
 
     <h3 class="sub">Where Everything Is — Diagrams</h3>
@@ -900,6 +776,94 @@
       <span class="ni">💡</span>
       <div><strong>Exercise injects this enables:</strong> "Aircraft declares minimum fuel and requests priority landing — no fuel available for turn-around." Or "Operator requests emergency fuel bowser delivery by road/sea." Both test your logistics and liaison functions hard.</div>
     </div>
+
+    <h3 class="sub" id="ac-flow">Passenger &amp; Baggage Flow</h3>
+    <div class="board-flow">
+      <div class="board-step">
+        <span class="n">1</span>
+        <b>Check-in &amp; Security</b>
+        <span>Processed inside the terminal building.</span>
+      </div>
+      <div class="board-step">
+        <span class="n">2</span>
+        <b>Walk to Aircraft</b>
+        <span>Passengers walk across the apron or use buses — plan for remote stands vs jet bridges.</span>
+      </div>
+      <div class="board-step">
+        <span class="n">3</span>
+        <b>Board at Main Door</b>
+        <span>Turboprops often board via the rear door; jets use the forward left door.</span>
+      </div>
+      <div class="board-step">
+        <span class="n">4</span>
+        <b>Baggage Loaded</b>
+        <span>Checked bags go into the forward and/or aft baggage holds.</span>
+      </div>
+      <div class="board-step">
+        <span class="n">5</span>
+        <b>Deplaning</b>
+        <span>Passengers exit the same door and walk back across the apron.</span>
+      </div>
+    </div>
+
+    <h3 class="sub" id="ac-implications">Emergency Planning Implications</h3>
+    <div class="emg-grid">
+      <div class="emg-card">
+        <div class="emg-head">
+          <div class="emg-icon" style="background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3)">🚪</div>
+          <h4>Evacuation Routes</h4>
+        </div>
+        <ul class="clean">
+          <li><strong>Turboprops:</strong> four main exits (two per side) plus overwing exits</li>
+          <li><strong>Jets:</strong> two to four main passenger doors plus overwing exits</li>
+          <li><strong>Small types:</strong> main door plus rear exit</li>
+          <li>Survivors will exit onto the apron or runway surface — plan triage accordingly</li>
+        </ul>
+      </div>
+
+      <div class="emg-card">
+        <div class="emg-head">
+          <div class="emg-icon" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3)">⛽</div>
+          <h4>Fuel Load &amp; Fire Risk</h4>
+        </div>
+        <ul class="clean">
+          <li>An ATR 72 may carry up to <strong>5,000 kg</strong> of Jet A-1 in the wings</li>
+          <li>Wing tanks mean a wing strike can release large volumes of fuel</li>
+          <li>A Boeing 737-800 can carry up to <strong>26,020 L</strong> — the largest fuel load in this table</li>
+          <li>Check your airport's foam concentrate stock against the largest expected fuel load</li>
+        </ul>
+      </div>
+
+      <div class="emg-card">
+        <div class="emg-head">
+          <div class="emg-icon" style="background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3)">🧳</div>
+          <h4>Baggage &amp; Security</h4>
+        </div>
+        <ul class="clean">
+          <li>Forward and aft holds must be identified early for any security or HazMat scenario</li>
+          <li>Small types have low hold weight limits — expect light loads</li>
+          <li>Hold access doors are usually on the <strong>right side</strong> — useful for ARFF positioning</li>
+        </ul>
+      </div>
+
+      <div class="emg-card">
+        <div class="emg-head">
+          <div class="emg-icon" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.3)">🛞</div>
+          <h4>Disabled Aircraft Recovery</h4>
+        </div>
+        <ul class="clean">
+          <li>All types in this table use <strong>tricycle retractable gear</strong></li>
+          <li>A gear-up landing means the aircraft rests on its engine nacelles and rear fuselage</li>
+          <li>A disabled aircraft on the only runway closes the airport entirely</li>
+          <li>Recovery equipment may need to come by sea or air — factor this into your timeline</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="notice">
+      <span class="ni">💡</span>
+      <div><strong>Planning number to use:</strong> take the souls-on-board figure from your scenario — it drives your triage capacity, ambulance requirements, hospital notification, and Family Assistance Center sizing.</div>
+    </div>
   </section>
 
   <!-- ============ CHECKLIST ============ -->
@@ -943,6 +907,21 @@
       <span class="ni">💡</span>
       <div><strong>How to use:</strong> check off each item as the IC completes it during the exercise. The progress bar tracks completion. Use the Reset button to start over. State is saved in your browser between sessions.</div>
     </div>
+
+    <h3 class="sub" id="glossary">Glossary</h3>
+    <div class="glossary-tools">
+      <input type="search" id="glossaryFilter" class="glossary-filter" placeholder="Filter terms… (e.g. ICP, AAR)" aria-label="Filter glossary terms">
+      <span class="glossary-count" id="glossaryCount"></span>
+    </div>
+    <div class="glossary-grid" id="glossaryGrid">
+      <!-- cards rendered from TTX_DATA.glossary -->
+    </div>
+
+    <h3 class="sub" id="references">Regulatory &amp; Guidance References</h3>
+    <p class="section-sub" style="margin-bottom:14px;">The source documents behind this dashboard's zones, checklist and exercise methodology. Use them to justify decisions in your AAR.</p>
+    <div class="ref-grid" id="refGrid">
+      <!-- cards rendered from TTX_DATA.references -->
+    </div>
   </section>
 
 </main>
@@ -967,9 +946,13 @@
       <a href="#" id="guideDockLink">Guide</a>
       <a href="https://github.com/mmisbaah/airport-emergency-exercise-plan" target="_blank" rel="noopener">GitHub</a>
       <a href="tests/tests" target="_blank">Tests</a>
+      <span class="footer-ver" id="footerVer"></span>
+      <button id="changelogBtn" class="reset-btn" type="button" style="padding:5px 12px;font-size:12px;" title="View version history">🕘 Version History</button>
     </div>
   </div>
 </footer>
+
+<button id="backToTop" class="back-to-top" type="button" title="Back to top">↑</button>
 
 <!-- ============ SCENARIO EDITOR MODAL ============ -->
 <div id="scenarioModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
@@ -1322,10 +1305,10 @@
       <h3>🧭 Screen layout</h3>
       <ul>
         <li><strong>Header (top)</strong> — app title plus the tool buttons. It scrolls away as you read, giving the content full space.</li>
-        <li><strong>Scenario row</strong> — the dropdown that selects the active exercise scenario.</li>
+        <li><strong>Scenario row</strong> — the dropdown that selects the active exercise scenario, plus a live weather widget.</li>
         <li><strong>Tab bar</strong> — the 7 sections. It stays <strong>pinned to the top</strong> of the screen while you scroll. On phones it scrolls sideways and keeps the active tab in view.</li>
         <li><strong>Main content</strong> — everything belonging to the selected section.</li>
-        <li><strong>Bottom dock</strong> — app info, live scenario count, shortcut hints, and the <em>Guide · GitHub · Tests</em> links.</li>
+        <li><strong>Bottom dock</strong> — app info, live scenario count, shortcut hints, the app version, and the <em>Guide · GitHub · Tests</em> links plus version history.</li>
       </ul>
     </div>
 
@@ -1333,13 +1316,13 @@
       <h3>📑 The 7 sections</h3>
       <table class="guide-table">
         <tr><th style="width:1%;">Tab</th><th>What's inside</th></tr>
-        <tr><td>IC Role</td><td>Incident Commander responsibilities across three phases: <strong>Before</strong> (Preparation), <strong>During</strong> (Execution) and <strong>After</strong> (Evaluation).</td></tr>
+        <tr><td>IC Role</td><td>Incident Commander responsibilities across three phases: <strong>Before</strong> (Preparation), <strong>During</strong> (Execution) and <strong>After</strong> (Evaluation), plus 8 Command &amp; General Staff role cards.</td></tr>
         <tr><td>Team Labels</td><td>14 label cards for assigning tabletop roles to players and participating agencies.</td></tr>
         <tr><td>Key Locations</td><td>Interactive airport map with draggable numbered pins, movable TWR/ARFF station markers, the crash site, zone rings and a legend.</td></tr>
         <tr><td>Incident Zones</td><td>Concentric hot, warm and cold zone diagram with guidance for each ring.</td></tr>
         <tr><td>Emergency Types</td><td>Cards covering the airport emergency categories used in exercises.</td></tr>
-        <tr><td>Aircraft Specs</td><td>Reference specifications plus side and top aircraft diagrams (doors, baggage holds, fuel tanks, landing gear).</td></tr>
-        <tr><td>TTX Flow &amp; Checklist</td><td>The 10-step exercise flow and the 11-item IC checklist with a live progress bar.</td></tr>
+        <tr><td>Aircraft Specs</td><td>Reference specifications for <strong>9 aircraft types</strong> with a comparison table, detail cards, side and top diagrams, a passenger &amp; baggage flow, and emergency planning implications.</td></tr>
+        <tr><td>TTX Flow &amp; Checklist</td><td>The 10-step exercise flow, the 11-item IC checklist with a live progress bar, a filterable <strong>glossary</strong> and the <strong>regulatory references</strong> behind the content.</td></tr>
       </table>
     </div>
 
@@ -1365,16 +1348,18 @@
       <h3>🧰 Header tools</h3>
       <ul>
         <li><strong>❔ Guide</strong> — this help page, always available here and from the dock.</li>
-        <li><strong>📝 Scenarios</strong> — scenario editor (<span class="kg">Ctrl+E</span>): build and manage custom scenarios.</li>
+        <li><strong>A− / 100% / A+</strong> — text size controls (<span class="kg">Ctrl + / − / 0</span>); your choice is remembered and applied instantly.</li>
+        <li><strong>📝 Scenarios</strong> — scenario editor (<span class="kg">Ctrl+E</span>): build and manage custom scenarios, or <strong>⚖ Compare</strong> any two side by side.</li>
         <li><strong>📋 ICS Forms</strong> — seven styled forms: ICS 201 Briefing, 202 Objectives, 203 Organization, 204 Assignment List, 205 Communications List, 206 Medical Plan and 209 Incident Summary — auto-filled from the scenario, timeline and trackers. Print them, download as .txt, or copy to clipboard.</li>
         <li><strong>🚒 Resources</strong> — track the 10 default units (ARFF, EMS, fire, transport, security, medical) with status, location and notes. Export a status report or reset everything.</li>
         <li><strong>🚑 Casualties</strong> — log tagged casualties with triage category, location, notes and transported flag; export a casualty report or clear all.</li>
-        <li><strong>🌤️ Weather</strong> — current weather for any place worldwide (Open-Meteo; needs internet): temperature, feels-like, wind, humidity and pressure.</li>
+        <li><strong>🌤️ Weather</strong> — current weather for any place worldwide (Open-Meteo; needs internet): temperature, feels-like, wind, humidity and pressure. The <strong>header widget</strong> shows the last searched place at a glance.</li>
         <li><strong>📄 PDF</strong> — builds a complete exercise package (scenario, ICS forms, resources, casualties, checklist) and opens the print dialog — choose "Save as PDF".</li>
         <li><strong>💾 Data</strong> — export everything (or scenarios only) as JSON, and import a file to restore or move data to another device.</li>
+        <li><strong>💾 Backup / 📂 Restore</strong> — one-click full backup of <em>all</em> dashboard data (scenarios, timeline, checklist, map layout, zone sizes, clock, theme, text size) as a dated JSON file; restore validates the file, saves a rollback point and reloads.</li>
         <li><strong>📜 History</strong> — a timestamped audit trail of the last 50 changes per scenario.</li>
         <li><strong>🖨️ Print</strong> — prints the whole plan (<span class="kg">Ctrl+P</span>); header, tabs and dock are left out of printouts.</li>
-        <li><strong>☀️ / 🌙</strong> — light/dark theme toggle (<span class="kg">Ctrl+T</span>); your choice is remembered.</li>
+        <li><strong>☀️ / 🌙 / 👁️</strong> — theme cycle: dark → light → <strong>high contrast</strong> (<span class="kg">Ctrl+T</span>); your choice is remembered and applied before the page paints.</li>
       </ul>
     </div>
 
@@ -1406,7 +1391,8 @@
         <tr><td><span class="kg">Ctrl + 1–7</span></td><td>Switch section (tabs left to right)</td></tr>
         <tr><td><span class="kg">Ctrl + E</span></td><td>Open the scenario editor</td></tr>
         <tr><td><span class="kg">Ctrl + P</span></td><td>Print the exercise plan</td></tr>
-        <tr><td><span class="kg">Ctrl + T</span></td><td>Toggle light / dark theme</td></tr>
+        <tr><td><span class="kg">Ctrl + T</span></td><td>Cycle theme: dark → light → high contrast</td></tr>
+        <tr><td><span class="kg">Ctrl + / − / 0</span></td><td>Text size: increase / decrease / reset to 100%</td></tr>
         <tr><td><span class="kg">Ctrl + Z</span></td><td>Undo the last timeline change</td></tr>
         <tr><td><span class="kg">Ctrl + Shift + Z</span> / <span class="kg">Ctrl + Y</span></td><td>Redo</td></tr>
         <tr><td><span class="kg">Esc</span></td><td>Close the open window (guide, forms, trackers, editors…)</td></tr>
@@ -1418,9 +1404,9 @@
       <h3>💾 Saving, privacy &amp; backup</h3>
       <ul>
         <li><strong>No account, no server</strong> — everything is stored in this browser on this device.</li>
-        <li>Same device and browser = your scenarios, checklist, timeline, map layout &amp; zone sizes, trackers, clock and facilitator notes <strong>persist</strong> after you close the tab.</li>
+        <li>Same device and browser = your scenarios, checklist, timeline, map layout &amp; zone sizes, trackers, clock, theme, text size and facilitator notes <strong>persist</strong> after you close the tab.</li>
         <li>Clearing site data — or switching browser/device — <strong>erases it</strong>, so export regularly.</li>
-        <li><strong>💾 Data → Export All</strong> creates a JSON backup; <strong>Import</strong> restores it anywhere.</li>
+        <li><strong>💾 Backup</strong> creates a full JSON snapshot of everything; <strong>📂 Restore</strong> puts it back (a rollback point is saved first). The <strong>💾 Data</strong> modal exports the same format, or scenarios only.</li>
         <li><strong>📜 History</strong> keeps an audit trail of scenario changes.</li>
       </ul>
     </div>
@@ -1464,7 +1450,34 @@
 <!-- print target: only visible in @media print -->
 <div id="printRoot" aria-hidden="true"></div>
 
-<script src="js/data.js?v=20260929.9"></script>
-<script src="js/app.js?v=20260929.9"></script>
+<!-- ============ SCENARIO COMPARISON MODAL ============ -->
+<div id="compareModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:860px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="margin:0;font-size:18px;">⚖ Scenario Comparison</h2>
+      <button id="closeCompareModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+      <select id="cmpA" style="background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;"></select>
+      <span style="color:var(--muted);font-weight:600;">vs</span>
+      <select id="cmpB" style="background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;"></select>
+    </div>
+    <div id="cmpBody"></div>
+  </div>
+</div>
+
+<!-- ============ VERSION HISTORY (CHANGELOG) MODAL ============ -->
+<div id="changelogModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:700px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="margin:0;font-size:18px;">🕘 Version History</h2>
+      <button id="closeChangelogModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+    </div>
+    <div id="changelogContent"></div>
+  </div>
+</div>
+
+<script src="js/data.js?v=20260929.10"></script>
+<script src="js/app.js?v=20260929.10"></script>
 </body>
 </html>

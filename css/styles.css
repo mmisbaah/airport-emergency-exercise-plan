@@ -968,6 +968,168 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
 .aar-empty{font-size:13px;color:var(--muted);font-style:italic;margin:0;}
 .aar-notes-body{font-size:13.5px;color:var(--card-text);line-height:1.6;margin:0;white-space:pre-wrap;}
 
+/* ---------- High-contrast theme ---------- */
+[data-theme="hc"]{
+  --bg-grad-1:#000; --bg-grad-2:#000;
+  --panel:#000; --panel2:#0a0a0a;
+  --line:#fff; --line-soft:#888;
+  --text:#fff; --muted:#e0e0e0; --muted2:#c0c0c0;
+  --red:#ff6b6b; --amber:#ffd700; --green:#00e676;
+  --blue:#ffd700; --purple:#e0aaff; --cyan:#00e5ff;
+  --card-text:#fff; --card-strong:#fff; --card-bg-solid:#000;
+  --header-bg:#000; --tabs-bg:#000;
+  --tab-active:#000; --tab-active-border:#ffd700;
+  --stat-bg:#000; --stat-text:#fff;
+  --table-stripe:rgba(255,255,255,.08); --table-text:#fff; --table-strong:#fff;
+  --progress-bg:#000;
+  --check-box-border:#fff;
+  --hover-border:#ffd700;
+  --notice-text:#fff; --notice-strong:#fff;
+  --spec-val:#fff;
+  --step-text:#fff;
+  --check-label:#fff;
+  --zone-who:#fff;
+  --flow-label-hot:#ff6b6b; --flow-label-warm:#ffd700; --flow-label-cold:#00e676;
+  --phase-num-1:#00e5ff; --phase-num-2:#ff6b6b; --phase-num-3:#00e676;
+  --phase-bg-1:rgba(0,229,255,.12); --phase-bg-2:rgba(255,107,107,.12); --phase-bg-3:rgba(0,230,118,.12);
+  --scrollbar:#888;
+  --map-bg:#000;
+  --diagram-bg:#000;
+}
+[data-theme="hc"] *{box-shadow:none !important;text-shadow:none !important;}
+[data-theme="hc"] .card,[data-theme="hc"] .team-card,[data-theme="hc"] .ac-card,
+[data-theme="hc"] .role-card,[data-theme="hc"] .glossary-card,[data-theme="hc"] .ref-card,
+[data-theme="hc"] .zone-card,[data-theme="hc"] .emg-card,[data-theme="hc"] .board-step{
+  border-width:2px;
+}
+[data-theme="hc"] .tab{border-width:2px;}
+[data-theme="hc"] .reset-btn{border-width:2px;}
+[data-theme="hc"] .skip-link{background:#ffd700;color:#000;}
+
+/* ---------- Skip link ---------- */
+.skip-link{
+  position:absolute;left:-9999px;top:0;z-index:2000;
+  background:var(--blue);color:#fff;padding:10px 18px;
+  font-size:14px;font-weight:600;text-decoration:none;border-radius:0 0 8px 0;
+}
+.skip-link:focus{left:0;outline:3px solid #fff;outline-offset:2px;}
+
+/* ---------- Font size controls ---------- */
+.font-controls{display:inline-flex;align-items:center;gap:4px;}
+.font-btn{padding:6px 10px;font-size:12px;min-width:34px;}
+.font-btn.font-scale{min-width:48px;font-weight:600;}
+
+/* ---------- Header weather widget ---------- */
+.weather{
+  display:inline-flex;align-items:center;gap:8px;flex-wrap:wrap;
+  font-size:12px;color:var(--muted);cursor:pointer;
+  padding:4px 10px;border:1px solid var(--line-soft);border-radius:8px;
+  background:var(--panel);min-height:30px;
+}
+.weather:hover{border-color:var(--hover-border);}
+.weather .wx-icon{font-size:15px;}
+.weather .wx-temp{color:var(--text);font-weight:700;font-size:13px;}
+.weather .wx-meta{white-space:nowrap;}
+.weather .wx-cond{color:var(--text);font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.weather .wx-fresh{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted2);border:1px solid var(--line-soft);border-radius:4px;padding:1px 5px;}
+
+/* ---------- Back to top ---------- */
+.back-to-top{
+  position:fixed;right:18px;bottom:64px;z-index:70;
+  width:42px;height:42px;border-radius:50%;
+  border:1px solid var(--line);background:var(--panel);
+  color:var(--text);font-size:18px;cursor:pointer;
+  opacity:0;pointer-events:none;transform:translateY(8px);
+  transition:opacity .2s ease,transform .2s ease;
+}
+.back-to-top.visible{opacity:1;pointer-events:auto;transform:none;}
+.back-to-top:hover{border-color:var(--hover-border);}
+
+/* ---------- IC role cards ---------- */
+.role-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:26px;}
+.role-card{
+  background:var(--panel);border:1px solid var(--line-soft);
+  border-radius:var(--radius);padding:18px 20px;
+}
+.role-card:hover{border-color:var(--hover-border);}
+.role-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.role-head h4{margin:0;font-size:15px;font-weight:700;}
+.role-tag{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+  padding:2px 8px;border-radius:5px;background:var(--panel2);
+  border:1px solid var(--line-soft);color:var(--muted);white-space:nowrap;
+}
+.role-who{margin:0 0 10px;font-size:12.5px;color:var(--muted);line-height:1.5;}
+.role-card ul.clean{margin:0 0 10px;}
+.role-reports{font-size:11.5px;color:var(--muted2);border-top:1px solid var(--line-soft);padding-top:8px;}
+
+/* ---------- Glossary ---------- */
+.glossary-tools{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.glossary-filter{
+  flex:1;max-width:340px;background:var(--stat-bg);border:1px solid var(--line-soft);
+  border-radius:8px;padding:8px 12px;color:var(--text);font:inherit;font-size:13px;
+}
+.glossary-filter:focus{outline:2px solid var(--blue);outline-offset:1px;}
+.glossary-count{font-size:12px;color:var(--muted2);white-space:nowrap;}
+.glossary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-bottom:26px;}
+.glossary-card{
+  background:var(--panel);border:1px solid var(--line-soft);
+  border-radius:var(--radius-sm);padding:13px 15px;
+}
+.glossary-card:hover{border-color:var(--hover-border);}
+.glossary-term{font-size:13.5px;font-weight:700;color:var(--card-strong);margin-bottom:4px;}
+.glossary-def{font-size:12.5px;color:var(--muted);line-height:1.5;}
+
+/* ---------- Regulatory references ---------- */
+.ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;}
+.ref-card{
+  background:var(--panel);border:1px solid var(--line-soft);
+  border-radius:var(--radius-sm);padding:14px 16px;
+  border-left:3px solid var(--blue);
+}
+.ref-card:hover{border-color:var(--hover-border);}
+.ref-doc{font-size:13px;font-weight:600;color:var(--card-strong);line-height:1.4;margin-bottom:4px;}
+.ref-org{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:6px;}
+.ref-scope{font-size:12px;color:var(--muted);line-height:1.5;}
+
+/* ---------- Aircraft sub-nav ---------- */
+.sub-nav{
+  display:flex;gap:6px;flex-wrap:wrap;margin:0 0 20px;
+  padding:8px 10px;background:var(--panel);border:1px solid var(--line-soft);
+  border-radius:var(--radius-sm);
+}
+.sub-nav-link{
+  font-size:12.5px;font-weight:600;color:var(--muted);text-decoration:none;
+  padding:5px 12px;border-radius:7px;border:1px solid transparent;
+}
+.sub-nav-link:hover{color:var(--text);border-color:var(--line-soft);}
+.sub-nav-link.active{color:var(--tab-active);background:var(--blue);border-color:var(--blue);}
+#aircraft .sub[id]{scroll-margin-top:110px;}
+
+/* ---------- Version history (changelog) ---------- */
+.cl-release{margin-bottom:18px;}
+.cl-version{
+  display:inline-block;font-size:13px;font-weight:700;color:var(--card-strong);
+  border:1px solid var(--line-soft);border-radius:6px;padding:3px 10px;
+  background:var(--panel2);margin-bottom:8px;
+}
+.cl-release ul{margin:0;padding-left:20px;}
+.cl-release li{font-size:13px;color:var(--card-text);line-height:1.55;margin-bottom:3px;}
+
+/* ---------- Scenario comparison ---------- */
+.cmp-grid{display:flex;flex-direction:column;gap:6px;}
+.cmp-row{
+  display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:10px;
+  padding:9px 12px;background:var(--panel2);border:1px solid var(--line-soft);
+  border-radius:8px;font-size:13px;align-items:center;
+}
+.cmp-row.cmp-head{background:var(--panel);border-color:var(--line);font-weight:700;}
+.cmp-label{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.cmp-val{color:var(--text);}
+
+/* ---------- Dock version ---------- */
+.footer-ver{font-size:11.5px;color:var(--muted2);white-space:nowrap;border:1px solid var(--line-soft);border-radius:5px;padding:2px 8px;}
+
 /* ---------- Print root (ICS / AAR markup printing) ---------- */
 #printRoot{display:none;}
 

@@ -103,12 +103,31 @@
         return;
       }
 
-      // Ctrl/Cmd + T: Toggle theme
+      // Ctrl/Cmd + T: Cycle theme (dark → light → high contrast)
       if ((e.ctrlKey || e.metaKey) && (e.key === 't' || e.key === 'T')) {
         e.preventDefault();
-        var current = document.documentElement.getAttribute('data-theme');
-        if (current === 'light') setTheme('dark');
-        else setTheme('light');
+        var current = document.documentElement.getAttribute('data-theme') || 'dark';
+        if (current === 'dark') setTheme('light');
+        else if (current === 'light') setTheme('hc');
+        else setTheme('dark');
+        return;
+      }
+
+      // Ctrl/Cmd + / - / 0: Text size controls
+      if ((e.ctrlKey || e.metaKey) && (e.key === '=' || e.key === '+')) {
+        e.preventDefault();
+        stepFont(1);
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === '-') {
+        e.preventDefault();
+        stepFont(-1);
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === '0') {
+        e.preventDefault();
+        fontScale = 1;
+        applyFontScale();
         return;
       }
 
@@ -165,6 +184,9 @@
       if (theme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
         if (themeToggle) themeToggle.textContent = '🌙';
+      } else if (theme === 'hc') {
+        document.documentElement.setAttribute('data-theme', 'hc');
+        if (themeToggle) themeToggle.textContent = '👁️';
       } else {
         document.documentElement.removeAttribute('data-theme');
         if (themeToggle) themeToggle.textContent = '☀️';
@@ -177,7 +199,7 @@
     var loadTheme = function () {
       var saved = null;
       try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
-      if (saved === 'light' || saved === 'dark') {
+      if (saved === 'light' || saved === 'dark' || saved === 'hc') {
         setTheme(saved);
       } else {
         // No saved preference: follow the OS light/dark setting (not persisted,
@@ -189,13 +211,43 @@
 
     if (themeToggle) {
       themeToggle.addEventListener('click', function () {
-        var current = document.documentElement.getAttribute('data-theme');
-        if (current === 'light') setTheme('dark');
-        else setTheme('light');
+        // Cycle: dark → light → high contrast → dark
+        var current = document.documentElement.getAttribute('data-theme') || 'dark';
+        if (current === 'dark') setTheme('light');
+        else if (current === 'light') setTheme('hc');
+        else setTheme('dark');
       });
     }
 
     loadTheme();
+
+    /* ================= FONT SIZE CONTROLS ================= */
+    var FONT_KEY = 'ttx-font-scale';
+    var fontScale = 1;
+    try {
+      var savedFont = parseFloat(localStorage.getItem(FONT_KEY));
+      if (savedFont >= 0.8 && savedFont <= 1.6) fontScale = savedFont;
+    } catch (e) {}
+
+    var applyFontScale = function () {
+      try { document.documentElement.style.zoom = fontScale; } catch (e) {}
+      var resetBtn = document.getElementById('fontReset');
+      if (resetBtn) resetBtn.textContent = Math.round(fontScale * 100) + '%';
+      try { localStorage.setItem(FONT_KEY, String(fontScale)); } catch (e) {}
+    };
+
+    var stepFont = function (dir) {
+      fontScale = Math.max(0.8, Math.min(1.6, Math.round((fontScale + dir * 0.1) * 10) / 10));
+      applyFontScale();
+    };
+
+    var fontDec = document.getElementById('fontDec');
+    var fontInc = document.getElementById('fontInc');
+    var fontReset = document.getElementById('fontReset');
+    if (fontDec) fontDec.addEventListener('click', function () { stepFont(-1); });
+    if (fontInc) fontInc.addEventListener('click', function () { stepFont(1); });
+    if (fontReset) fontReset.addEventListener('click', function () { fontScale = 1; applyFontScale(); });
+    applyFontScale();
 
     /* ================= MOBILE TAB SCROLL ================= */
     // On narrow screens the tab bar scrolls horizontally — keep the
@@ -2131,8 +2183,11 @@
 
       html += '</div>';
 
-      // Add new scenario button
-      html += '<button id="newScenarioBtn" class="reset-btn" type="button" style="margin-top:12px;padding:8px 16px;width:100%;">+ New Scenario</button>';
+      // Add new scenario + compare buttons
+      html += '<div style="display:flex;gap:8px;margin-top:12px;">';
+      html += '<button id="newScenarioBtn" class="reset-btn" type="button" style="padding:8px 16px;flex:1;">+ New Scenario</button>';
+      html += '<button id="compareBtn" class="reset-btn" type="button" style="padding:8px 16px;">⚖ Compare</button>';
+      html += '</div>';
 
       scenarioList.innerHTML = html;
 
@@ -2157,6 +2212,15 @@
           document.getElementById('editFireTrucks').value = '';
           document.getElementById('editBuses').value = '';
           document.getElementById('editInjects').value = '';
+        });
+      }
+
+      var compareBtn = document.getElementById('compareBtn');
+      if (compareBtn) {
+        compareBtn.addEventListener('click', function () {
+          renderCompareSelectors();
+          renderCompare();
+          compareModal.style.display = 'block';
         });
       }
     }
@@ -3051,6 +3115,12 @@
               });
               html += '</div>';
 
+              // Remember the place so the header widget can show it later
+              try {
+                localStorage.setItem('ttx-wx-place', JSON.stringify({ name: name, lat: lat, lon: lon }));
+              } catch (e) {}
+              renderWeatherWidget(weatherData);
+
               weatherResult.innerHTML = html;
             });
         })
@@ -3091,6 +3161,92 @@
         }
       });
     }
+
+    /* ---------- Inline header weather widget ---------- */
+    var weatherWidget = document.getElementById('weatherWidget');
+    var WX_CACHE_KEY = 'ttx-wx-cache';
+    var WX_PLACE_KEY = 'ttx-wx-place';
+
+    var WX_CODES = {
+      0: ['☀️', 'Clear'], 1: ['🌤️', 'Mainly clear'], 2: ['⛅', 'Partly cloudy'], 3: ['☁️', 'Overcast'],
+      45: ['🌫️', 'Fog'], 48: ['🌫️', 'Rime fog'],
+      51: ['🌦️', 'Light drizzle'], 53: ['🌧️', 'Drizzle'], 55: ['🌧️', 'Dense drizzle'],
+      56: ['🌧️', 'Freezing drizzle'], 57: ['🌧️', 'Freezing drizzle'],
+      61: ['🌧️', 'Light rain'], 63: ['🌧️', 'Rain'], 65: ['🌧️', 'Heavy rain'],
+      66: ['🌧️', 'Freezing rain'], 67: ['🌧️', 'Freezing rain'],
+      71: ['🌨️', 'Light snow'], 73: ['🌨️', 'Snow'], 75: ['🌨️', 'Heavy snow'], 77: ['🌨️', 'Snow grains'],
+      80: ['🌦️', 'Rain showers'], 81: ['🌧️', 'Rain showers'], 82: ['⛈️', 'Violent showers'],
+      85: ['🌨️', 'Snow showers'], 86: ['🌨️', 'Snow showers'],
+      95: ['⛈️', 'Thunderstorm'], 96: ['⛈️', 'Thunderstorm + hail'], 99: ['⛈️', 'Severe t-storm']
+    };
+
+    var windDirLabel = function (deg) {
+      var dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+      return dirs[Math.round(deg / 22.5) % 16];
+    };
+
+    var renderWeatherWidget = function (data, cached) {
+      if (!weatherWidget || !data || !data.current) return;
+      var c = data.current;
+      var code = WX_CODES[c.weather_code] || ['🌡️', '—'];
+      var place = '';
+      try { place = JSON.parse(localStorage.getItem(WX_PLACE_KEY) || 'null'); } catch (e) {}
+      var html = '<span class="wx-icon" title="' + code[1] + '">' + code[0] + '</span>';
+      html += '<span class="wx-temp">' + Math.round(c.temperature_2m) + '°C</span>';
+      html += '<span class="wx-meta">' + Math.round(c.wind_speed_10m) + ' km/h ' + windDirLabel(c.wind_direction_10m) + '</span>';
+      html += '<span class="wx-meta">RH ' + Math.round(c.relative_humidity_2m) + '%</span>';
+      if (place && place.name) html += '<span class="wx-cond">' + place.name + '</span>';
+      html += '<span class="wx-fresh" title="Data from Open-Meteo">' + (cached ? 'cached' : 'live') + '</span>';
+      weatherWidget.innerHTML = html;
+      weatherWidget.setAttribute('aria-label',
+        'Current weather' + (place && place.name ? ' at ' + place.name : '') + ': ' + code[1] +
+        ', ' + Math.round(c.temperature_2m) + ' degrees, wind ' + Math.round(c.wind_speed_10m) +
+        ' kilometres per hour ' + windDirLabel(c.wind_direction_10m));
+    };
+
+    var loadWeatherWidget = function (force) {
+      if (!weatherWidget) return;
+      var place = null;
+      try { place = JSON.parse(localStorage.getItem(WX_PLACE_KEY) || 'null'); } catch (e) {}
+      if (!place || typeof place.lat !== 'number') {
+        weatherWidget.innerHTML = '<span class="wx-cond">🌤️ Weather — tap to set location</span>';
+        return;
+      }
+      // Cache for 10 minutes so refreshes don't hammer the API
+      if (!force) {
+        try {
+          var cached = JSON.parse(localStorage.getItem(WX_CACHE_KEY) || 'null');
+          if (cached && cached.t && (Date.now() - cached.t) < 10 * 60 * 1000) {
+            renderWeatherWidget(cached.data, true);
+            return;
+          }
+        } catch (e) {}
+      }
+      var url = 'https://api.open-meteo.com/v1/forecast?latitude=' + place.lat + '&longitude=' + place.lon +
+        '&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto';
+      fetch(url)
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (!data || !data.current) return;
+          try { localStorage.setItem(WX_CACHE_KEY, JSON.stringify({ t: Date.now(), data: data })); } catch (e) {}
+          renderWeatherWidget(data, false);
+        })
+        .catch(function () {
+          // Offline or blocked — fall back to any cached copy
+          try {
+            var cached = JSON.parse(localStorage.getItem(WX_CACHE_KEY) || 'null');
+            if (cached && cached.data && cached.data.current) renderWeatherWidget(cached.data, true);
+          } catch (e) {}
+        });
+    };
+
+    if (weatherWidget) {
+      weatherWidget.addEventListener('click', function () {
+        weatherModal.style.display = 'block';
+        loadWeatherWidget(true);
+      });
+    }
+    loadWeatherWidget(false);
 
     /* ================= EXPORT TO PDF ================= */
     var exportPdfBtn = document.getElementById('exportPdfBtn');
@@ -3309,17 +3465,24 @@
         '</div>';
     };
 
+    /* Full backup key set — everything the dashboard persists */
+    var BACKUP_KEYS = [
+      'ttx-theme', 'ttx-font-scale',
+      'ttx-checklist-state', 'ttx-pin-positions', 'ttx-crash-zone-positions',
+      'ttx-custom-scenarios', 'ttx-casualty-tracker', 'ttx-resource-tracker',
+      'ttx-timeline-events', 'ttx-restore-points', 'ttx-version-history',
+      'ttx-clock', 'ttx-aar-notes', 'ttx-map-config'
+    ];
+
     var exportData = function (type) {
       var data = {};
       if (type === 'all') {
-        data = {
-          version: '1.0',
-          exportDate: new Date().toISOString(),
-          scenarios: allScenarios.filter(function (s) { return s.custom; }),
-          resources: resources,
-          casualties: casualties,
-          timelineEvents: timelineEvents
-        };
+        /* Full snapshot of every persisted key (same format as 💾 Backup) */
+        data = { app: 'airport-emergency-exercise-plan', format: 1, exportedAt: new Date().toISOString(), data: {} };
+        BACKUP_KEYS.forEach(function (k) {
+          var v = localStorage.getItem(k);
+          if (v !== null) data.data[k] = v;
+        });
       } else {
         data = {
           version: '1.0',
@@ -3332,7 +3495,7 @@
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
       a.href = url;
-      a.download = 'airport-emergency-data-' + new Date().toISOString().slice(0, 10) + '.json';
+      a.download = (type === 'all' ? 'airport-emergency-backup-' : 'airport-emergency-data-') + new Date().toISOString().slice(0, 10) + '.json';
       a.click();
       URL.revokeObjectURL(url);
     };
@@ -3347,6 +3510,22 @@
       reader.onload = function (e) {
         try {
           var data = JSON.parse(e.target.result);
+
+          /* Full backup format: restore every key, then reload */
+          if (data && data.app === 'airport-emergency-exercise-plan' && data.data && typeof data.data === 'object') {
+            pushSnapshot('Before backup restore');
+            var count = 0;
+            Object.keys(data.data).forEach(function (k) {
+              if (typeof data.data[k] === 'string') { localStorage.setItem(k, data.data[k]); count++; }
+            });
+            if (count > 0) {
+              alert('Backup restored (' + count + ' entries). Reloading…');
+              location.reload();
+            } else {
+              alert('This file is not a valid dashboard backup.');
+            }
+            return;
+          }
 
           if (!data.version || !data.scenarios) {
             alert('Invalid file format. Please use a valid export file.');
@@ -3620,6 +3799,260 @@
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }
+
+  /* ================= BACKUP / RESTORE (one-click header buttons) ================= */
+  var backupBtn = document.getElementById('backupBtn');
+  if (backupBtn) {
+    backupBtn.addEventListener('click', function () {
+      exportData('all');
+    });
+  }
+
+  var restoreBtn = document.getElementById('restoreBtn');
+  var restoreFile = document.getElementById('restoreFile');
+  if (restoreBtn && restoreFile) {
+    restoreBtn.addEventListener('click', function () { restoreFile.click(); });
+    restoreFile.addEventListener('change', function () {
+      var f = restoreFile.files && restoreFile.files[0];
+      if (f) importData(f);
+    });
+  }
+
+  /* ================= BACK TO TOP ================= */
+  var backToTop = document.getElementById('backToTop');
+  if (backToTop) {
+    var onScrollTop = function () {
+      if (window.scrollY > 400) backToTop.classList.add('visible');
+      else backToTop.classList.remove('visible');
+    };
+    window.addEventListener('scroll', onScrollTop, { passive: true });
+    onScrollTop();
+    backToTop.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  /* ================= VERSION HISTORY (changelog) ================= */
+  var APP_VERSION = '2026.09.30';
+  var CHANGELOG = [
+    { v: '2026.09.30', items: [
+      'Text size controls (A− / 100% / A+ or Ctrl +/−/0) with instant apply',
+      'High-contrast theme — dark → light → HC cycle (Ctrl+T)',
+      'Theme and text size applied before first paint (no flash)',
+      'Skip link and back-to-top button',
+      'One-click 💾 Backup / 📂 Restore of all dashboard data',
+      'Live weather widget in the header (Open-Meteo, 10-min cache)',
+      'IC Role Cards — 8 Command & General Staff cards',
+      'Filterable glossary (20 terms) and regulatory references',
+      'Aircraft tab: 9-type comparison, detail cards, sub-nav, passenger & baggage flow, planning implications',
+      '⚖ Scenario comparison — any two scenarios side by side',
+      '🕘 Version History overlay + version shown in the dock'
+    ]},
+    { v: '2026.09.29', items: [
+      'Sections and dialogs always open from the top',
+      'TWR and ARFF station markers are draggable on the map'
+    ]},
+    { v: '2026.09.28', items: [
+      'After Action Report with facilitator notes, .md export, copy and print',
+      'Seven ICS forms (201–206, 209) auto-filled from exercise data',
+      'Customize Map editor: zone radii, location list, JSON export/import',
+      'CI test suite + accessibility: modal focus trap, ARIA, keyboard support'
+    ]},
+    { v: '2026.09.27', items: [
+      'Exercise clock with T+ timer, scheduled inject release and audio cue',
+      'PWA: installable, offline support via service worker'
+    ]},
+    { v: '2026.09.26', items: [
+      'Initial release: IC phases, team labels, key locations, incident zones, emergency types, aircraft specs, checklist'
+    ]}
+  ];
+
+  var changelogBtn = document.getElementById('changelogBtn');
+  var changelogModal = document.getElementById('changelogModal');
+  var closeChangelogModal = document.getElementById('closeChangelogModal');
+  var changelogContent = document.getElementById('changelogContent');
+  var footerVer = document.getElementById('footerVer');
+  if (footerVer) footerVer.textContent = 'v' + APP_VERSION;
+
+  var renderChangelog = function () {
+    if (!changelogContent) return;
+    var html = '';
+    CHANGELOG.forEach(function (rel) {
+      html += '<div class="cl-release"><div class="cl-version">v' + rel.v + '</div><ul>';
+      rel.items.forEach(function (item) { html += '<li>' + item + '</li>'; });
+      html += '</ul></div>';
+    });
+    changelogContent.innerHTML = html;
+  };
+
+  if (changelogBtn) {
+    changelogBtn.addEventListener('click', function () {
+      renderChangelog();
+      changelogModal.style.display = 'block';
+    });
+  }
+  if (closeChangelogModal) {
+    closeChangelogModal.addEventListener('click', function () { changelogModal.style.display = 'none'; });
+  }
+  if (changelogModal) {
+    changelogModal.addEventListener('click', function (e) { if (e.target === changelogModal) changelogModal.style.display = 'none'; });
+  }
+
+  /* ================= IC ROLE CARDS (data-driven) ================= */
+  var renderRoleCards = function () {
+    var grid = document.getElementById('roleGrid');
+    if (!grid || !TTX_DATA.roleCards) return;
+    var html = '';
+    TTX_DATA.roleCards.forEach(function (r) {
+      html += '<div class="role-card">';
+      html += '<div class="role-head"><span class="role-tag">' + r.tag + '</span><h4>' + r.role + '</h4></div>';
+      html += '<p class="role-who">' + r.who + '</p>';
+      html += '<ul class="clean">';
+      r.duties.forEach(function (d) { html += '<li>' + d + '</li>'; });
+      html += '</ul>';
+      html += '<div class="role-reports">' + r.reports + '</div>';
+      html += '</div>';
+    });
+    grid.innerHTML = html;
+  };
+
+  /* ================= GLOSSARY (data-driven + filter) ================= */
+  var glossaryFilter = document.getElementById('glossaryFilter');
+  var glossaryGrid = document.getElementById('glossaryGrid');
+  var glossaryCount = document.getElementById('glossaryCount');
+
+  var renderGlossary = function (filter) {
+    if (!glossaryGrid || !TTX_DATA.glossary) return;
+    var q = (filter || '').trim().toLowerCase();
+    var terms = TTX_DATA.glossary.filter(function (g) {
+      return !q || g.term.toLowerCase().indexOf(q) > -1 || g.def.toLowerCase().indexOf(q) > -1;
+    });
+    var html = '';
+    terms.forEach(function (g) {
+      html += '<div class="glossary-card"><div class="glossary-term">' + g.term + '</div><div class="glossary-def">' + g.def + '</div></div>';
+    });
+    glossaryGrid.innerHTML = html;
+    if (glossaryCount) glossaryCount.textContent = terms.length + ' of ' + TTX_DATA.glossary.length + ' terms';
+  };
+
+  if (glossaryFilter) {
+    glossaryFilter.addEventListener('input', function () { renderGlossary(glossaryFilter.value); });
+  }
+  renderGlossary('');
+
+  /* ================= REGULATORY REFERENCES (data-driven) ================= */
+  var renderReferences = function () {
+    var grid = document.getElementById('refGrid');
+    if (!grid || !TTX_DATA.references) return;
+    var html = '';
+    TTX_DATA.references.forEach(function (r) {
+      html += '<div class="ref-card"><div class="ref-doc">' + r.doc + '</div><div class="ref-org">' + r.org + '</div><div class="ref-scope">' + r.scope + '</div></div>';
+    });
+    grid.innerHTML = html;
+  };
+  renderReferences();
+
+  /* ================= AIRCRAFT TABLE + CARDS (data-driven) ================= */
+  var renderAircraftTable = function () {
+    var body = document.getElementById('acTableBody');
+    if (!body || !TTX_DATA.aircraftComparison) return;
+    var html = '';
+    TTX_DATA.aircraftComparison.forEach(function (a) {
+      html += '<tr><td class="ac-name">' + a.name + '</td><td class="num">' + a.pax + '</td><td class="num">' + a.crew + '</td><td class="num">' + a.total + '</td><td>' + a.fuel + '</td><td class="num">' + a.wheels + '</td><td>' + a.door + '</td><td>' + a.baggage + '</td></tr>';
+    });
+    body.innerHTML = html;
+  };
+
+  var renderAircraftCards = function () {
+    var grid = document.getElementById('acGrid');
+    if (!grid || !TTX_DATA.aircraftDetails) return;
+    var badges = ['✈️', '✈️', '🛫', '🛩️', '🛩️', '🛩️', '🛫', '🛫', '🛫'];
+    var html = '';
+    TTX_DATA.aircraftDetails.forEach(function (a, i) {
+      html += '<div class="ac-card">';
+      html += '<div class="ac-head"><div class="ac-badge">' + (badges[i] || '✈️') + '</div><div><h4>' + a.name + '</h4><p>' + a.operator + '</p></div></div>';
+      html += '<div class="stat-grid">';
+      html += '<div class="stat"><span class="num">' + a.pax + '</span><span class="lbl">Pax</span></div>';
+      html += '<div class="stat"><span class="num">' + a.crew + '</span><span class="lbl">Crew</span></div>';
+      html += '<div class="stat"><span class="num">' + a.total + '</span><span class="lbl">Total</span></div>';
+      html += '<div class="stat"><span class="num">' + a.wheels + '</span><span class="lbl">Wheels</span></div>';
+      html += '</div><div class="spec-rows">';
+      a.specs.forEach(function (s) {
+        html += '<div class="spec-row"><span class="k">' + s.k + '</span><span class="v">' + s.v + '</span></div>';
+      });
+      html += '</div></div>';
+    });
+    grid.innerHTML = html;
+  };
+
+  /* ================= SCENARIO COMPARISON ================= */
+  var compareBtn = document.getElementById('compareBtn');
+  var compareModal = document.getElementById('compareModal');
+  var closeCompareModal = document.getElementById('closeCompareModal');
+  var cmpA = document.getElementById('cmpA');
+  var cmpB = document.getElementById('cmpB');
+  var cmpBody = document.getElementById('cmpBody');
+
+  var renderCompareSelectors = function () {
+    if (!cmpA || !cmpB) return;
+    var opts = allScenarios.map(function (s) {
+      return '<option value="' + s.id + '">' + s.name + (s.custom ? ' (custom)' : '') + '</option>';
+    }).join('');
+    var a = cmpA.value || (allScenarios[0] && allScenarios[0].id) || '';
+    var b = cmpB.value || '';
+    if (!b || b === a) {
+      var other = allScenarios.find(function (s) { return s.id !== a; });
+      b = other ? other.id : a;
+    }
+    cmpA.innerHTML = opts; cmpA.value = a;
+    cmpB.innerHTML = opts; cmpB.value = b;
+  };
+
+  var renderCompare = function () {
+    if (!cmpBody || !cmpA || !cmpB) return;
+    var a = allScenarios.find(function (s) { return s.id === cmpA.value; });
+    var b = allScenarios.find(function (s) { return s.id === cmpB.value; });
+    if (!a || !b) { cmpBody.innerHTML = '<p style="color:var(--muted);margin:0;">Select two scenarios to compare.</p>'; return; }
+    var row = function (label, va, vb) {
+      return '<div class="cmp-row"><div class="cmp-label">' + label + '</div><div class="cmp-val">' + va + '</div><div class="cmp-val">' + vb + '</div></div>';
+    };
+    var html = '<div class="cmp-grid">';
+    html += '<div class="cmp-row cmp-head"><div class="cmp-label"></div><div class="cmp-val">' + a.name + '</div><div class="cmp-val">' + b.name + '</div></div>';
+    html += row('Aircraft', a.aircraft || '—', b.aircraft || '—');
+    html += row('Souls on board', a.soulsOnBoard, b.soulsOnBoard);
+    html += row('Fuel load', a.fuelLoad || '—', b.fuelLoad || '—');
+    html += row('Fire involved', a.fireInvolved ? 'Yes' : 'No', b.fireInvolved ? 'Yes' : 'No');
+    html += row('Casualties (R/Y/G/D)',
+      a.casualties.red + ' / ' + a.casualties.yellow + ' / ' + a.casualties.green + ' / ' + a.casualties.deceased,
+      b.casualties.red + ' / ' + b.casualties.yellow + ' / ' + b.casualties.green + ' / ' + b.casualties.deceased);
+    html += row('Resources (ARFF/Amb/Fire/Bus)',
+      a.resources.arff + ' / ' + a.resources.ambulances + ' / ' + a.resources.fireTrucks + ' / ' + a.resources.buses,
+      b.resources.arff + ' / ' + b.resources.ambulances + ' / ' + b.resources.fireTrucks + ' / ' + b.resources.buses);
+    html += row('Injects', a.injects.length, b.injects.length);
+    html += '</div>';
+    cmpBody.innerHTML = html;
+  };
+
+  if (compareBtn) {
+    compareBtn.addEventListener('click', function () {
+      renderCompareSelectors();
+      renderCompare();
+      compareModal.style.display = 'block';
+    });
+  }
+  if (cmpA) cmpA.addEventListener('change', renderCompare);
+  if (cmpB) cmpB.addEventListener('change', renderCompare);
+  if (closeCompareModal) {
+    closeCompareModal.addEventListener('click', function () { compareModal.style.display = 'none'; });
+  }
+  if (compareModal) {
+    compareModal.addEventListener('click', function (e) { if (e.target === compareModal) compareModal.style.display = 'none'; });
+  }
+
+  /* Render data-driven content sections (after their definitions above) */
+  renderRoleCards();
+  renderAircraftTable();
+  renderAircraftCards();
 
   /* ================= A11Y — MODAL DIALOGS ================= */
   /* Dialog semantics for every *Modal overlay: role/aria-modal/labelledby,

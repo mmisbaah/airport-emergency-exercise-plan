@@ -82,7 +82,10 @@ var TTX_DATA = {
     { name: 'Dash 8 Q400',   pax: 78, crew: '2 + 2', total: 82, fuel: '6,530 L',  wheels: 4, door: 'Forward left', baggage: 'Fwd + aft holds' },
     { name: 'Dash 8-300',    pax: 50, crew: '2 + 2', total: 54, fuel: '3,160 L',  wheels: 4, door: 'Forward left', baggage: 'Fwd + aft holds' },
     { name: 'Dash 8-200',    pax: 37, crew: '2 + 1', total: 40, fuel: '3,160 L',  wheels: 4, door: 'Forward left', baggage: 'Fwd + aft holds' },
-    { name: 'Dornier 228',   pax: 19, crew: '2 + 1', total: 22, fuel: '1,885 kg', wheels: 4, door: 'Left main door', baggage: 'Fwd + aft holds' }
+    { name: 'Dornier 228',   pax: 19, crew: '2 + 1', total: 22, fuel: '1,885 kg', wheels: 4, door: 'Left main door', baggage: 'Fwd + aft holds' },
+    { name: 'Fokker 100',    pax: 100, crew: '2 + 3', total: 105, fuel: '13,600 L', wheels: 4, door: 'Rear left',   baggage: 'Fwd + aft holds' },
+    { name: 'Airbus A320-200', pax: 150, crew: '2 + 4', total: 156, fuel: '23,859 L', wheels: 4, door: 'Forward left', baggage: 'Fwd + aft holds' },
+    { name: 'Boeing 737-800', pax: 162, crew: '2 + 4', total: 168, fuel: '26,020 L', wheels: 4, door: 'Forward left', baggage: 'Fwd + aft holds' }
   ],
 
   /* Scenarios for the scenario selector — customise for your airport */
@@ -416,6 +419,107 @@ var TTX_DATA = {
         { k: 'Landing gear', v: 'Tricycle, retractable' },
         { k: 'Emergency exits', v: 'Main door + rear' }
       ]
+    },
+    {
+      name: 'Fokker 100',
+      operator: 'Regional jet — rear-mounted engines',
+      pax: 100, crew: '2+3', total: 105, wheels: 4,
+      specs: [
+        { k: 'Fuel capacity', v: '13,600 L' },
+        { k: 'Fuel storage', v: 'Wing + centre tanks' },
+        { k: 'Boarding door', v: 'Rear left (main)' },
+        { k: 'Baggage holds', v: 'Forward + aft' },
+        { k: 'Landing gear', v: 'Tricycle, retractable' },
+        { k: 'Emergency exits', v: '4 main + overwing' }
+      ]
+    },
+    {
+      name: 'Airbus A320-200',
+      operator: 'Single-aisle jet — most common narrowbody worldwide',
+      pax: 150, crew: '2+4', total: 156, wheels: 4,
+      specs: [
+        { k: 'Fuel capacity', v: '23,859 L' },
+        { k: 'Fuel storage', v: 'Wing + centre tanks' },
+        { k: 'Boarding door', v: 'Forward left (main)' },
+        { k: 'Baggage holds', v: 'Forward + aft' },
+        { k: 'Landing gear', v: 'Tricycle, retractable' },
+        { k: 'Emergency exits', v: '4 main doors + overwing' }
+      ]
+    },
+    {
+      name: 'Boeing 737-800',
+      operator: 'Single-aisle jet — high-capacity narrowbody',
+      pax: 162, crew: '2+4', total: 168, wheels: 4,
+      specs: [
+        { k: 'Fuel capacity', v: '26,020 L' },
+        { k: 'Fuel storage', v: 'Wing + centre tanks' },
+        { k: 'Boarding door', v: 'Forward left (main)' },
+        { k: 'Baggage holds', v: 'Forward + aft' },
+        { k: 'Landing gear', v: 'Tricycle, retractable' },
+        { k: 'Emergency exits', v: '4 main doors + overwing' }
+      ]
     }
+  ],
+
+  /* IC Role Cards — Command & General Staff (IC Role tab) */
+  roleCards: [
+    { role: 'Incident Commander', tag: 'Command', who: 'The overall authority for the incident until relieved.',
+      duties: ['Sets objectives and approves the Incident Action Plan', 'Establishes the ICP and directs all response elements', 'Approves resource ordering and strategy changes', 'Briefs agency heads and the EOC'],
+      reports: 'Reports to: EOC / Duty Manager' },
+    { role: 'Safety Officer', tag: 'Command', who: 'Monitors hazards and develops safety measures for all personnel.',
+      duties: ['Identifies hazards and unsafe acts on scene', 'Stops unsafe operations when life is at risk', 'Advises the IC on PPE and zone discipline', 'Investigates injuries and near-misses'],
+      reports: 'Reports to: Incident Commander' },
+    { role: 'Public Information Officer', tag: 'Command', who: 'Single voice for media and public messaging.',
+      duties: ['Prepares press releases and holding statements', 'Runs media briefings and monitors coverage', 'Coordinates family assistance messaging', 'Clears all public statements with the IC'],
+      reports: 'Reports to: Incident Commander' },
+    { role: 'Liaison Officer', tag: 'Command', who: 'Point of contact for assisting and cooperating agencies.',
+      duties: ['Coordinates with police, fire, EMS and government', 'Manages agency requests for resources', 'Represents the IC at multi-agency meetings', 'Maintains a list of agency contacts'],
+      reports: 'Reports to: Incident Commander' },
+    { role: 'Operations Section Chief', tag: 'General Staff', who: 'Directs all tactical operations to meet the IAP objectives.',
+      duties: ['Develops and supervises tactical assignments', 'Manages staging areas and resource deployment', 'Controls access to the hot and warm zones', 'Requests additional resources as needed'],
+      reports: 'Reports to: Incident Commander' },
+    { role: 'Planning Section Chief', tag: 'General Staff', who: 'Collects, evaluates and shares incident information.',
+      duties: ['Maintains the situation status and resource status', 'Prepares the IAP for each operational period', 'Documents the incident timeline for the AAR', 'Plans demobilization and recovery'],
+      reports: 'Reports to: Incident Commander' },
+    { role: 'Logistics Section Chief', tag: 'General Staff', who: 'Provides facilities, services and material support.',
+      duties: ['Orders and tracks equipment and supplies', 'Manages communications and medical support', 'Arranges food, water and rest for responders', 'Secures facilities such as the ICP and staging'],
+      reports: 'Reports to: Incident Commander' },
+    { role: 'Finance / Administration', tag: 'General Staff', who: 'Tracks costs and administrative requirements.',
+      duties: ['Records personnel time and equipment use', 'Documents costs for reimbursement and the AAR', 'Handles procurement and contracts', 'Manages claims and compensation records'],
+      reports: 'Reports to: Incident Commander' }
+  ],
+
+  /* Glossary of exercise and ICS terms (Checklist tab) */
+  glossary: [
+    { term: 'AAR', def: 'After Action Report — the document capturing strengths, gaps and corrective actions after an exercise or real event.' },
+    { term: 'AEP', def: 'Airport Emergency Plan — the airport\'s documented procedures for responding to emergencies.' },
+    { term: 'ARFF', def: 'Aircraft Rescue and Firefighting — the specialist fire service trained and equipped for aircraft incidents.' },
+    { term: 'CCP', def: 'Casualty Collection Point — a designated area where casualties are gathered, triaged and prepared for transport.' },
+    { term: 'EOC', def: 'Emergency Operations Center — the off-scene facility where agency executives coordinate support and policy.' },
+    { term: 'FAC', def: 'Family Assistance Center — a safe, private area where information and support are provided to friends and relatives.' },
+    { term: 'Hot Wash', def: 'An immediate, informal debrief held right after the exercise while memories are fresh.' },
+    { term: 'IAP', def: 'Incident Action Plan — the plan for the next operational period: objectives, strategy, assignments and safety.' },
+    { term: 'IC', def: 'Incident Commander — the person with overall authority and responsibility for the incident response.' },
+    { term: 'ICP', def: 'Incident Command Post — the on-scene location from which the IC directs the response.' },
+    { term: 'ICS', def: 'Incident Command System — the standardised on-scene management structure (Command, Operations, Planning, Logistics, Finance).' },
+    { term: 'Inject', def: 'A scripted event or piece of information introduced by facilitators to drive the exercise.' },
+    { term: 'MACL', def: 'Maldives Airports Company Limited — the operator of Velana International Airport and state airports.' },
+    { term: 'Mutual Aid', def: 'A formal agreement for agencies to send personnel and equipment to assist each other during emergencies.' },
+    { term: 'Size-up', def: 'The initial assessment of the scene: what happened, what is burning, who is involved, what is needed.' },
+    { term: 'SOB', def: 'Souls on Board — the total number of passengers and crew, used to plan triage and transport capacity.' },
+    { term: 'Staging', def: 'A designated area where incoming resources report, are assigned and await tasking.' },
+    { term: 'TTX', def: 'Tabletop Exercise — a discussion-based exercise where participants work through a scenario without deploying resources.' },
+    { term: 'Warm Zone', def: 'The transition area between the hot and cold zones — triage, decontamination and PPE donning happen here.' },
+    { term: 'VAAC', def: 'Volcanic Ash Advisory Centre — a centre that monitors and forecasts volcanic ash clouds affecting aviation.' }
+  ],
+
+  /* Regulatory & guidance references behind the content (Checklist tab) */
+  references: [
+    { doc: 'Annex 14 to the Chicago Convention, Vol. I — Aerodromes', org: 'ICAO', scope: 'Aerodrome design, emergency planning and rescue services.' },
+    { doc: 'Annex 17 — Security; and Doc 8973 (Aviation Security Manual)', org: 'ICAO', scope: 'Aviation security standards and recommended practices.' },
+    { doc: 'AC 150/5200-31C — Airport Emergency Plan', org: 'FAA', scope: 'Guide for developing airport emergency plans.' },
+    { doc: 'Regulation (EU) No 139/2013, AMC1 GM1 ADR-OPS', org: 'EASA', scope: 'Aerodrome licensing and operations requirements.' },
+    { doc: 'MACL Airport Emergency Plan (AEP) + CAAML aerodrome requirements', org: 'Maldives', scope: 'National airport emergency planning framework.' },
+    { doc: 'NFPA 1600 — Standard on Disaster/Emergency Management', org: 'NFPA', scope: 'Continuity, emergency and crisis management standard.' }
   ]
 };
