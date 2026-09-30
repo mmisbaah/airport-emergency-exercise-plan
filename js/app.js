@@ -1635,72 +1635,336 @@
       checkAutoDue();
     }, 1000);
 
-    /* ================= AAR EXPORT ================= */
-    var aarBtn = document.createElement('button');
-    aarBtn.className = 'reset-btn';
-    aarBtn.type = 'button';
-    aarBtn.textContent = 'Export AAR Summary';
-    aarBtn.style.marginTop = '12px';
-    aarBtn.addEventListener('click', function () {
-      var scenarioName = '';
-      var scenarioSelect = document.getElementById('scenarioSelect');
-      if (scenarioSelect && scenarioSelect.value) {
+    /* ================= AFTER ACTION REPORT ================= */
+    /* Shared print helper: fills #printRoot (shown only in @media print,
+       overriding the full-plan print rules) then prints. */
+    var printMarkup = function (html) {
+      var root = document.getElementById('printRoot');
+      if (root) root.innerHTML = html;
+      /* body class gates the @media print rules that hide the whole app */
+      document.body.classList.add('print-markup');
+      window.print();
+    };
+    var clearPrintMarkup = function () {
+      document.body.classList.remove('print-markup');
+      var root = document.getElementById('printRoot');
+      if (root) root.innerHTML = '';
+    };
+    window.addEventListener('afterprint', clearPrintMarkup);
+
+    var AAR_NOTES_KEY = 'ttx-aar-notes';
+    var currentAarMd = '';
+
+    var aarScenario = function () {
+      var sel = document.getElementById('scenarioSelect');
+      if (sel && sel.value) {
         var sc = (typeof allScenarios !== 'undefined' ? allScenarios : TTX_DATA.scenarios)
-          .find(function (s) { return s.id === scenarioSelect.value; });
-        if (sc) scenarioName = sc.name;
+          .find(function (s) { return s.id === sel.value; });
+        if (sc) return sc;
       }
+      return null;
+    };
 
-      var checklistState = [];
+    var jsonGet = function (key, fallback) {
       try {
-        var raw = localStorage.getItem('ttx-checklist-state');
-        if (raw) checklistState = JSON.parse(raw);
+        var raw = localStorage.getItem(key);
+        if (raw) return JSON.parse(raw);
       } catch (e) {}
+      return fallback;
+    };
 
-      var report = '';
-      report += '============================================================\n';
-      report += '  AIRPORT EMERGENCY EXERCISE — AFTER ACTION REPORT SUMMARY\n';
-      report += '============================================================\n\n';
-      report += 'Generated: ' + new Date().toLocaleString() + '\n';
-      if (scenarioName) report += 'Scenario: ' + scenarioName + '\n';
-      report += '\n';
+    var collectAarData = function () {
+      var scenario = aarScenario();
+      var now = new Date();
 
-      report += '------------------------------------------------------------\n';
-      report += 'CHECKLIST STATUS\n';
-      report += '------------------------------------------------------------\n';
-      var checkedCount = 0;
-      TTX_DATA.checklistItems.forEach(function (item, idx) {
-        var checked = checklistState[idx] === true;
-        if (checked) checkedCount++;
-        report += (checked ? '[✓]' : '[ ]') + ' ' + item + '\n';
+      var checklistState = jsonGet('ttx-checklist-state', []) || [];
+      var checklist = TTX_DATA.checklistItems.map(function (item, idx) {
+        return { text: item, done: checklistState[idx] === true };
       });
-      report += '\nProgress: ' + checkedCount + ' / ' + TTX_DATA.checklistItems.length + ' completed\n\n';
+      var doneCount = checklist.filter(function (i) { return i.done; }).length;
 
-      report += '------------------------------------------------------------\n';
-      report += 'EXERCISE TIMELINE\n';
-      report += '------------------------------------------------------------\n';
-      if (timelineEvents.length === 0) {
-        report += 'No events recorded.\n';
+      var resArr = jsonGet('ttx-resource-tracker', []) || [];
+      if (!Array.isArray(resArr)) resArr = [];
+      var casArr = jsonGet('ttx-casualty-tracker', []) || [];
+      if (!Array.isArray(casArr)) casArr = [];
+      var clock = jsonGet('ttx-clock', null);
+
+      return {
+        generatedAt: now,
+        scenario: scenario,
+        checklist: checklist,
+        doneCount: doneCount,
+        total: checklist.length,
+        timeline: timelineEvents, /* module var, loaded above */
+        resources: resArr,
+        casualties: casArr,
+        clock: clock,
+        notes: ''
+      };
+    };
+
+    var aarCounts = function (d) {
+      var count = function (fn) { return d.casualties.filter(fn).length; };
+      return {
+        red: count(function (c) { return c.triage === 'red'; }),
+        yellow: count(function (c) { return c.triage === 'yellow'; }),
+        green: count(function (c) { return c.triage === 'green'; }),
+        deceased: count(function (c) { return c.triage === 'deceased'; }),
+        transported: count(function (c) { return !!c.transported; }),
+        total: d.casualties.length,
+        resByStatus: d.resources.reduce(function (acc, r) {
+          var s = r.status || 'available';
+          acc[s] = (acc[s] || 0) + 1;
+          return acc;
+        }, {})
+      };
+    };
+
+    var aarScenarioLine = function (d) {
+      if (!d.scenario) return 'Airport Emergency Exercise (no scenario selected)';
+      return d.scenario.name;
+    };
+
+    var aarToMarkdown = function (d) {
+      var cell = function (s) {
+        return String(s == null ? '' : s).replace(/\|/g, '\\|').replace(/\r?\n/g, ' ');
+      };
+      var L = [];
+      L.push('# After Action Report — ' + aarScenarioLine(d));
+      L.push('');
+      L.push('- **Generated:** ' + d.generatedAt.toLocaleString());
+      if (d.scenario) {
+        L.push('- **Scenario type:** ' + (d.scenario.category || 'aircraft'));
+        if (d.scenario.soulsOnBoard != null) {
+          L.push('- **Souls on board:** ' + d.scenario.soulsOnBoard + ' · **Fuel:** ' + d.scenario.fuelLoad);
+        }
+      }
+      if (d.clock && d.clock.startWall) {
+        L.push('- **Exercise started:** ' + new Date(d.clock.startWall).toLocaleTimeString() +
+          ' (clock ' + (d.clock.running ? 'running' : 'stopped') + ')');
+      }
+      L.push('');
+      L.push('## 1. Checklist Progress');
+      L.push('');
+      L.push('**' + d.doneCount + ' / ' + d.total + '** items completed');
+      L.push('');
+      d.checklist.forEach(function (it) {
+        L.push('- [' + (it.done ? 'x' : ' ') + '] ' + it.text);
+      });
+      L.push('');
+      L.push('## 2. Exercise Timeline');
+      L.push('');
+      if (!d.timeline.length) {
+        L.push('_No events recorded._');
       } else {
-        timelineEvents.forEach(function (evt) {
-          report += '[' + evt.time + '] [' + evt.category.toUpperCase() + '] ' + evt.text + '\n';
+        L.push('| Time | T+ | Category | Event |');
+        L.push('|------|----|----------|-------|');
+        d.timeline.forEach(function (e) {
+          L.push('| ' + cell(e.time) + ' | ' + cell(e.tplus || '—') + ' | ' +
+            cell(e.category) + ' | ' + cell(e.text) + ' |');
         });
       }
-      report += '\n';
+      L.push('');
+      L.push('## 3. Resources');
+      L.push('');
+      if (!d.resources.length) {
+        L.push('_Resource tracker is empty._');
+      } else {
+        var c = aarCounts(d);
+        L.push('**Status summary:** ' + Object.keys(c.resByStatus).map(function (s) {
+          return s + ' ' + c.resByStatus[s];
+        }).join(' · ') + ' (of ' + d.resources.length + ')');
+        L.push('');
+        L.push('| Resource | Type | Status | Location |');
+        L.push('|----------|------|--------|----------|');
+        d.resources.forEach(function (r) {
+          L.push('| ' + cell(r.name) + ' | ' + cell(r.type) + ' | ' + cell(r.status) + ' | ' + cell(r.location || '—') + ' |');
+        });
+      }
+      L.push('');
+      L.push('## 4. Casualties');
+      L.push('');
+      if (!d.casualties.length) {
+        L.push('_No casualties recorded in the tracker._');
+      } else {
+        var cc = aarCounts(d);
+        L.push('- Red: ' + cc.red + ' · Yellow: ' + cc.yellow + ' · Green: ' + cc.green +
+          ' · Deceased: ' + cc.deceased + ' · Transported: ' + cc.transported + ' · **Total: ' + cc.total + '**');
+      }
+      L.push('');
+      L.push('## 5. Facilitator Notes');
+      L.push('');
+      L.push(d.notes ? d.notes : '_None recorded._');
+      L.push('');
+      L.push('## 6. Improvement Plan');
+      L.push('');
+      L.push('| # | Item | Owner | Due |');
+      L.push('|---|------|-------|-----|');
+      for (var i = 1; i <= 5; i++) L.push('| ' + i + ' |  |  |  |');
+      L.push('');
+      L.push('---');
+      L.push('_Generated by the Airport Emergency Exercise Plan dashboard._');
+      return L.join('\n') + '\n';
+    };
 
-      report += '------------------------------------------------------------\n';
-      report += 'NOTES\n';
-      report += '------------------------------------------------------------\n';
-      report += '\n\n\n\n';
+    var aarToHtml = function (d) {
+      var esc = function (s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+      var h = '';
 
-      var blob = new Blob([report], { type: 'text/plain' });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = 'AAR-Summary-' + new Date().toISOString().slice(0, 10) + '.txt';
-      a.click();
-      URL.revokeObjectURL(url);
-    });
-    timelineSection.appendChild(aarBtn);
+      h += '<div class="aar-sec"><h3>Overview</h3>' +
+        '<div class="aar-grid">' +
+        '<div><span>Scenario</span><b>' + esc(aarScenarioLine(d)) + '</b></div>' +
+        '<div><span>Generated</span><b>' + esc(d.generatedAt.toLocaleString()) + '</b></div>' +
+        (d.scenario ? '<div><span>Type</span><b>' + esc(d.scenario.category || 'aircraft') + '</b></div>' : '') +
+        (d.scenario && d.scenario.soulsOnBoard != null
+          ? '<div><span>Souls on board</span><b>' + esc(d.scenario.soulsOnBoard) + ' (fuel ' + esc(d.scenario.fuelLoad) + ')</b></div>'
+          : '') +
+        (d.clock && d.clock.startWall
+          ? '<div><span>Exercise started</span><b>' + esc(new Date(d.clock.startWall).toLocaleTimeString()) + '</b></div>'
+          : '') +
+        '</div></div>';
+
+      h += '<div class="aar-sec"><h3>Checklist Progress <span class="aar-count">' +
+        d.doneCount + ' / ' + d.total + '</span></h3><ul class="aar-list">' +
+        d.checklist.map(function (it) {
+          return '<li class="' + (it.done ? 'done' : '') + '">' +
+            '<span class="aar-box">' + (it.done ? '✓' : '') + '</span>' + esc(it.text) + '</li>';
+        }).join('') + '</ul></div>';
+
+      h += '<div class="aar-sec"><h3>Exercise Timeline <span class="aar-count">' +
+        d.timeline.length + ' events</span></h3>';
+      if (!d.timeline.length) {
+        h += '<p class="aar-empty">No events recorded.</p>';
+      } else {
+        h += '<table class="aar-tbl"><thead><tr><th>Time</th><th>T+</th><th>Category</th><th>Event</th></tr></thead><tbody>' +
+          d.timeline.map(function (e) {
+            return '<tr><td class="mono">' + esc(e.time) + '</td><td class="mono">' + esc(e.tplus || '—') +
+              '</td><td><span class="aar-cat c-' + esc(e.category) + '">' + esc(e.category) + '</span></td><td>' +
+              esc(e.text) + '</td></tr>';
+          }).join('') + '</tbody></table>';
+      }
+      h += '</div>';
+
+      var c = aarCounts(d);
+      h += '<div class="aar-sec"><h3>Resources <span class="aar-count">' + d.resources.length + '</span></h3>';
+      if (!d.resources.length) {
+        h += '<p class="aar-empty">Resource tracker is empty.</p>';
+      } else {
+        h += '<div class="aar-pills">' + Object.keys(c.resByStatus).map(function (s) {
+          return '<span class="aar-pill s-' + esc(s) + '">' + esc(s) + ' ' + c.resByStatus[s] + '</span>';
+        }).join('') + '</div>';
+        h += '<table class="aar-tbl"><thead><tr><th>Resource</th><th>Type</th><th>Status</th><th>Location</th></tr></thead><tbody>' +
+          d.resources.map(function (r) {
+            return '<tr><td>' + esc(r.name) + '</td><td>' + esc(r.type) + '</td><td>' +
+              esc(r.status) + '</td><td>' + esc(r.location || '—') + '</td></tr>';
+          }).join('') + '</tbody></table>';
+      }
+      h += '</div>';
+
+      h += '<div class="aar-sec"><h3>Casualties</h3>';
+      if (!d.casualties.length) {
+        h += '<p class="aar-empty">No casualties recorded in the tracker.</p>';
+      } else {
+        h += '<div class="aar-pills">' +
+          '<span class="aar-pill s-red">Red ' + c.red + '</span>' +
+          '<span class="aar-pill s-yellow">Yellow ' + c.yellow + '</span>' +
+          '<span class="aar-pill s-green">Green ' + c.green + '</span>' +
+          '<span class="aar-pill s-deceased">Deceased ' + c.deceased + '</span>' +
+          '<span class="aar-pill s-transported">Transported ' + c.transported + '</span>' +
+          '<span class="aar-pill s-total">Total ' + c.total + '</span>' +
+          '</div>';
+      }
+      h += '</div>';
+
+      h += '<div class="aar-sec"><h3>Facilitator Notes</h3>' +
+        '<p class="aar-notes-body">' + (d.notes ? esc(d.notes).replace(/\n/g, '<br>') : '<i>None recorded.</i>') + '</p></div>';
+
+      h += '<div class="aar-sec"><h3>Improvement Plan</h3>' +
+        '<table class="aar-tbl"><thead><tr><th style="width:34px;">#</th><th>Item</th><th style="width:120px;">Owner</th><th style="width:110px;">Due</th></tr></thead><tbody>' +
+        [1, 2, 3, 4, 5].map(function (n) {
+          return '<tr><td class="mono">' + n + '</td><td></td><td></td><td></td></tr>';
+        }).join('') + '</tbody></table></div>';
+
+      return h;
+    };
+
+    var renderAarPreview = function () {
+      var d = collectAarData();
+      var notesEl = document.getElementById('aarNotes');
+      d.notes = notesEl ? (notesEl.value || '').trim() : '';
+      currentAarMd = aarToMarkdown(d);
+      var content = document.getElementById('aarContent');
+      if (content) content.innerHTML = aarToHtml(d);
+    };
+
+    (function () {
+      var aarBtn = document.createElement('button');
+      aarBtn.className = 'reset-btn';
+      aarBtn.type = 'button';
+      aarBtn.textContent = '📋 After Action Report';
+      aarBtn.style.marginTop = '12px';
+
+      var modal = document.getElementById('aarModal');
+      var notesEl = document.getElementById('aarNotes');
+      if (!modal) { timelineSection.appendChild(aarBtn); return; }
+
+      var open = function () {
+        try { if (notesEl) notesEl.value = localStorage.getItem(AAR_NOTES_KEY) || ''; } catch (e) {}
+        renderAarPreview();
+        modal.style.display = 'block';
+      };
+      var close = function () { modal.style.display = 'none'; };
+
+      aarBtn.addEventListener('click', open);
+      document.getElementById('closeAarModal').addEventListener('click', close);
+      modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+
+      if (notesEl) {
+        notesEl.addEventListener('input', function () {
+          try { localStorage.setItem(AAR_NOTES_KEY, notesEl.value); } catch (e) {}
+          renderAarPreview();
+        });
+      }
+
+      document.getElementById('aarPrintBtn').addEventListener('click', function () {
+        printMarkup(document.getElementById('aarContent').innerHTML);
+      });
+
+      document.getElementById('aarMdBtn').addEventListener('click', function () {
+        var blob = new Blob([currentAarMd], { type: 'text/markdown;charset=utf-8' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'AAR-' + new Date().toISOString().slice(0, 10) + '.md';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById('aarCopyBtn').addEventListener('click', function () {
+        var btn = document.getElementById('aarCopyBtn');
+        var done = function () {
+          btn.textContent = 'Copied!';
+          setTimeout(function () { btn.textContent = 'Copy Markdown'; }, 2000);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(currentAarMd).then(done, function () {});
+        } else {
+          var ta = document.createElement('textarea');
+          ta.value = currentAarMd;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          done();
+        }
+      });
+
+      timelineSection.appendChild(aarBtn);
+    })();
 
     /* ================= SCENARIO EDITOR ================= */
     var SCENARIO_STORAGE_KEY = 'ttx-custom-scenarios';
@@ -1946,6 +2210,11 @@
     var printBtn = document.getElementById('printBtn');
     if (printBtn) {
       printBtn.addEventListener('click', function () {
+        /* full-plan print: make sure no markup-print state is left over */
+        document.body.classList.remove('print-markup');
+        var printRootEl = document.getElementById('printRoot');
+        if (printRootEl) printRootEl.innerHTML = '';
+
         // Set print date
         var printDate = document.getElementById('printDate');
         if (printDate) printDate.textContent = new Date().toLocaleString();
@@ -1978,115 +2247,232 @@
     var icsCopyBtn = document.getElementById('icsCopyBtn');
 
     var generateICSForms = function () {
-      var scenarioSelect = document.getElementById('scenarioSelect');
       var scenario = null;
-      if (scenarioSelect && scenarioSelect.value) {
-        scenario = allScenarios.find(function (s) { return s.id === scenarioSelect.value; });
+      var sel = document.getElementById('scenarioSelect');
+      if (sel && sel.value && typeof allScenarios !== 'undefined') {
+        scenario = allScenarios.find(function (s) { return s.id === sel.value; });
       }
 
       var now = new Date();
-      var dateStr = now.toISOString().slice(0, 10);
+      var dateStr = now.toLocaleDateString();
       var timeStr = now.toTimeString().slice(0, 5);
+      var incName = scenario ? scenario.name : 'Airport Emergency Exercise';
 
-      var report = '';
-      report += '=================================================================\n';
-      report += '  ICS 201 — INCIDENT BRIEFING\n';
-      report += '=================================================================\n\n';
-      report += '1. Incident Name: ' + (scenario ? scenario.name : 'Airport Emergency Exercise') + '\n';
-      report += '2. Date/Time Prepared: ' + dateStr + ' ' + timeStr + '\n';
-      report += '3. Incident Commander: _________________________\n';
-      report += '4. Agency: Airport Emergency Management\n';
-      report += '5. Incident Type: ' + (scenario ? (scenario.category || 'aircraft') : 'Exercise') + '\n\n';
+      var esc = function (s) {
+        return String(s == null ? '' : s)
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      };
 
-      report += '6. Situation Summary:\n';
-      if (scenario) {
-        report += '   - Aircraft: ' + (scenario.aircraft || 'N/A') + '\n';
-        report += '   - Souls on Board: ' + scenario.soulsOnBoard + '\n';
-        report += '   - Fuel Load: ' + scenario.fuelLoad + '\n';
-        report += '   - Fire Involved: ' + (scenario.fireInvolved ? 'Yes' : 'No') + '\n';
-        report += '   - Estimated Casualties: Red=' + scenario.casualties.red + ', Yellow=' + scenario.casualties.yellow + ', Green=' + scenario.casualties.green + ', Deceased=' + scenario.casualties.deceased + '\n';
+      var start = function (num, title) {
+        return '<div class="ics-form">' +
+          '<div class="ics-form-head"><span class="ics-form-num">' + num + '</span>' +
+          '<span class="ics-form-title">' + title + '</span></div><div class="ics-body">';
+      };
+      var end = '</div></div>';
+      var field = function (label, value) {
+        return '<div class="ics-field"><div class="ics-label">' + esc(label) +
+          '</div><div class="ics-value">' + (value || '&nbsp;') + '</div></div>';
+      };
+      var wide = function (label, value) {
+        return '<div class="ics-field ics-wide"><div class="ics-label">' + esc(label) +
+          '</div><div class="ics-value">' + (value || '&nbsp;') + '</div></div>';
+      };
+      var sign = function () {
+        return '<div class="ics-sign"><span>Prepared by</span><span>Approved by</span><span>Date / Time</span></div>';
+      };
+      var table = function (head, rows) {
+        return '<table class="ics-tbl"><thead><tr>' +
+          head.map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') +
+          '</tr></thead><tbody>' +
+          rows.map(function (r) {
+            return '<tr>' + r.map(function (cell) { return '<td>' + cell + '</td>'; }).join('') + '</tr>';
+          }).join('') + '</tbody></table>';
+      };
+
+      var cas = jsonGet('ttx-casualty-tracker', []) || [];
+      var res = jsonGet('ttx-resource-tracker', []) || [];
+      var countCas = function (t) { return cas.filter(function (c) { return c.triage === t; }).length; };
+      var countResType = function (type) { return res.filter(function (r) { return r.type === type; }).length; };
+
+      var html = '';
+
+      /* ---------------- ICS 201 — INCIDENT BRIEFING ---------------- */
+      html += start('ICS 201', 'Incident Briefing');
+      html += '<div class="ics-grid">' +
+        field('1. Incident Name', esc(incName)) +
+        field('2. Date / Time Prepared', esc(dateStr + ' ' + timeStr)) +
+        field('3. Incident Commander', '') +
+        field('4. Agency', 'Airport Emergency Management') +
+        field('5. Incident Type', esc(scenario ? (scenario.category || 'aircraft') : 'Exercise')) +
+        field('6. Operational Period', esc(dateStr) + ' — ongoing') +
+        '</div>';
+      html += '<div class="ics-sub">7. Situation Summary</div><div class="ics-grid">' +
+        field('Aircraft', esc(scenario ? (scenario.aircraft || 'N/A') : '—')) +
+        field('Souls on Board', scenario ? esc(scenario.soulsOnBoard) : '—') +
+        field('Fuel Load', scenario ? esc(scenario.fuelLoad) : '—') +
+        field('Fire Involved', scenario ? (scenario.fireInvolved ? 'Yes' : 'No') : '—') +
+        field('Est. Casualties R/Y/G/D',
+          scenario ? [scenario.casualties.red, scenario.casualties.yellow, scenario.casualties.green, scenario.casualties.deceased].join(' / ') : '—') +
+        field('Recorded (tracker)',
+          cas.length ? esc(countCas('red') + ' / ' + countCas('yellow') + ' / ' + countCas('green') + ' / ' + countCas('deceased')) : '—') +
+        '</div>';
+      html += '<div class="ics-sub">8. Current Actions</div>';
+      if (timelineEvents.length) {
+        html += '<ul class="ics-list">' +
+          timelineEvents.slice(0, 14).map(function (e) {
+            return '<li>[' + esc(e.time) + (e.tplus ? ' · T+' + esc(e.tplus) : '') + '] ' + esc(e.text) + '</li>';
+          }).join('') +
+          (timelineEvents.length > 14 ? '<li>… ' + (timelineEvents.length - 14) + ' more (see timeline)</li>' : '') +
+          '</ul>';
       } else {
-        report += '   No scenario selected. Select a scenario to auto-populate.\n';
+        html += '<p class="ics-empty">No actions recorded yet.</p>';
       }
-      report += '\n';
+      html += '<div class="ics-sub">9. Resource Requirements</div><div class="ics-grid">' +
+        field('ARFF Vehicles', scenario ? esc(scenario.resources.arff) : '—') +
+        field('Ambulances', scenario ? esc(scenario.resources.ambulances) : '—') +
+        field('Fire Trucks', scenario ? esc(scenario.resources.fireTrucks) : '—') +
+        field('Buses', scenario ? esc(scenario.resources.buses) : '—') +
+        '</div>';
+      html += sign();
+      html += end;
 
-      report += '7. Current Actions:\n';
-      if (timelineEvents.length > 0) {
-        timelineEvents.forEach(function (evt) {
-          report += '   [' + evt.time + '] ' + evt.text + '\n';
-        });
-      } else {
-        report += '   No actions recorded.\n';
-      }
-      report += '\n';
+      /* ---------------- ICS 202 — INCIDENT OBJECTIVES ---------------- */
+      html += start('ICS 202', 'Incident Objectives');
+      html += '<div class="ics-grid">' +
+        field('1. Incident Name', esc(incName)) +
+        field('2. Operational Period', esc(dateStr) + ' — ongoing') +
+        '</div>';
+      html += '<div class="ics-sub">3. Incident Objectives (in priority order)</div>' +
+        '<ol class="ics-list">' +
+        ['Establish Incident Command Post and command structure',
+          'Ensure life safety — rescue and triage casualties',
+          'Contain and control the hazard',
+          'Establish hot / warm / cold zones and cordons',
+          'Coordinate multi-agency response',
+          'Establish Family Assistance Center',
+          'Manage media and public information',
+          'Document all actions for the After Action Report'
+        ].map(function (o) { return '<li>' + esc(o) + '</li>'; }).join('') +
+        '</ol>';
+      html += '<div class="ics-sub">4. Strategy</div><ul class="ics-list">' +
+        '<li>Prioritize life safety over property conservation</li>' +
+        '<li>Establish unified command with all responding agencies</li>' +
+        '<li>Maintain span of control (3–7 subordinates per supervisor)</li>' +
+        '</ul>';
+      html += sign();
+      html += end;
 
-      report += '8. Resource Requirements:\n';
-      if (scenario) {
-        report += '   - ARFF Vehicles: ' + scenario.resources.arff + '\n';
-        report += '   - Ambulances: ' + scenario.resources.ambulances + '\n';
-        report += '   - Fire Trucks: ' + scenario.resources.fireTrucks + '\n';
-        report += '   - Buses: ' + scenario.resources.buses + '\n';
-      }
-      report += '\n';
+      /* ---------------- ICS 203 — ORGANIZATION ASSIGNMENT LIST ---------------- */
+      html += start('ICS 203', 'Organization Assignment List');
+      html += '<div class="ics-grid">' +
+        field('1. Incident Name', esc(incName)) +
+        field('2. Date / Time Prepared', esc(dateStr + ' ' + timeStr)) +
+        '</div>';
+      var orgGroups = [
+        ['Command Staff', ['Incident Commander', 'Safety Officer', 'Public Information Officer', 'Liaison Officer']],
+        ['Operations Section', ['Operations Section Chief', 'ARFF Group Supervisor', 'EMS / Triage Group Supervisor', 'Security / Perimeter Group Supervisor']],
+        ['Planning Section', ['Planning Section Chief', 'Situation Unit', 'Resources Unit']],
+        ['Logistics Section', ['Logistics Section Chief', 'Staging Area Manager', 'Communications Unit Leader']]
+      ];
+      orgGroups.forEach(function (g) {
+        html += '<div class="ics-sub">' + g[0] + '</div><div class="ics-grid">' +
+          g[1].map(function (role) { return field(role, ''); }).join('') + '</div>';
+      });
+      html += sign();
+      html += end;
 
-      report += '=================================================================\n';
-      report += '  ICS 202 — INCIDENT OBJECTIVES\n';
-      report += '=================================================================\n\n';
-      report += '1. Incident Name: ' + (scenario ? scenario.name : 'Airport Emergency Exercise') + '\n';
-      report += '2. Operational Period: ' + dateStr + ' ' + timeStr + ' — Ongoing\n\n';
-      report += '3. Objectives:\n';
-      report += '   a. Establish Incident Command Post and command structure\n';
-      report += '   b. Ensure life safety — rescue and triage casualties\n';
-      report += '   c. Contain and control the hazard\n';
-      report += '   d. Establish hot/warm/cold zones and cordons\n';
-      report += '   e. Coordinate multi-agency response\n';
-      report += '   f. Establish Family Assistance Center\n';
-      report += '   g. Manage media and public information\n';
-      report += '   h. Document all actions for After Action Report\n\n';
+      /* ---------------- ICS 204 — ASSIGNMENT LIST ---------------- */
+      html += start('ICS 204', 'Assignment List');
+      html += '<div class="ics-grid">' +
+        field('1. Incident Name', esc(incName)) +
+        field('2. Operational Period', esc(dateStr) + ' — ongoing') +
+        '</div>';
+      html += table(['Group / Unit', 'Assignment', 'Resources', 'Communications'], [
+        ['Command', 'Establish ICP, unified command, overall control', 'ICP, command staff', 'Command channel'],
+        ['ARFF', 'Extinguish fire, rescue trapped occupants', 'ARFF × ' + esc(scenario ? scenario.resources.arff : 2), 'Fire ground channel'],
+        ['EMS / Triage', 'Triage, treatment, transport', 'Ambulances × ' + esc(scenario ? scenario.resources.ambulances : 3), 'EMS channel'],
+        ['Security / Perimeter', 'Establish cordon, control access', 'Police / security unit', 'Security channel'],
+        ['Logistics', 'Staging, resupply, communications', 'Staging area, comms unit', 'Logistics channel'],
+        ['Family Assistance', 'Support for families and survivors', 'FAC team', 'FAC channel']
+      ]);
+      html += sign();
+      html += end;
 
-      report += '4. Strategy:\n';
-      report += '   - Prioritize life safety over property conservation\n';
-      report += '   - Establish unified command with all responding agencies\n';
-      report += '   - Maintain span of control (3-7 subordinates per supervisor)\n\n';
+      /* ---------------- ICS 205 — COMMUNICATIONS LIST ---------------- */
+      html += start('ICS 205', 'Communications List');
+      html += '<div class="ics-grid">' +
+        field('1. Incident Name', esc(incName)) +
+        field('2. Radio System', '') +
+        '</div>';
+      html += table(['Function', 'Channel / Talkgroup', 'Callsign', 'Remarks'], [
+        ['Command', 'CH ______', 'CMD', 'Unified command net'],
+        ['Fire / ARFF', 'CH ______', 'FIRE', 'Fire ground operations'],
+        ['EMS / Medical', 'CH ______', 'EMS', 'Triage and transport'],
+        ['Security / Perimeter', 'CH ______', 'SEC', 'Cordon control'],
+        ['Logistics', 'CH ______', 'LOG', 'Staging and resupply'],
+        ['Airport Operations', 'CH ______', 'AQD', 'Airfield status / redirects']
+      ]);
+      html += sign();
+      html += end;
 
-      report += '=================================================================\n';
-      report += '  ICS 203 — ORGANIZATION ASSIGNMENT LIST\n';
-      report += '=================================================================\n\n';
-      report += '1. Incident Name: ' + (scenario ? scenario.name : 'Airport Emergency Exercise') + '\n';
-      report += '2. Date/Time Prepared: ' + dateStr + ' ' + timeStr + '\n\n';
-      report += '3. Command Staff:\n';
-      report += '   Incident Commander: _________________________\n';
-      report += '   Safety Officer: _________________________\n';
-      report += '   Public Information Officer: _________________________\n';
-      report += '   Liaison Officer: _________________________\n\n';
+      /* ---------------- ICS 206 — MEDICAL PLAN ---------------- */
+      html += start('ICS 206', 'Medical Plan');
+      html += '<div class="ics-grid">' +
+        field('1. Incident Name', esc(incName)) +
+        field('2. Operational Period', esc(dateStr) + ' — ongoing') +
+        '</div>';
+      html += table(['Resource', 'Quantity', 'Base / Location', 'Notes'], [
+        ['Ambulances', esc(scenario ? scenario.resources.ambulances : '—'), '', 'Transport to hospital'],
+        ['Medical teams', String(countResType('Medical') || '—'), '', 'On-scene treatment'],
+        ['Hospital — primary', '1', '', 'Receiving hospital'],
+        ['Hospital — secondary', '1', '', 'Backup / overflow']
+      ]);
+      html += wide('Triage summary (tracker)',
+        cas.length
+          ? esc('Red ' + countCas('red') + ' · Yellow ' + countCas('yellow') + ' · Green ' + countCas('green') +
+            ' · Deceased ' + countCas('deceased') + ' · Total ' + cas.length)
+          : 'No casualties recorded.');
+      html += sign();
+      html += end;
 
-      report += '4. Operations Section:\n';
-      report += '   Operations Section Chief: _________________________\n';
-      report += '   ARFF Group: _________________________\n';
-      report += '   EMS/Triage Group: _________________________\n';
-      report += '   Security/Perimeter Group: _________________________\n\n';
+      /* ---------------- ICS 209 — INCIDENT SUMMARY ---------------- */
+      html += start('ICS 209', 'Incident Summary');
+      html += '<div class="ics-grid">' +
+        field('1. Incident Name', esc(incName)) +
+        field('2. Date / Time', esc(dateStr + ' ' + timeStr)) +
+        field('3. Location', 'Airport Reference Layout — crash site') +
+        field('4. Reported By', '') +
+        '</div>';
+      html += wide('5. Incident description',
+        esc(scenario ? ((scenario.aircraft || 'Aircraft') + ' incident — ' + (scenario.category || 'aircraft')) : 'Exercise scenario'));
+      html += '<div class="ics-grid">' +
+        field('6. Casualties recorded', cas.length ? esc(cas.length + ' total') : '—') +
+        field('7. Actions logged', esc(timelineEvents.length + ' timeline events')) +
+        field('8. Checklist progress', esc((function () {
+          var st = jsonGet('ttx-checklist-state', []) || [];
+          var done = TTX_DATA.checklistItems.filter(function (x, i) { return st[i] === true; }).length;
+          return done + ' / ' + TTX_DATA.checklistItems.length;
+        })())) +
+        field('9. Resources active', res.length ? esc(res.length + ' tracked') : '—') +
+        '</div>';
+      html += wide('10. Attachments', '☐ ICS 201 · ☐ ICS 202 · ☐ ICS 203 · ☐ Timeline · ☐ After Action Report');
+      html += sign();
+      html += end;
 
-      report += '5. Planning Section:\n';
-      report += '   Planning Section Chief: _________________________\n';
-      report += '   Situation Unit: _________________________\n';
-      report += '   Resources Unit: _________________________\n\n';
-
-      report += '6. Logistics Section:\n';
-      report += '   Logistics Section Chief: _________________________\n';
-      report += '   Staging Area Manager: _________________________\n';
-      report += '   Communications Unit: _________________________\n\n';
-
-      report += '=================================================================\n';
-      report += '  END OF ICS FORMS\n';
-      report += '=================================================================\n';
-
-      return report;
+      return html;
     };
 
     if (icsBtn) {
       icsBtn.addEventListener('click', function () {
         icsModal.style.display = 'block';
-        icsContent.textContent = generateICSForms();
+        icsContent.innerHTML = generateICSForms();
+      });
+    }
+
+    var icsPrintBtn = document.getElementById('icsPrintBtn');
+    if (icsPrintBtn) {
+      icsPrintBtn.addEventListener('click', function () {
+        printMarkup(icsContent.innerHTML);
       });
     }
 
@@ -2104,7 +2490,7 @@
 
     if (icsDownloadBtn) {
       icsDownloadBtn.addEventListener('click', function () {
-        var content = icsContent.textContent;
+        var content = icsContent.innerText; // block layout -> readable lines
         var blob = new Blob([content], { type: 'text/plain' });
         var url = URL.createObjectURL(blob);
         var a = document.createElement('a');
@@ -2117,7 +2503,7 @@
 
     if (icsCopyBtn) {
       icsCopyBtn.addEventListener('click', function () {
-        var content = icsContent.textContent;
+        var content = icsContent.innerText;
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(content).then(function () {
             icsCopyBtn.textContent = 'Copied!';

@@ -1085,11 +1085,33 @@
       <button id="closeIcsModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
     </div>
 
-    <div id="icsContent" style="font-family:monospace;font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap;"></div>
+    <div id="icsContent" class="ics-stack"></div>
 
-    <div style="display:flex;gap:8px;margin-top:16px;">
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
+      <button id="icsPrintBtn" class="reset-btn" type="button" style="padding:8px 20px;">🖨 Print Forms</button>
       <button id="icsDownloadBtn" class="reset-btn" type="button" style="padding:8px 20px;background:var(--blue);color:#fff;border-color:var(--blue);">Download ICS Forms</button>
       <button id="icsCopyBtn" class="reset-btn" type="button" style="padding:8px 20px;">Copy to Clipboard</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ AFTER ACTION REPORT MODAL ============ -->
+<div id="aarModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:860px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="margin:0;font-size:18px;">📋 After Action Report</h2>
+      <button id="closeAarModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+    </div>
+
+    <label for="aarNotes" class="aar-notes-label">Facilitator notes — included in the report</label>
+    <textarea id="aarNotes" rows="3" placeholder="Observations, commendations, issues for the improvement plan…"></textarea>
+
+    <div id="aarContent" class="aar-preview"></div>
+
+    <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
+      <button id="aarPrintBtn" class="reset-btn" type="button" style="padding:8px 20px;">🖨 Print</button>
+      <button id="aarMdBtn" class="reset-btn" type="button" style="padding:8px 20px;background:var(--blue);color:#fff;border-color:var(--blue);">⤓ Download .md</button>
+      <button id="aarCopyBtn" class="reset-btn" type="button" style="padding:8px 20px;">Copy Markdown</button>
     </div>
   </div>
 </div>
@@ -1421,6 +1443,9 @@
     </div>
   </div>
 </div>
+
+<!-- print target: only visible in @media print -->
+<div id="printRoot" aria-hidden="true"></div>
 
 <script src="js/data.js?v=20260929.4"></script>
 <script src="js/app.js?v=20260929.4"></script>

@@ -828,6 +828,164 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
   .map-modal-actions .reset-btn{flex:1 1 45%;}
 }
 
+/* ---------- ICS forms (styled, printable) ---------- */
+.ics-stack{}
+.ics-form{
+  border:1px solid var(--line-soft);border-radius:10px;
+  background:var(--panel2);margin-bottom:16px;overflow:hidden;
+}
+.ics-form-head{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;background:rgba(59,130,246,.08);
+  border-bottom:1px solid var(--line-soft);
+}
+.ics-form-num{font-size:13px;font-weight:800;color:var(--blue);letter-spacing:.04em;white-space:nowrap;}
+.ics-form-title{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text);}
+.ics-body{padding:14px;}
+.ics-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:10px 16px;margin-bottom:6px;
+}
+.ics-field.ics-wide{grid-column:1/-1;}
+.ics-label{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted2);margin-bottom:3px;}
+.ics-value{
+  font-size:13.5px;color:var(--card-text);min-height:20px;
+  padding:3px 0 5px;border-bottom:1px dotted var(--line);
+}
+.ics-sub{
+  font-size:11.5px;font-weight:700;color:var(--blue);
+  text-transform:uppercase;letter-spacing:.1em;margin:14px 0 8px;
+}
+.ics-list{margin:0 0 6px;padding-left:20px;font-size:13.5px;color:var(--card-text);line-height:1.6;}
+.ics-list li{margin-bottom:3px;}
+.ics-empty{font-size:13px;color:var(--muted);margin:0 0 6px;font-style:italic;}
+.ics-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin:4px 0 8px;}
+.ics-tbl th,.ics-tbl td{
+  border:1px solid var(--line-soft);padding:7px 9px;
+  text-align:left;vertical-align:top;color:var(--card-text);
+}
+.ics-tbl th{
+  background:rgba(59,130,246,.08);font-size:11px;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--text);
+}
+.ics-sign{
+  display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;
+  padding-top:12px;border-top:1px solid var(--line-soft);
+}
+.ics-sign span{
+  flex:1;min-width:130px;font-size:11px;color:var(--muted);
+  border-bottom:1px dotted var(--line);padding-bottom:18px;
+}
+
+/* ---------- After Action Report ---------- */
+.aar-notes-label{
+  display:block;font-size:11.5px;color:var(--muted);
+  margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;
+}
+#aarNotes{
+  width:100%;box-sizing:border-box;background:var(--stat-bg);
+  border:1px solid var(--line-soft);border-radius:8px;
+  padding:10px 12px;color:var(--text);font:inherit;font-size:13.5px;
+  line-height:1.5;resize:vertical;margin-bottom:16px;
+}
+#aarNotes:focus{outline:2px solid var(--blue);outline-offset:-1px;}
+.aar-preview{max-height:55vh;overflow-y:auto;padding-right:4px;}
+.aar-sec{
+  border:1px solid var(--line-soft);border-radius:10px;
+  background:var(--panel2);padding:14px 16px;margin-bottom:12px;
+}
+.aar-sec h3{
+  margin:0 0 10px;font-size:12.5px;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--text);
+  display:flex;align-items:center;gap:8px;justify-content:space-between;
+}
+.aar-count{
+  font-size:11px;background:var(--blue);color:#fff;
+  border-radius:99px;padding:2px 9px;letter-spacing:0;white-space:nowrap;
+}
+.aar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px 16px;}
+.aar-grid > div{display:flex;flex-direction:column;gap:2px;}
+.aar-grid span{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted2);}
+.aar-grid b{font-size:13.5px;color:var(--card-text);font-weight:600;}
+.aar-list{
+  list-style:none;margin:0;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 14px;
+}
+.aar-list li{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--card-text);line-height:1.45;}
+.aar-list li.done{color:var(--muted2);}
+.aar-box{
+  flex:0 0 16px;height:16px;border:1.5px solid var(--line);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:#22c55e;margin-top:1px;
+}
+.aar-list li.done .aar-box{border-color:#22c55e;}
+.aar-tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+.aar-tbl th,.aar-tbl td{
+  border:1px solid var(--line-soft);padding:6px 9px;
+  text-align:left;color:var(--card-text);vertical-align:top;
+}
+.aar-tbl th{
+  background:rgba(59,130,246,.08);font-size:11px;
+  text-transform:uppercase;letter-spacing:.06em;color:var(--text);
+}
+.aar-tbl td.mono{font-variant-numeric:tabular-nums;white-space:nowrap;}
+.aar-pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.aar-pill{
+  font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:99px;
+  border:1px solid var(--line-soft);background:var(--panel);
+  color:var(--card-text);text-transform:capitalize;
+}
+.aar-pill.s-red{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.4);color:#f87171;}
+.aar-pill.s-yellow{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:#fbbf24;}
+.aar-pill.s-green,.aar-pill.s-available,.aar-pill.s-transported{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4);color:#4ade80;}
+.aar-pill.s-deceased,.aar-pill.s-out-of-service{background:rgba(100,116,139,.15);border-color:rgba(100,116,139,.5);color:#94a3b8;}
+.aar-pill.s-deployed{background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.4);color:#60a5fa;}
+.aar-pill.s-total{background:var(--panel);color:var(--text);}
+.aar-cat{
+  font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  padding:2px 7px;border-radius:5px;background:var(--panel);
+  border:1px solid var(--line-soft);color:var(--muted);white-space:nowrap;
+}
+.aar-cat.c-inject{color:#c084fc;border-color:rgba(168,85,247,.4);}
+.aar-cat.c-decision{color:#60a5fa;border-color:rgba(59,130,246,.4);}
+.aar-cat.c-milestone{color:#4ade80;border-color:rgba(34,197,94,.4);}
+.aar-cat.c-casualty{color:#f87171;border-color:rgba(239,68,68,.4);}
+.aar-empty{font-size:13px;color:var(--muted);font-style:italic;margin:0;}
+.aar-notes-body{font-size:13.5px;color:var(--card-text);line-height:1.6;margin:0;white-space:pre-wrap;}
+
+/* ---------- Print root (ICS / AAR markup printing) ---------- */
+#printRoot{display:none;}
+
+@media print{
+  /* Markup printing: the entire app is hidden, only printRoot shows.
+     body.print-markup outranks the full-plan .view{display:block} rules. */
+  body.print-markup > *:not(#printRoot){display:none !important;}
+  body.print-markup #printRoot{display:block !important;}
+
+  #printRoot{color:#000 !important;background:#fff !important;}
+  #printRoot *{color:#000 !important;}
+  #printRoot .ics-form,#printRoot .aar-sec{
+    border:1px solid #444 !important;border-radius:0 !important;
+    background:#fff !important;break-inside:avoid;page-break-inside:avoid;
+    margin-bottom:12px !important;
+  }
+  #printRoot .ics-form-head{background:#eee !important;border-bottom:1px solid #444 !important;}
+  #printRoot .ics-sub{color:#000 !important;border-bottom:1px solid #999;padding-bottom:3px;}
+  #printRoot .ics-label,#printRoot .aar-grid span{color:#444 !important;}
+  #printRoot .ics-value{border-bottom:1px dotted #777 !important;}
+  #printRoot .ics-tbl th,#printRoot .aar-tbl th{background:#eee !important;border-color:#666 !important;}
+  #printRoot .ics-tbl td,#printRoot .aar-tbl td{border-color:#999 !important;}
+  #printRoot .ics-sign{border-top:1px solid #666 !important;}
+  #printRoot .ics-sign span{border-bottom:1px dotted #777 !important;}
+  #printRoot .aar-count,#printRoot .aar-pill,#printRoot .aar-cat{
+    background:#fff !important;border:1px solid #999 !important;
+  }
+  #printRoot .aar-box{border-color:#999 !important;}
+  #printRoot .aar-preview{max-height:none !important;overflow:visible !important;}
+  #printRoot .aar-notes-body{white-space:pre-wrap !important;}
+}
+@page{margin:12mm;}
+
 /* ---------- User Guide ---------- */
 .guide-toc{
   display:flex;flex-wrap:wrap;gap:8px;
