@@ -12,6 +12,76 @@
     var TAB_IDS = ['ttx-tab-phases', 'ttx-tab-teams', 'ttx-tab-locations', 'ttx-tab-zones', 'ttx-tab-emergencies', 'ttx-tab-aircraft', 'ttx-tab-checklist'];
     var TAB_NAMES = ['IC Role', 'Team Labels', 'Key Locations', 'Incident Zones', 'Emergency Types', 'Aircraft Specs', 'TTX Flow & Checklist'];
 
+    /* ================= SAVE CHIP ================= */
+    // Subtle "✓ saved" confirmation shown in the scenario row whenever
+    // something is written to browser storage.
+    var flashSaved = function (label) {
+      var chip = document.getElementById('saveChip');
+      if (!chip) return;
+      chip.textContent = '✓ ' + (label || 'saved');
+      chip.classList.add('on');
+      clearTimeout(flashSaved._t);
+      flashSaved._t = setTimeout(function () {
+        chip.classList.remove('on');
+      }, 1800);
+    };
+
+    /* ================= RESTORE POINTS (snapshots) ================= */
+    // A rolling snapshot of the mutable exercise state so users can roll
+    // back after a destructive action (clear all, reset, import …).
+    var SNAPSHOT_KEY = 'ttx-restore-points';
+    var SNAPSHOT_MAX = 15;
+
+    var collectState = function () {
+      var pick = function (key) {
+        try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+      };
+      return {
+        timeline: pick('ttx-timeline-events'),
+        checklist: pick('ttx-checklist-state'),
+        casualties: pick('ttx-casualty-tracker'),
+        resources: pick('ttx-resource-tracker')
+      };
+    };
+
+    var pushSnapshot = function (label) {
+      var points = [];
+      try { points = JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || '[]'); } catch (e) {}
+      if (!Array.isArray(points)) points = [];
+      points.push({
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+        label: label || 'Manual point',
+        data: collectState()
+      });
+      if (points.length > SNAPSHOT_MAX) points = points.slice(-SNAPSHOT_MAX);
+      try { localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(points)); } catch (e) {}
+      return points[points.length - 1];
+    };
+
+    // Returns true when the state was rolled back. The caller decides
+    // whether to reload the page (simplest way to re-render everything).
+    var restoreSnapshot = function (id) {
+      var points = [];
+      try { points = JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || '[]'); } catch (e) {}
+      if (!Array.isArray(points)) return false;
+      var pt = points.find(function (p) { return p && p.id === id; });
+      if (!pt || !pt.data) return false;
+      // Safety net: snapshot the CURRENT state first, so a restore is undoable.
+      pushSnapshot('Auto — before restore');
+      var put = function (key, val) {
+        try {
+          if (val === null || val === undefined) localStorage.removeItem(key);
+          else localStorage.setItem(key, JSON.stringify(val));
+        } catch (e) {}
+      };
+      put('ttx-timeline-events', pt.data.timeline);
+      put('ttx-checklist-state', pt.data.checklist);
+      put('ttx-casualty-tracker', pt.data.casualties);
+      put('ttx-resource-tracker', pt.data.resources);
+      return true;
+    };
+
     document.addEventListener('keydown', function (e) {
       // Don't trigger shortcuts when typing in inputs
       var tag = (e.target.tagName || '').toLowerCase();
@@ -86,7 +156,7 @@
     var THEME_KEY = 'ttx-theme';
     var themeToggle = document.getElementById('themeToggle');
 
-    var setTheme = function (theme) {
+    var setTheme = function (theme, persist) {
       if (theme === 'light') {
         document.documentElement.setAttribute('data-theme', 'light');
         if (themeToggle) themeToggle.textContent = '🌙';
@@ -94,15 +164,22 @@
         document.documentElement.removeAttribute('data-theme');
         if (themeToggle) themeToggle.textContent = '☀️';
       }
-      try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+      if (persist !== false) {
+        try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+      }
     };
 
     var loadTheme = function () {
-      try {
-        var saved = localStorage.getItem(THEME_KEY);
-        if (saved === 'light') setTheme('light');
-        else setTheme('dark');
-      } catch (e) { setTheme('dark'); }
+      var saved = null;
+      try { saved = localStorage.getItem(THEME_KEY); } catch (e) {}
+      if (saved === 'light' || saved === 'dark') {
+        setTheme(saved);
+      } else {
+        // No saved preference: follow the OS light/dark setting (not persisted,
+        // so the app keeps tracking the system until the user toggles manually).
+        var sysLight = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+        setTheme(sysLight ? 'light' : 'dark', false);
+      }
     };
 
     if (themeToggle) {
@@ -122,6 +199,9 @@
       var radio = document.getElementById(id);
       if (!radio) return;
       radio.addEventListener('change', function () {
+        if (radio.checked) {
+          try { localStorage.setItem('ttx-active-tab', id); } catch (e) {}
+        }
         var label = document.querySelector('.tab[for="' + id + '"]');
         var scroller = document.querySelector('.tabs .wrap');
         if (!label || !scroller) return;
@@ -135,6 +215,15 @@
         }
       });
     });
+
+    // Restore the tab the user was last on
+    try {
+      var lastTab = localStorage.getItem('ttx-active-tab');
+      if (lastTab && TAB_IDS.indexOf(lastTab) !== -1) {
+        var lastRadio = document.getElementById(lastTab);
+        if (lastRadio) lastRadio.checked = true;
+      }
+    } catch (e) {}
 
     /* ================= USER GUIDE ================= */
     var guideBtn = document.getElementById('guideBtn');
@@ -180,7 +269,13 @@
 
       var saveState = function () {
         var state = inputs.map(function (i) { return i.checked; });
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+        var json = JSON.stringify(state);
+        var changed = false;
+        try {
+          changed = localStorage.getItem(STORAGE_KEY) !== json;
+          localStorage.setItem(STORAGE_KEY, json);
+        } catch (e) {}
+        if (changed) flashSaved();
       };
 
       var loadState = function () {
@@ -208,9 +303,12 @@
       updateProgress();
 
       reset.addEventListener('click', function () {
+        if (!confirm('Reset the IC checklist? All ticks will be cleared.')) return;
+        pushSnapshot('Before checklist reset');
         inputs.forEach(function (i) { i.checked = false; });
         updateProgress();
         try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        flashSaved('checklist reset');
       });
     }
 
@@ -237,6 +335,7 @@
         }
       });
       try { localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(positions)); } catch (e) {}
+      flashSaved('pin positions');
     };
 
     var loadPinPositions = function () {
@@ -442,6 +541,7 @@
       if (match) {
         var positions = { x: parseFloat(match[1]), y: parseFloat(match[2]) };
         try { localStorage.setItem(CRASH_ZONE_STORAGE_KEY, JSON.stringify(positions)); } catch (e) {}
+        flashSaved('crash site');
       }
     };
 
@@ -561,8 +661,15 @@
       });
 
       scenarioSelect.addEventListener('change', function () {
-        var scenario = TTX_DATA.scenarios.find(function (s) { return s.id === scenarioSelect.value; });
+        // Look up in allScenarios (built-in + custom) so custom scenarios
+        // also get their panel, timeline and injects.
+        var scenario = (typeof allScenarios !== 'undefined' ? allScenarios : TTX_DATA.scenarios)
+          .find(function (s) { return s.id === scenarioSelect.value; });
         updateScenarioPanel(scenario);
+        try {
+          if (scenarioSelect.value) localStorage.setItem('ttx-active-scenario', scenarioSelect.value);
+          else localStorage.removeItem('ttx-active-scenario');
+        } catch (e) {}
         var timelineSection = document.getElementById('timelineSection');
         if (timelineSection) {
           if (scenario) {
@@ -688,6 +795,7 @@
 
     var saveTimeline = function () {
       try { localStorage.setItem(TIMELINE_STORAGE_KEY, JSON.stringify(timelineEvents)); } catch (e) {}
+      flashSaved('timeline');
     };
 
     var clearTimeline = function () {
@@ -819,7 +927,11 @@
 
     if (timelineClearBtn) {
       timelineClearBtn.addEventListener('click', function () {
-        if (confirm('Clear all timeline events?')) clearTimeline();
+        if (confirm('Clear all timeline events?')) {
+          pushSnapshot('Before clearing timeline');
+          clearTimeline();
+          flashSaved('timeline cleared');
+        }
       });
     }
 
@@ -866,7 +978,8 @@
       var scenarioName = '';
       var scenarioSelect = document.getElementById('scenarioSelect');
       if (scenarioSelect && scenarioSelect.value) {
-        var sc = TTX_DATA.scenarios.find(function (s) { return s.id === scenarioSelect.value; });
+        var sc = (typeof allScenarios !== 'undefined' ? allScenarios : TTX_DATA.scenarios)
+          .find(function (s) { return s.id === scenarioSelect.value; });
         if (sc) scenarioName = sc.name;
       }
 
@@ -943,6 +1056,7 @@
       var custom = allScenarios.filter(function (s) { return s.custom; });
       try { localStorage.setItem(SCENARIO_STORAGE_KEY, JSON.stringify(custom)); } catch (e) {}
       updateDockInfo();
+      flashSaved('scenario saved');
     };
 
     // Keep the bottom dock's basic info in sync
@@ -967,6 +1081,15 @@
         opt.textContent = sc.name + (sc.custom ? ' (custom)' : '');
         scenarioSelect.appendChild(opt);
       });
+
+      // Session resume: reopen the scenario that was active last time
+      try {
+        var lastScenario = localStorage.getItem('ttx-active-scenario');
+        if (lastScenario && allScenarios.some(function (s) { return s.id === lastScenario; })) {
+          scenarioSelect.value = lastScenario;
+          scenarioSelect.dispatchEvent(new Event('change'));
+        }
+      } catch (e) {}
     }
 
     // Modal elements
@@ -1387,6 +1510,7 @@
 
     var saveResources = function () {
       try { localStorage.setItem(RESOURCE_STORAGE_KEY, JSON.stringify(resources)); } catch (e) {}
+      flashSaved('resources');
     };
 
     var renderResources = function () {
@@ -1502,6 +1626,7 @@
     if (resourceResetBtn) {
       resourceResetBtn.addEventListener('click', function () {
         if (confirm('Reset all resources to available?')) {
+          pushSnapshot('Before resource reset');
           resources = JSON.parse(JSON.stringify(defaultResources));
           saveResources();
           renderResources();
@@ -1538,6 +1663,7 @@
 
     var saveCasualties = function () {
       try { localStorage.setItem(CASUALTY_STORAGE_KEY, JSON.stringify(casualties)); } catch (e) {}
+      flashSaved('casualties');
     };
 
     var renderCasualtySummary = function () {
@@ -1690,6 +1816,7 @@
     if (casualtyClearBtn) {
       casualtyClearBtn.addEventListener('click', function () {
         if (confirm('Clear all casualty records?')) {
+        pushSnapshot('Before clearing casualties');
           casualties = [];
           saveCasualties();
           renderCasualtySummary();
@@ -2114,6 +2241,9 @@
             return;
           }
 
+          // Snapshot current state so an import can be rolled back
+          pushSnapshot('Before data import');
+
           // Merge scenarios
           if (data.scenarios && Array.isArray(data.scenarios)) {
             data.scenarios.forEach(function (sc) {
@@ -2306,11 +2436,58 @@
       historyList.innerHTML = html;
     };
 
+    var renderRestoreList = function () {
+      var el = document.getElementById('restoreList');
+      if (!el) return;
+
+      var points = [];
+      try { points = JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || '[]'); } catch (e) {}
+      if (!Array.isArray(points) || points.length === 0) {
+        el.innerHTML = '<p style="color:var(--muted);margin:0;font-size:12.5px;">No restore points yet. One is created automatically before every clear, reset or import — the last 15 are kept here.</p>';
+        return;
+      }
+
+      var html = '<h3 style="margin:0 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Restore points</h3>';
+      html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+      points.slice().reverse().forEach(function (pt) {
+        var date = new Date(pt.timestamp);
+        var d = pt.data || {};
+        var counts = [];
+        if (Array.isArray(d.timeline)) counts.push(d.timeline.length + ' timeline');
+        if (Array.isArray(d.casualties)) counts.push(d.casualties.length + ' casualties');
+        if (Array.isArray(d.resources)) counts.push(d.resources.length + ' resources');
+        if (Array.isArray(d.checklist)) {
+          counts.push(d.checklist.filter(function (x) { return x; }).length + '/' + d.checklist.length + ' ticks');
+        }
+        html += '<div style="padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">';
+        html += '<div style="min-width:0;">';
+        html += '<div style="font-size:13px;font-weight:600;color:var(--text);">' + pt.label + '</div>';
+        html += '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + date.toLocaleDateString() + ' ' + date.toLocaleTimeString() + (counts.length ? ' · ' + counts.join(' · ') : '') + '</div>';
+        html += '</div>';
+        html += '<button class="reset-btn" style="padding:5px 14px;font-size:12px;" onclick="window.__restorePoint(' + pt.id + ')">↩ Restore</button>';
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '<p style="font-size:12px;color:var(--muted);margin:10px 0 0;">Restoring replaces the current timeline, checklist, casualties and resources. Your present state is snapshotted first, so you can switch back.</p>';
+      el.innerHTML = html;
+    };
+
+    window.__restorePoint = function (id) {
+      if (!confirm('Restore this point? The current timeline, checklist, casualties and resources will be replaced (your current state is saved as a restore point first).')) return;
+      if (restoreSnapshot(id)) {
+        flashSaved('restored');
+        setTimeout(function () { location.reload(); }, 350);
+      } else {
+        alert('That restore point could not be found.');
+      }
+    };
+
     if (historyBtn) {
       historyBtn.addEventListener('click', function () {
         historyModal.style.display = 'block';
         renderHistoryScenarioSelect();
         renderHistoryList('');
+        renderRestoreList();
       });
     }
 

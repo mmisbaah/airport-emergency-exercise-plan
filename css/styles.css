@@ -607,6 +607,16 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
 /* Tactile press feedback */
 .reset-btn:active,.tab:active,.check-item:active,.legend-item:active{transform:scale(.97);}
 
+/* ---------- Save chip ---------- */
+.scenario-row{display:flex;align-items:center;flex-wrap:wrap;}
+.save-chip{
+  margin-left:auto;font-size:11px;font-weight:700;color:#22c55e;
+  opacity:0;transform:translateY(-2px);
+  transition:opacity .25s ease,transform .25s ease;
+  white-space:nowrap;pointer-events:none;padding-left:10px;
+}
+.save-chip.on{opacity:1;transform:none;}
+
 /* ---------- User Guide ---------- */
 .guide-toc{
   display:flex;flex-wrap:wrap;gap:8px;
