@@ -127,7 +127,7 @@ var TTX_DATA = {
       id: 'fuel-spill',
       name: 'Fuel Spill on Apron',
       aircraft: 'Dash 8 Q400',
-      soulsOnBoard: 0,
+      soulsOnBoard: 82,
       fuelLoad: '6,530 L',
       fireInvolved: false,
       casualties: { red: 0, yellow: 2, green: 5, deceased: 0 },
@@ -371,6 +371,32 @@ var TTX_DATA = {
       pax: 78, crew: '2+2', total: 82, wheels: 4,
       specs: [
         { k: 'Fuel capacity', v: '6,530 L' },
+        { k: 'Fuel storage', v: 'Wing tanks' },
+        { k: 'Boarding door', v: 'Forward left' },
+        { k: 'Baggage holds', v: 'Forward + aft' },
+        { k: 'Landing gear', v: 'Tricycle, retractable' },
+        { k: 'Emergency exits', v: '2 doors + overwing' }
+      ]
+    },
+    {
+      name: 'Dash 8-300',
+      operator: 'Mid-size regional turboprop',
+      pax: 50, crew: '2+2', total: 54, wheels: 4,
+      specs: [
+        { k: 'Fuel capacity', v: '3,160 L' },
+        { k: 'Fuel storage', v: 'Wing tanks' },
+        { k: 'Boarding door', v: 'Forward left' },
+        { k: 'Baggage holds', v: 'Forward + aft' },
+        { k: 'Landing gear', v: 'Tricycle, retractable' },
+        { k: 'Emergency exits', v: '2 doors + overwing' }
+      ]
+    },
+    {
+      name: 'Dash 8-200',
+      operator: 'Shorter regional turboprop',
+      pax: 37, crew: '2+1', total: 40, wheels: 4,
+      specs: [
+        { k: 'Fuel capacity', v: '3,160 L' },
         { k: 'Fuel storage', v: 'Wing tanks' },
         { k: 'Boarding door', v: 'Forward left' },
         { k: 'Baggage holds', v: 'Forward + aft' },

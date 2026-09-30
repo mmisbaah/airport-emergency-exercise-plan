@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Syntax check
+        run: |
+          node --check js/app.js
+          node --check js/data.js
+          node --check sw.js
+          node --check scripts/make-icons.js
+          node --check scripts/ci-tests.mjs
+
+      - name: Install dependencies
+        run: |
+          npm init -y
+          npm i -D playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run test suite + app smoke test
+        run: node scripts/ci-tests.mjs

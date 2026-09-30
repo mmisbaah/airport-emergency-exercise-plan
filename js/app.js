@@ -292,6 +292,9 @@
         var done = inputs.filter(function (i) { return i.checked; }).length;
         var pct  = Math.round((done / inputs.length) * 100);
         fill.style.width = pct + '%';
+        if (fill.parentElement && fill.parentElement.hasAttribute('role')) {
+          fill.parentElement.setAttribute('aria-valuenow', String(pct));
+        }
         num.textContent = done + ' / ' + inputs.length;
         num.classList.toggle('ready', done === inputs.length);
         saveState();
@@ -3561,6 +3564,107 @@
   } catch (err) {
     if (window.console) console.warn('Enhancement script skipped:', err);
   }
+
+  /* ================= A11Y — MODAL DIALOGS ================= */
+  /* Dialog semantics for every *Modal overlay: role/aria-modal/labelledby,
+     focus moves into the dialog on open and returns to the opener on close,
+     Tab cycles inside, Escape closes (via each modal's own close button),
+     and the page behind gets `inert` while a dialog is up. Visibility
+     flips are detected with a MutationObserver because modals open by
+     setting style.display. */
+  (function () {
+    var MODAL_SEL = 'div[id$="Modal"]';
+    var FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),' +
+      'select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+    var BG_SEL = 'header.app-header,nav.tabs,main.wrap,.app-dock,.tab-radio';
+
+    var modals = Array.prototype.slice.call(document.querySelectorAll(MODAL_SEL));
+    if (!modals.length) return;
+
+    modals.forEach(function (m) {
+      m.setAttribute('role', 'dialog');
+      m.setAttribute('aria-modal', 'true');
+      m.setAttribute('tabindex', '-1');
+      var title = m.querySelector('h2');
+      if (title) {
+        if (!title.id) title.id = m.id + '-title';
+        m.setAttribute('aria-labelledby', title.id);
+      }
+    });
+
+    var getOpen = function () {
+      for (var i = 0; i < modals.length; i++) {
+        var st = modals[i].style.display;
+        if (st && st !== 'none') return modals[i];
+      }
+      return null;
+    };
+
+    var lastFocused = null;
+
+    var setBackgroundInert = function (on) {
+      Array.prototype.forEach.call(document.querySelectorAll(BG_SEL), function (el) {
+        if (on) el.setAttribute('inert', '');
+        else el.removeAttribute('inert');
+      });
+    };
+
+    var mo = new MutationObserver(function (records) {
+      records.forEach(function (rec) {
+        var m = rec.target;
+        var visible = !!(m.style.display && m.style.display !== 'none');
+        if (visible && !m.hasAttribute('data-a11y-open')) {
+          m.setAttribute('data-a11y-open', '');
+          lastFocused = document.activeElement;
+          setBackgroundInert(true);
+          m.focus();
+        } else if (!visible && m.hasAttribute('data-a11y-open')) {
+          m.removeAttribute('data-a11y-open');
+          setBackgroundInert(false);
+          if (lastFocused && document.contains(lastFocused) && typeof lastFocused.focus === 'function') {
+            lastFocused.focus();
+          }
+          lastFocused = null;
+        }
+      });
+    });
+    modals.forEach(function (m) {
+      mo.observe(m, { attributes: true, attributeFilter: ['style'] });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      var m = getOpen();
+      if (!m) return;
+
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        var closeBtn = m.querySelector('button[id^="close"]');
+        if (closeBtn) closeBtn.click();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      var focusables = Array.prototype.filter.call(m.querySelectorAll(FOCUSABLE), function (el) {
+        return el.offsetParent !== null;
+      });
+      if (!focusables.length) { e.preventDefault(); return; }
+
+      var first = focusables[0];
+      var last = focusables[focusables.length - 1];
+      var active = document.activeElement;
+
+      if (e.shiftKey) {
+        if (active === first || active === m || !m.contains(active)) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (active === last || active === m || !m.contains(active)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    });
+  })();
 
   /* ================= PWA — OFFLINE + UPDATE TOAST ================= */
   (function () {

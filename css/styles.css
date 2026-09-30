@@ -139,6 +139,18 @@ body{
 }
 .tab:hover{color:var(--text);background:var(--panel);}
 
+/* keyboard focus lands on the visually-hidden radios — show the ring on
+   the matching visible label instead */
+.tab-radio:focus-visible ~ .tabs .tab[for="ttx-tab-phases"],
+.tab-radio:focus-visible ~ .tabs .tab[for="ttx-tab-teams"],
+.tab-radio:focus-visible ~ .tabs .tab[for="ttx-tab-locations"],
+.tab-radio:focus-visible ~ .tabs .tab[for="ttx-tab-zones"],
+.tab-radio:focus-visible ~ .tabs .tab[for="ttx-tab-emergencies"],
+.tab-radio:focus-visible ~ .tabs .tab[for="ttx-tab-aircraft"],
+.tab-radio:focus-visible ~ .tabs .tab[for="ttx-tab-checklist"]{
+  outline:2px solid var(--blue);outline-offset:2px;color:var(--text);
+}
+
 #ttx-tab-phases:checked ~ .tabs .tab[for="ttx-tab-phases"],
 #ttx-tab-teams:checked ~ .tabs .tab[for="ttx-tab-teams"],
 #ttx-tab-locations:checked ~ .tabs .tab[for="ttx-tab-locations"],

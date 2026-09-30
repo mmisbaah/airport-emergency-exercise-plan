@@ -31,7 +31,7 @@
   <button id="runBtn" onclick="runAllTests()">Run All Tests</button>
   <div id="results"></div>
 
-  <script src="../js/data.js"></script>
+  <script src="../js/data.js?v=20260929.5"></script>
   <script>
     var results = { pass: 0, fail: 0, total: 0 };
 
@@ -114,7 +114,14 @@
       html += formatResult(test('All scenarios have valid casualty counts', function () {
         TTX_DATA.scenarios.forEach(function (sc) {
           var total = sc.casualties.red + sc.casualties.yellow + sc.casualties.green + sc.casualties.deceased;
-          assert(total <= sc.soulsOnBoard, 'Casualty total exceeds souls on board for: ' + sc.name);
+          ['red', 'yellow', 'green', 'deceased'].forEach(function (k) {
+            assert(sc.casualties[k] >= 0, 'Negative casualty count for: ' + sc.name);
+          });
+          // casualties can never exceed the people aboard — ground incidents
+          // (no aircraft) have soulsOnBoard 0 and involve ground personnel
+          if (sc.soulsOnBoard > 0) {
+            assert(total <= sc.soulsOnBoard, 'Casualty total exceeds souls on board for: ' + sc.name);
+          }
         });
       }));
 

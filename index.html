@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" href="css/styles.css?v=20260929.4">
+  <link rel="stylesheet" href="css/styles.css?v=20260929.6">
 </head>
 <body>
 
@@ -60,7 +60,7 @@
   </div>
 </header>
 
-<nav class="tabs">
+<nav class="tabs" aria-label="Exercise plan sections">
   <div class="wrap">
     <label class="tab" for="ttx-tab-phases">IC Role</label>
     <label class="tab" for="ttx-tab-teams">Team Labels</label>
@@ -930,7 +930,7 @@
 
     <h3 class="sub">IC Checklist</h3>
     <div class="progress-shell">
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-bar" role="progressbar" aria-label="Exercise checklist completion" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-fill" id="progressFill"></div></div>
       <div class="progress-num" id="progressNum">0 / 11</div>
       <button id="resetBtn" class="reset-btn" type="button">Reset</button>
     </div>
@@ -1302,6 +1302,7 @@
       <a href="#g-keys">Shortcuts</a>
       <a href="#g-data">Saving &amp; backup</a>
       <a href="#g-mobile">Mobile &amp; touch</a>
+      <a href="#g-install">Offline install</a>
       <a href="#g-export">Print &amp; exports</a>
     </div>
 
@@ -1311,7 +1312,7 @@
         <li><strong>Pick a scenario</strong> — choose one in the <strong>Scenario</strong> dropdown in the header. The scenario panel (key facts &amp; injects) and the <strong>Exercise Timeline</strong> appear at the top of the page.</li>
         <li><strong>Review the reference tabs</strong> — use the <strong>7 tabs</strong> below the header to walk through your IC role, team labels, the airport map, incident zones, emergency types and aircraft specs.</li>
         <li><strong>Run the exercise</strong> — log injects and decisions in the <strong>Timeline</strong>, check off the <strong>IC Checklist</strong>, and keep <strong>Resources</strong> and <strong>Casualties</strong> up to date as the play unfolds.</li>
-        <li><strong>Wrap up</strong> — review <strong>History</strong>, back up with <strong>Data</strong>, then <strong>Print</strong> or export the <strong>PDF</strong> package for your After-Action Report.</li>
+        <li><strong>Wrap up</strong> — export the <strong>📋 After Action Report</strong> (.md), review <strong>History</strong>, back up with <strong>Data</strong>, then <strong>Print</strong> or export the <strong>PDF</strong> package.</li>
       </ol>
     </div>
 
@@ -1353,6 +1354,8 @@
             <li><strong>Clear All Events</strong>, or <strong>Export for AAR</strong> to download the log as a timestamped .txt file.</li>
           </ul>
         </li>
+        <li><strong>⏱ Exercise clock</strong> — Start / Pause / Reset a live T+ clock for the exercise. It survives page reloads, shows each inject's release moment as a <strong>T+ badge</strong>, and can <strong>release injects automatically</strong> on schedule (or one at a time with ▶). Released injects are logged to the timeline with a sound cue.</li>
+        <li><strong>📋 After Action Report</strong> (button under the timeline) — a live report combining checklist progress, the full timeline table, resource status, casualty triage totals and a blank improvement plan. Type <strong>facilitator notes</strong> (saved as you type), then <strong>Download .md</strong>, <strong>Copy Markdown</strong> or <strong>Print</strong>.</li>
       </ul>
     </div>
 
@@ -1361,7 +1364,7 @@
       <ul>
         <li><strong>❔ Guide</strong> — this help page, always available here and from the dock.</li>
         <li><strong>📝 Scenarios</strong> — scenario editor (<span class="kg">Ctrl+E</span>): build and manage custom scenarios.</li>
-        <li><strong>📋 ICS Forms</strong> — generates ICS 201 (Incident Briefing), 202 (Incident Objectives) and 203 (Organization Assignment List); download as .txt or copy to clipboard.</li>
+        <li><strong>📋 ICS Forms</strong> — seven styled forms: ICS 201 Briefing, 202 Objectives, 203 Organization, 204 Assignment List, 205 Communications List, 206 Medical Plan and 209 Incident Summary — auto-filled from the scenario, timeline and trackers. Print them, download as .txt, or copy to clipboard.</li>
         <li><strong>🚒 Resources</strong> — track the 10 default units (ARFF, EMS, fire, transport, security, medical) with status, location and notes. Export a status report or reset everything.</li>
         <li><strong>🚑 Casualties</strong> — log tagged casualties with triage category, location, notes and transported flag; export a casualty report or clear all.</li>
         <li><strong>🌤️ Weather</strong> — current weather for any place worldwide (Open-Meteo; needs internet): temperature, feels-like, wind, humidity and pressure.</li>
@@ -1379,7 +1382,9 @@
         <li>Drag the <strong>numbered pins</strong> with a mouse <em>or a finger</em> to match your airport's layout.</li>
         <li>Drag the <strong>crash site and zone rings</strong> together as one group.</li>
         <li>The <strong>legend</strong> explains each pin category and includes reset buttons to restore the defaults.</li>
-        <li>Positions are <strong>saved automatically</strong> on this device.</li>
+        <li><strong>✏️ Customize Map</strong> — rename, recategorise, delete and add locations, and tune the <strong>zone ring radii</strong> for both the map and the zone diagram.</li>
+        <li><strong>Export / Import JSON</strong> — move a layout to another device or share it with a co-facilitator; <strong>Reset</strong> restores the factory defaults (with confirmation).</li>
+        <li>Positions, layout and zone sizes are <strong>saved automatically</strong> on this device.</li>
       </ul>
     </div>
 
@@ -1402,7 +1407,7 @@
         <tr><td><span class="kg">Ctrl + T</span></td><td>Toggle light / dark theme</td></tr>
         <tr><td><span class="kg">Ctrl + Z</span></td><td>Undo the last timeline change</td></tr>
         <tr><td><span class="kg">Ctrl + Shift + Z</span> / <span class="kg">Ctrl + Y</span></td><td>Redo</td></tr>
-        <tr><td><span class="kg">Esc</span></td><td>Close this guide (or the scenario window)</td></tr>
+        <tr><td><span class="kg">Esc</span></td><td>Close the open window (guide, forms, trackers, editors…)</td></tr>
       </table>
       <p style="font-size:12.5px;color:var(--muted);margin:8px 0 0;">Shortcuts are ignored while you are typing in a field. On Mac use ⌘ in place of Ctrl.</p>
     </div>
@@ -1411,7 +1416,7 @@
       <h3>💾 Saving, privacy &amp; backup</h3>
       <ul>
         <li><strong>No account, no server</strong> — everything is stored in this browser on this device.</li>
-        <li>Same device and browser = your scenarios, checklist, map positions and trackers <strong>persist</strong> after you close the tab.</li>
+        <li>Same device and browser = your scenarios, checklist, timeline, map layout &amp; zone sizes, trackers, clock and facilitator notes <strong>persist</strong> after you close the tab.</li>
         <li>Clearing site data — or switching browser/device — <strong>erases it</strong>, so export regularly.</li>
         <li><strong>💾 Data → Export All</strong> creates a JSON backup; <strong>Import</strong> restores it anywhere.</li>
         <li><strong>📜 History</strong> keeps an audit trail of scenario changes.</li>
@@ -1428,12 +1433,22 @@
       </ul>
     </div>
 
+    <div class="guide-sec" id="g-install">
+      <h3>📲 Offline &amp; installing</h3>
+      <ul>
+        <li><strong>Works offline</strong> — after the first visit the dashboard loads with <strong>no internet connection</strong> (airport ops networks are unreliable). Weather is the only feature that needs a connection.</li>
+        <li><strong>Install as an app</strong> — use your browser's <em>Install app</em> / <em>Add to Home Screen</em> for a home-screen icon and a full-screen window.</li>
+        <li><strong>Updates</strong> — when a new version is published a small reload toast appears; one tap installs it.</li>
+      </ul>
+    </div>
+
     <div class="guide-sec" id="g-export">
       <h3>🖨️ Printing &amp; exports</h3>
       <ul>
         <li><strong>🖨️ Print</strong> — the full plan in a clean paper layout (app chrome hidden).</li>
         <li><strong>📄 PDF</strong> — a monochrome "complete exercise package" for the record.</li>
-        <li><strong>.txt exports</strong> — timeline, AAR summary, ICS forms, resource status and casualty report.</li>
+        <li><strong>Print (ICS / AAR)</strong> — the ICS forms and the After Action Report print <em>on their own</em>, clean and monochrome, without the app around them.</li>
+        <li><strong>.txt / .md exports</strong> — timeline, resource status and casualty report as .txt; ICS forms as .txt; the After Action Report as Markdown (.md).</li>
         <li><strong>JSON exports</strong> — full data or scenarios only, for backup and transfer (<strong>💾 Data</strong>).</li>
       </ul>
       <div class="notice" style="margin-top:12px;">
@@ -1447,7 +1462,7 @@
 <!-- print target: only visible in @media print -->
 <div id="printRoot" aria-hidden="true"></div>
 
-<script src="js/data.js?v=20260929.4"></script>
-<script src="js/app.js?v=20260929.4"></script>
+<script src="js/data.js?v=20260929.6"></script>
+<script src="js/app.js?v=20260929.6"></script>
 </body>
 </html>
