@@ -717,6 +717,32 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
   .inject-release{margin-left:auto;}
 }
 
+/* ---------- PWA update toast ---------- */
+#updateToast{
+  position:fixed;left:50%;transform:translateX(-50%);
+  bottom:58px;z-index:400;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  max-width:min(94vw,480px);
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:12px;padding:11px 14px;
+  box-shadow:0 10px 34px rgba(0,0,0,.5);
+  font-size:13px;color:var(--text);line-height:1.4;
+}
+#updateToast button{
+  border:none;border-radius:8px;padding:7px 14px;
+  font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;
+  min-height:34px;
+}
+#updateToast #updateToastBtn{background:var(--blue);color:#fff;}
+#updateToast #updateToastBtn:hover{filter:brightness(1.1);}
+#updateToast #updateToastX{
+  background:none;color:var(--muted);padding:7px 9px;
+}
+#updateToast #updateToastX:hover{color:var(--text);}
+@media (max-width: 520px){
+  #updateToast{bottom:14px;}
+}
+
 /* ---------- User Guide ---------- */
 .guide-toc{
   display:flex;flex-wrap:wrap;gap:8px;

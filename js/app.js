@@ -2826,4 +2826,69 @@
     if (window.console) console.warn('Enhancement script skipped:', err);
   }
 
+  /* ================= PWA — OFFLINE + UPDATE TOAST ================= */
+  (function () {
+    if (!('serviceWorker' in navigator)) return;
+    var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (location.protocol !== 'https:' && !isLocal) return;
+
+    var updateRequested = false;
+    var refreshing = false;
+
+    var showUpdateToast = function (worker) {
+      if (document.getElementById('updateToast')) return;
+      var toast = document.createElement('div');
+      toast.id = 'updateToast';
+      toast.setAttribute('role', 'status');
+      toast.innerHTML =
+        '<span>🔄 New version ready — reload to update.</span>' +
+        '<button type="button" id="updateToastBtn">Reload</button>' +
+        '<button type="button" id="updateToastX" aria-label="Dismiss update notice">✕</button>';
+      document.body.appendChild(toast);
+      document.getElementById('updateToastBtn').addEventListener('click', function () {
+        updateRequested = true;
+        toast.parentNode.removeChild(toast);
+        if (worker) worker.postMessage({ type: 'SKIP_WAITING' });
+        else location.reload();
+      });
+      document.getElementById('updateToastX').addEventListener('click', function () {
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      });
+    };
+
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        reg.update().catch(function () {});
+
+        // A worker may already be waiting from an earlier visit — offer it.
+        if (reg.waiting && navigator.serviceWorker.controller) showUpdateToast(reg.waiting);
+
+        // register() may have ALREADY found an update (updatefound fires
+        // before the promise resolves), so watch reg.installing directly
+        // as well as future updatefound events.
+        var watch = function (w) {
+          if (!w) return;
+          var check = function () {
+            if (w.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateToast(w);
+            }
+          };
+          w.addEventListener('statechange', check);
+          check();
+        };
+        watch(reg.installing);
+        reg.addEventListener('updatefound', function () { watch(reg.installing); });
+      }).catch(function (err) {
+        if (window.console) console.warn('Service worker registration failed:', err);
+        /* SW unavailable (e.g. private mode) — app still works online */
+      });
+    });
+
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!updateRequested || refreshing) return;
+      refreshing = true;
+      location.reload();
+    });
+  })();
+
 })();
