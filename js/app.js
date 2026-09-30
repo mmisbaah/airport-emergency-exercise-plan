@@ -698,6 +698,9 @@
 
       var html = '<h3 style="margin:0 0 16px;font-size:16px;color:var(--text);">' + scenario.name + '</h3>';
 
+      /* Exercise clock + inject player (rendered by renderClockPanel) */
+      html += '<div id="clockMount"></div>';
+
       html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:16px;">';
       html += '<div class="stat" style="background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:9px;padding:12px;text-align:center;"><span class="num" style="font-size:20px;font-weight:700;color:var(--stat-text);">' + scenario.soulsOnBoard + '</span><span class="lbl" style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:4px;">Souls on Board</span></div>';
       html += '<div class="stat" style="background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:9px;padding:12px;text-align:center;"><span class="num" style="font-size:20px;font-weight:700;color:var(--stat-text);">' + scenario.fuelLoad + '</span><span class="lbl" style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:4px;">Fuel Load</span></div>';
@@ -713,21 +716,17 @@
       html += '</div>';
 
       html += '<h4 style="margin:0 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Resource Requirements</h4>';
-      html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:16px;">';
+      html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:4px;">';
       html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:var(--stat-text);">' + scenario.resources.arff + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">ARFF Vehicles</span></div>';
       html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:var(--stat-text);">' + scenario.resources.ambulances + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Ambulances</span></div>';
       html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:var(--stat-text);">' + scenario.resources.fireTrucks + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Fire Trucks</span></div>';
       html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:var(--stat-text);">' + scenario.resources.buses + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Buses</span></div>';
       html += '</div>';
 
-      html += '<h4 style="margin:0 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Exercise Injects</h4>';
-      html += '<ul class="clean" style="margin:0;">';
-      scenario.injects.forEach(function (inject) {
-        html += '<li style="padding-left:20px;margin-bottom:8px;font-size:13px;color:var(--card-text);position:relative;"><span style="position:absolute;left:4px;top:8px;width:6px;height:6px;border-radius:2px;background:var(--blue);transform:rotate(45deg);"></span>' + inject + '</li>';
-      });
-      html += '</ul>';
-
       panel.innerHTML = html;
+
+      // Render the exercise clock & inject player into its mount
+      if (typeof renderClockPanel === 'function') renderClockPanel();
     }
 
     /* ================= TIMELINE / INJECT TRACKER ================= */
@@ -806,15 +805,17 @@
       updateUndoRedoButtons();
     };
 
-    var addTimelineEvent = function (time, text, category) {
+    var addTimelineEvent = function (time, text, category, tplus) {
       pushHistory();
-      timelineEvents.push({
+      var evt = {
         id: Date.now() + Math.random().toString(36).substr(2, 9),
         time: time,
         text: text,
         category: category || 'info',
         timestamp: new Date().toISOString()
-      });
+      };
+      if (tplus) evt.tplus = tplus;
+      timelineEvents.push(evt);
       saveTimeline();
       renderTimeline();
       updateUndoRedoButtons();
@@ -846,7 +847,9 @@
         else if (evt.category === 'casualty') catColor = '#ef4444';
 
         html += '<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-soft);">';
-        html += '<div style="flex:0 0 60px;font-size:12px;font-weight:700;color:' + catColor + ';font-variant-numeric:tabular-nums;">' + evt.time + '</div>';
+        html += '<div style="flex:0 0 60px;font-size:12px;font-weight:700;color:' + catColor + ';font-variant-numeric:tabular-nums;">' + evt.time +
+          (evt.tplus ? '<div style="font-size:10px;font-weight:600;color:var(--muted);letter-spacing:.02em;">T+' + evt.tplus + '</div>' : '') +
+          '</div>';
         html += '<div style="flex:1;font-size:13px;color:var(--card-text);">' + evt.text + '</div>';
         html += '<button class="reset-btn" style="flex:0 0 auto;padding:2px 8px;font-size:11px;" onclick="deleteTimelineEvent(\'' + evt.id + '\')">×</button>';
         html += '</div>';
@@ -941,7 +944,8 @@
         var scenarioName = '';
         var scenarioSelect = document.getElementById('scenarioSelect');
         if (scenarioSelect && scenarioSelect.value) {
-          var sc = TTX_DATA.scenarios.find(function (s) { return s.id === scenarioSelect.value; });
+          var sc = (typeof allScenarios !== 'undefined' ? allScenarios : TTX_DATA.scenarios)
+            .find(function (s) { return s.id === scenarioSelect.value; });
           if (sc) scenarioName = sc.name;
         }
         var report = 'AIRPORT EMERGENCY EXERCISE — TIMELINE\n';
@@ -967,6 +971,319 @@
     timelineHistoryIndex = 0;
     renderTimeline();
     updateUndoRedoButtons();
+
+    /* ================= EXERCISE CLOCK & INJECT PLAYER ================= */
+    var CLOCK_KEY = 'ttx-clock';
+    var clockState = {
+      scenarioId: null, startWall: null, accumulated: 0,
+      running: false, startedAt: null,
+      mode: 'manual', autoLog: true, released: []
+    };
+    try {
+      var rawClock = JSON.parse(localStorage.getItem(CLOCK_KEY) || 'null');
+      if (rawClock && typeof rawClock === 'object') {
+        Object.keys(clockState).forEach(function (k) {
+          if (rawClock[k] !== undefined) clockState[k] = rawClock[k];
+        });
+        if (clockState.running && !clockState.startedAt) clockState.startedAt = Date.now();
+      }
+    } catch (e) {}
+
+    var saveClock = function () {
+      try { localStorage.setItem(CLOCK_KEY, JSON.stringify(clockState)); } catch (e) {}
+      flashSaved('clock');
+    };
+
+    // Cue (latest released inject) must survive re-renders of the panel
+    var clockCue = { visible: false, text: '' };
+
+    var resetClockState = function () {
+      clockState.scenarioId = getActiveScenarioId();
+      clockState.startWall = null;
+      clockState.accumulated = 0;
+      clockState.running = false;
+      clockState.startedAt = null;
+      clockState.released = [];
+      clockCue.visible = false;
+      clockCue.text = '';
+    };
+
+    var clockElapsed = function () {
+      var e = clockState.accumulated || 0;
+      if (clockState.running && clockState.startedAt) e += Date.now() - clockState.startedAt;
+      return e;
+    };
+
+    var fmtTplus = function (ms) {
+      var s = Math.max(0, Math.floor(ms / 1000));
+      var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+      var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+      return pad(h) + ':' + pad(m) + ':' + pad(sec);
+    };
+
+    var getActiveScenarioId = function () {
+      var sel = document.getElementById('scenarioSelect');
+      return sel && sel.value ? sel.value : null;
+    };
+
+    var getActiveScenarioObj = function () {
+      var id = getActiveScenarioId();
+      var pool = (typeof allScenarios !== 'undefined' ? allScenarios : TTX_DATA.scenarios);
+      return pool.find(function (s) { return s.id === id; }) || null;
+    };
+
+    /* Injects are strings like "09:05 — Aircraft crashes …".
+       Schedule offsets are computed relative to the first parseable time. */
+    var parseInjectSchedule = function (scenario) {
+      var out = [];
+      if (!scenario || !Array.isArray(scenario.injects)) return out;
+      var base = null;
+      scenario.injects.forEach(function (raw, idx) {
+        var text = String(raw), offsetMin = null;
+        var m = String(raw).match(/^\s*(\d{1,2}):(\d{2})\s*(?:—|–|-|:)?\s*(.*)$/);
+        if (m) {
+          var mins = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+          if (base === null) base = mins;
+          offsetMin = mins - base;
+          if (offsetMin < 0) offsetMin += 24 * 60; // crosses midnight
+          if (m[3]) text = m[3];
+        }
+        if (offsetMin === null) offsetMin = idx * 5; // no time in string → every 5 min
+        out.push({ idx: idx, text: text || String(raw), offsetMs: offsetMin * 60000 });
+      });
+      return out;
+    };
+
+    var clockAudioCtx = null;
+    var beep = function () {
+      try {
+        if (!clockAudioCtx) clockAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (clockAudioCtx.state === 'suspended') clockAudioCtx.resume();
+        [0, 0.24].forEach(function (t, i) {
+          var o = clockAudioCtx.createOscillator();
+          var g = clockAudioCtx.createGain();
+          o.type = 'sine';
+          o.frequency.value = i === 0 ? 880 : 660;
+          g.gain.setValueAtTime(0.0001, clockAudioCtx.currentTime + t);
+          g.gain.exponentialRampToValueAtTime(0.22, clockAudioCtx.currentTime + t + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.0001, clockAudioCtx.currentTime + t + 0.2);
+          o.connect(g); g.connect(clockAudioCtx.destination);
+          o.start(clockAudioCtx.currentTime + t);
+          o.stop(clockAudioCtx.currentTime + t + 0.22);
+        });
+      } catch (e) {}
+    };
+
+    var renderCue = function () {
+      var cue = document.getElementById('clockCue');
+      var txt = document.getElementById('clockCueText');
+      if (!cue || !txt) return;
+      txt.textContent = clockCue.text;
+      cue.style.display = clockCue.visible ? 'flex' : 'none';
+    };
+
+    var showCue = function (text) {
+      clockCue.visible = true;
+      clockCue.text = text;
+      renderCue();
+    };
+
+    var releaseInject = function (idx) {
+      var sc = getActiveScenarioObj();
+      if (!sc) return;
+      var sched = parseInjectSchedule(sc);
+      var item = sched[idx];
+      if (!item || clockState.released.indexOf(idx) !== -1) return;
+      clockState.released.push(idx);
+      saveClock();
+      beep();
+      showCue(item.text);
+      if (clockState.autoLog) {
+        var now = new Date();
+        var wallDate = clockState.startWall ? new Date(clockState.startWall + clockElapsed()) : now;
+        var wall = wallDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        var tplus = clockState.startWall ? fmtTplus(clockElapsed()) : null;
+        addTimelineEvent(wall, item.text, 'inject', tplus);
+      }
+      renderClockPanel();
+    };
+
+    var renderClockPanel = function () {
+      var mount = document.getElementById('clockMount');
+      if (!mount) return;
+
+      var scId = getActiveScenarioId();
+      // Clock state belongs to one scenario — reset when the user switches
+      if (scId && clockState.scenarioId && clockState.scenarioId !== scId) {
+        resetClockState();
+        saveClock();
+      }
+      if (scId) clockState.scenarioId = scId;
+
+      var sc = getActiveScenarioObj();
+      if (!sc) { mount.innerHTML = ''; return; }
+
+      var sched = parseInjectSchedule(sc);
+      var isRunning = clockState.running;
+      var started = clockState.startWall !== null;
+
+      var html = '<div class="clock-card">';
+      html += '<div class="clock-head"><span class="clock-title">⏱ Exercise Clock</span><span id="clockStatus" class="clock-status">Not started</span></div>';
+      html += '<div class="clock-main">';
+      html += '<div class="clock-tplus" id="clockTplus">T+ 00:00:00</div>';
+      html += '<div class="clock-wall" id="clockWall">Start wall time —</div>';
+      html += '<div class="clock-btns">';
+      html += '<button id="clockStartBtn" class="reset-btn" type="button">' + (isRunning ? '❚❚ Pause' : (started ? '▶ Resume' : '▶ Start')) + '</button>';
+      html += '<button id="clockResetBtn" class="reset-btn" type="button">↺ Reset</button>';
+      html += '</div>';
+      html += '<div class="clock-mode">';
+      html += '<label><input type="radio" name="clockPace" value="manual" ' + (clockState.mode !== 'auto' ? 'checked' : '') + '> Manual pacing</label>';
+      html += '<label><input type="radio" name="clockPace" value="auto" ' + (clockState.mode === 'auto' ? 'checked' : '') + '> Auto-release</label>';
+      html += '<label><input type="checkbox" id="clockAutoLog" ' + (clockState.autoLog ? 'checked' : '') + '> Log injects to timeline</label>';
+      html += '</div>';
+      html += '</div>';
+
+      html += '<div class="clock-next" id="clockNext"></div>';
+      html += '<div class="clock-cue" id="clockCue" role="alert" style="display:none;"><span class="cue-bell">🔔</span><span id="clockCueText"></span><button type="button" id="clockCueClose" aria-label="Dismiss inject">✕</button></div>';
+
+      /* Inject player list */
+      html += '<h4 class="clock-inject-h">Exercise Injects</h4>';
+      html += '<div class="inject-list">';
+      var nextIdx = -1;
+      for (var i = 0; i < sched.length; i++) {
+        if (clockState.released.indexOf(sched[i].idx) === -1) { nextIdx = i; break; }
+      }
+      sched.forEach(function (item, i) {
+        var released = clockState.released.indexOf(item.idx) !== -1;
+        var cls = released ? 'done' : (i === nextIdx ? 'next' : 'future');
+        html += '<div class="inject-row ' + cls + '">';
+        html += '<span class="inject-badge">' + (released ? '✓' : (i + 1)) + '</span>';
+        html += '<span class="inject-time">T+' + fmtTplus(item.offsetMs).replace(/^00:/, '') + '</span>';
+        html += '<span class="inject-text">' + item.text + '</span>';
+        if (!released && i === nextIdx && clockState.mode !== 'auto') {
+          html += '<button class="reset-btn inject-release" type="button" data-idx="' + item.idx + '">Release</button>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+      html += '</div>';
+
+      mount.innerHTML = html;
+      renderCue(); // restore cue (showCue runs before re-renders)
+
+      /* Controls */
+      var startBtn = document.getElementById('clockStartBtn');
+      startBtn.addEventListener('click', function () {
+        if (clockState.running) {
+          clockState.accumulated = clockElapsed();
+          clockState.running = false;
+          clockState.startedAt = null;
+        } else {
+          if (clockState.startWall === null) clockState.startWall = Date.now();
+          clockState.startedAt = Date.now();
+          clockState.running = true;
+        }
+        saveClock();
+        renderClockPanel();
+      });
+
+      document.getElementById('clockResetBtn').addEventListener('click', function () {
+        if (!confirm('Reset the exercise clock? T+ time and released injects will be cleared (timeline entries already logged are kept).')) return;
+        resetClockState();
+        saveClock();
+        renderClockPanel();
+      });
+
+      Array.prototype.forEach.call(document.querySelectorAll('input[name="clockPace"]'), function (r) {
+        r.addEventListener('change', function () {
+          clockState.mode = r.value;
+          saveClock();
+          renderClockPanel();
+        });
+      });
+
+      var autoLogEl = document.getElementById('clockAutoLog');
+      if (autoLogEl) {
+        autoLogEl.addEventListener('change', function () {
+          clockState.autoLog = autoLogEl.checked;
+          saveClock();
+        });
+      }
+
+      Array.prototype.forEach.call(mount.querySelectorAll('.inject-release'), function (b) {
+        b.addEventListener('click', function () {
+          releaseInject(parseInt(b.getAttribute('data-idx'), 10));
+        });
+      });
+
+      var cueClose = document.getElementById('clockCueClose');
+      if (cueClose) {
+        cueClose.addEventListener('click', function () {
+          clockCue.visible = false;
+          renderCue();
+        });
+      }
+
+      updateClockLive();
+    };
+
+    var updateClockLive = function () {
+      var tEl = document.getElementById('clockTplus');
+      if (!tEl) return;
+      var elapsed = clockElapsed();
+      tEl.textContent = 'T+ ' + fmtTplus(elapsed);
+
+      var wallEl = document.getElementById('clockWall');
+      wallEl.textContent = clockState.startWall
+        ? 'Wall time ' + new Date(clockState.startWall + elapsed).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        : 'Wall time —';
+
+      var statusEl = document.getElementById('clockStatus');
+      statusEl.textContent = clockState.running ? '● Running' : (clockState.startWall ? '❚❚ Paused' : 'Not started');
+      statusEl.classList.toggle('running', clockState.running);
+
+      var startBtn = document.getElementById('clockStartBtn');
+      if (startBtn) startBtn.textContent = clockState.running ? '❚❚ Pause' : (clockState.startWall ? '▶ Resume' : '▶ Start');
+
+      /* Next-inject countdown */
+      var nextEl = document.getElementById('clockNext');
+      var sc = getActiveScenarioObj();
+      var sched = parseInjectSchedule(sc);
+      var next = null;
+      for (var i = 0; i < sched.length; i++) {
+        if (clockState.released.indexOf(sched[i].idx) === -1) { next = sched[i]; break; }
+      }
+      if (!next) {
+        nextEl.innerHTML = '<b>All injects released ✓</b>';
+      } else if (clockState.mode === 'auto') {
+        var due = next.offsetMs - elapsed;
+        if (due <= 0) {
+          nextEl.innerHTML = '<b>Next inject due now…</b>';
+        } else {
+          nextEl.innerHTML = 'Next inject in <b>' + fmtTplus(due) + '</b> (auto)';
+        }
+      } else {
+        nextEl.innerHTML = 'Next inject ready — press <b>Release</b> when the controller calls it';
+      }
+    };
+
+    var checkAutoDue = function () {
+      if (clockState.mode !== 'auto' || !clockState.running) return;
+      var sc = getActiveScenarioObj();
+      var sched = parseInjectSchedule(sc);
+      var elapsed = clockElapsed();
+      sched.forEach(function (item) {
+        if (item.offsetMs <= elapsed && clockState.released.indexOf(item.idx) === -1) {
+          releaseInject(item.idx);
+        }
+      });
+    };
+
+    setInterval(function () {
+      if (!document.getElementById('clockTplus')) return;
+      updateClockLive();
+      checkAutoDue();
+    }, 1000);
 
     /* ================= AAR EXPORT ================= */
     var aarBtn = document.createElement('button');

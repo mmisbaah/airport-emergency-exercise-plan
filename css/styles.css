@@ -617,6 +617,106 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
 }
 .save-chip.on{opacity:1;transform:none;}
 
+/* ---------- Exercise clock & inject player ---------- */
+.clock-card{
+  background:var(--panel2);
+  border:1px solid var(--line-soft);
+  border-radius:12px;
+  padding:16px;
+  margin-bottom:18px;
+}
+.clock-head{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;flex-wrap:wrap;margin-bottom:12px;
+}
+.clock-title{
+  font-size:13px;font-weight:700;color:var(--text);
+  text-transform:uppercase;letter-spacing:.1em;
+}
+.clock-status{
+  font-size:12px;font-weight:700;color:var(--muted);
+  padding:3px 10px;border:1px solid var(--line-soft);
+  border-radius:99px;background:var(--panel);white-space:nowrap;
+}
+.clock-status.running{color:#22c55e;border-color:rgba(34,197,94,.4);}
+.clock-main{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.clock-tplus{
+  font-size:34px;font-weight:800;color:var(--text);
+  font-variant-numeric:tabular-nums;letter-spacing:.02em;line-height:1;
+}
+.clock-wall{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;}
+.clock-btns{display:flex;gap:8px;align-items:center;}
+.clock-btns .reset-btn{padding:7px 16px;font-size:13px;min-height:36px;}
+.clock-mode{
+  display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+  font-size:12.5px;color:var(--muted);margin-top:12px;
+}
+.clock-mode label{display:flex;align-items:center;gap:6px;cursor:pointer;min-height:32px;}
+.clock-mode input{accent-color:var(--blue);width:15px;height:15px;}
+.clock-next{
+  font-size:12.5px;color:var(--muted);margin-top:12px;
+  padding-top:12px;border-top:1px dashed var(--line-soft);
+}
+.clock-next b{color:var(--text);font-variant-numeric:tabular-nums;}
+.clock-cue{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(168,85,247,.12);
+  border:1px solid rgba(168,85,247,.45);
+  border-radius:10px;padding:11px 14px;margin-top:12px;
+  font-size:13.5px;color:var(--text);line-height:1.4;
+}
+.cue-bell{font-size:17px;flex:0 0 auto;animation:cueShake .5s ease 2;}
+@keyframes cueShake{
+  0%,100%{transform:rotate(0);}
+  25%{transform:rotate(-18deg);}
+  75%{transform:rotate(18deg);}
+}
+.clock-cue button{
+  margin-left:auto;flex:0 0 auto;background:none;border:1px solid var(--line-soft);
+  color:var(--muted);border-radius:6px;width:28px;height:28px;cursor:pointer;
+  font-size:13px;line-height:1;
+}
+.clock-cue button:hover{color:var(--text);border-color:var(--line);}
+.clock-inject-h{
+  margin:16px 0 8px;font-size:12px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.1em;
+}
+.inject-list{display:flex;flex-direction:column;gap:6px;}
+.inject-row{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--panel);border:1px solid var(--line-soft);
+  border-radius:8px;padding:9px 12px;font-size:13px;line-height:1.45;
+}
+.inject-row.future{opacity:.55;}
+.inject-row.next{border-color:rgba(59,130,246,.55);background:rgba(59,130,246,.07);}
+.inject-row.done{opacity:.72;}
+.inject-badge{
+  flex:0 0 auto;width:22px;height:22px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:800;color:#fff;background:#475569;
+}
+.inject-row.next .inject-badge{background:var(--blue);}
+.inject-row.done .inject-badge{background:#22c55e;}
+.inject-time{
+  flex:0 0 auto;font-size:11.5px;font-weight:700;color:var(--muted);
+  font-variant-numeric:tabular-nums;padding-top:3px;min-width:44px;
+}
+.inject-text{flex:1;min-width:0;color:var(--card-text);}
+.inject-row.done .inject-text{text-decoration:none;}
+.inject-release{
+  flex:0 0 auto;padding:4px 12px !important;font-size:11.5px !important;
+  min-height:30px;white-space:nowrap;
+}
+@media (max-width: 480px){
+  .clock-tplus{font-size:26px;}
+  .clock-main{gap:10px;}
+  .clock-btns{width:100%;}
+  .clock-btns .reset-btn{flex:1;}
+  .inject-row{flex-wrap:wrap;}
+  .inject-text{flex-basis:100%;order:3;}
+  .inject-release{margin-left:auto;}
+}
+
 /* ---------- User Guide ---------- */
 .guide-toc{
   display:flex;flex-wrap:wrap;gap:8px;
