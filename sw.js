@@ -5,7 +5,7 @@
    VERSION must be bumped whenever index.html / css / js change so the
    update toast fires (keep it in step with the ?v= asset versions). */
 
-var VERSION = 'eop-20260930.2';
+var VERSION = 'eop-20260930.3';
 var SHELL_CACHE = 'eop-shell-' + VERSION;
 
 var SHELL = [
@@ -55,8 +55,13 @@ self.addEventListener('fetch', function (event) {
     event.respondWith(
       fetch(req).then(function (resp) {
         if (resp && resp.ok) {
-          var copy = resp.clone();
-          caches.open(SHELL_CACHE).then(function (c) { c.put('./index.html', copy); });
+          // only the app shell itself may overwrite the cached index.html —
+          // visits to /tests/ etc. must not corrupt the offline fallback
+          var path = new URL(req.url).pathname;
+          if (path === '/' || path.slice(-11) === '/index.html') {
+            var copy = resp.clone();
+            caches.open(SHELL_CACHE).then(function (c) { c.put('./index.html', copy); });
+          }
           return resp;
         }
         // not ok (4xx/5xx) — serve the cached shell instead of an error page
