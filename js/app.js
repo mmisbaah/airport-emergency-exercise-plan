@@ -411,6 +411,22 @@
     var legend   = document.getElementById('legend');
     var NS = 'http://www.w3.org/2000/svg';
 
+    /* ---------- TWR / ARFF station markers (draggable like pins) ----------
+       Static elements in the map SVG — they share the pin position storage
+       (keys 'twr' / 'arff'), so saving, restoring and resetting cover pins
+       and markers alike. Default transforms are captured from the markup
+       here, before any saved position is applied. */
+    var SITE_MARKS = ['mapTwr', 'mapArff'].map(function (id) {
+      var el = document.getElementById(id);
+      var match = el ? (el.getAttribute('transform') || '').match(/translate\(([^,]+),([^)]+)\)/) : null;
+      return {
+        id: id,
+        key: id === 'mapTwr' ? 'twr' : 'arff',
+        defX: match ? parseFloat(match[1]) : 0,
+        defY: match ? parseFloat(match[2]) : 0
+      };
+    });
+
     /* ---------- Pin position persistence ---------- */
     var savePinPositions = function () {
       var positions = {};
@@ -423,6 +439,12 @@
             positions[loc.id] = { x: parseFloat(match[1]), y: parseFloat(match[2]) };
           }
         }
+      });
+      SITE_MARKS.forEach(function (m) {
+        var el = document.getElementById(m.id);
+        if (!el) return;
+        var match = (el.getAttribute('transform') || '').match(/translate\(([^,]+),([^)]+)\)/);
+        if (match) positions[m.key] = { x: parseFloat(match[1]), y: parseFloat(match[2]) };
       });
       try { localStorage.setItem(PIN_STORAGE_KEY, JSON.stringify(positions)); } catch (e) {}
       flashSaved('pin positions');
@@ -445,6 +467,22 @@
         if (pin) {
           pin.setAttribute('transform', 'translate(' + loc.x + ',' + loc.y + ')');
         }
+      });
+      SITE_MARKS.forEach(function (m) {
+        var el = document.getElementById(m.id);
+        if (el) el.setAttribute('transform', 'translate(' + m.defX + ',' + m.defY + ')');
+      });
+    };
+
+    /* Restore saved TWR/ARFF marker positions (or their markup defaults) */
+    var applySiteMarkerPositions = function () {
+      var saved = loadPinPositions();
+      SITE_MARKS.forEach(function (m) {
+        var el = document.getElementById(m.id);
+        if (!el) return;
+        var p = saved[m.key];
+        el.setAttribute('transform', 'translate(' +
+          (p ? p.x : m.defX) + ',' + (p ? p.y : m.defY) + ')');
       });
     };
 
@@ -609,7 +647,7 @@
       var resetPinsBtn = document.createElement('button');
       resetPinsBtn.className = 'reset-btn';
       resetPinsBtn.type = 'button';
-      resetPinsBtn.textContent = 'Reset Pin Positions';
+      resetPinsBtn.textContent = 'Reset Pin & Marker Positions';
       resetPinsBtn.style.marginTop = '12px';
       resetPinsBtn.addEventListener('click', function () {
         resetPinPositions();
@@ -634,9 +672,16 @@
     document.addEventListener('pointerup', onMouseUp);
     document.addEventListener('pointercancel', onMouseUp);
 
+    /* TWR / ARFF markers are static in the markup — bind them once here */
+    SITE_MARKS.forEach(function (m) {
+      var el = document.getElementById(m.id);
+      if (el) el.addEventListener('pointerdown', onPinMouseDown);
+    });
+
     /* Load custom map config (if any), then render pins + legend + zones */
     loadMapConfig();
     buildMapUI();
+    applySiteMarkerPositions();
 
     function highlight(id, on) {
       var pin  = pinLayer.querySelector('.pin[data-id="' + id + '"]');
