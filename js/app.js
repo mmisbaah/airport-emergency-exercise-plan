@@ -93,7 +93,12 @@
         var idx = parseInt(e.key) - 1;
         if (TAB_IDS[idx]) {
           var radio = document.getElementById(TAB_IDS[idx]);
-          if (radio) radio.checked = true;
+          if (radio) {
+            radio.checked = true;
+            // fire change so persistence, tab-strip scroll and
+            // scroll-to-top all run for keyboard switches too
+            radio.dispatchEvent(new Event('change'));
+          }
         }
         return;
       }
@@ -201,6 +206,8 @@
       radio.addEventListener('change', function () {
         if (radio.checked) {
           try { localStorage.setItem('ttx-active-tab', id); } catch (e) {}
+          // a section that opens always starts at the top
+          window.scrollTo(0, 0);
         }
         var label = document.querySelector('.tab[for="' + id + '"]');
         var scroller = document.querySelector('.tabs .wrap');
@@ -214,6 +221,10 @@
           }
         }
       });
+      // tapping a tab header always brings its section to the top —
+      // including a re-tap of the active tab, which fires no change event
+      var label = document.querySelector('.tab[for="' + id + '"]');
+      if (label) label.addEventListener('click', function () { window.scrollTo(0, 0); });
     });
 
     // Restore the tab the user was last on
@@ -3615,6 +3626,7 @@
         var visible = !!(m.style.display && m.style.display !== 'none');
         if (visible && !m.hasAttribute('data-a11y-open')) {
           m.setAttribute('data-a11y-open', '');
+          m.scrollTop = 0; // dialogs always open from the top
           lastFocused = document.activeElement;
           setBackgroundInert(true);
           m.focus();
