@@ -515,11 +515,47 @@ var TTX_DATA = {
 
   /* Regulatory & guidance references behind the content (Checklist tab) */
   references: [
-    { doc: 'Annex 14 to the Chicago Convention, Vol. I — Aerodromes', org: 'ICAO', scope: 'Aerodrome design, emergency planning and rescue services.' },
-    { doc: 'Annex 17 — Security; and Doc 8973 (Aviation Security Manual)', org: 'ICAO', scope: 'Aviation security standards and recommended practices.' },
-    { doc: 'AC 150/5200-31C — Airport Emergency Plan', org: 'FAA', scope: 'Guide for developing airport emergency plans.' },
-    { doc: 'Regulation (EU) No 139/2013, AMC1 GM1 ADR-OPS', org: 'EASA', scope: 'Aerodrome licensing and operations requirements.' },
-    { doc: 'MACL Airport Emergency Plan (AEP) + CAAML aerodrome requirements', org: 'Maldives', scope: 'National airport emergency planning framework.' },
-    { doc: 'NFPA 1600 — Standard on Disaster/Emergency Management', org: 'NFPA', scope: 'Continuity, emergency and crisis management standard.' }
+    { doc: 'Annex 14 to the Chicago Convention, Vol. I — Aerodromes', org: 'ICAO', scope: 'Aerodrome design, emergency planning and rescue services.',
+      bullets: [
+        'Aerodrome physical characteristics — runway strips, runway end safety areas (RESA), clearways and obstacle limitation surfaces',
+        'Airport rescue and firefighting (ARFF) — required levels of protection, response times and equipment based on airport category',
+        'Emergency planning — every aerodrome must maintain an Airport Emergency Plan (AEP) and test it with regular exercises',
+        'Marking, lighting and signage — visual aids that keep aircraft clear of hazards and guide emergency vehicles on the airfield'
+      ] },
+    { doc: 'Annex 17 — Security; and Doc 8973 (Aviation Security Manual)', org: 'ICAO', scope: 'Aviation security standards and recommended practices.',
+      bullets: [
+        'Standards and Recommended Practices (SARPs) for aviation security at airports and in the air',
+        'Airport security programmes — access control, perimeter protection, and screening of passengers, baggage and cargo',
+        'Response to unlawful interference — hijack, sabotage, bomb threats and armed attack procedures',
+        'Security training, contingency plans and coordination with law enforcement and intelligence agencies'
+      ] },
+    { doc: 'AC 150/5200-31C — Airport Emergency Plan', org: 'FAA', scope: 'Guide for developing airport emergency plans.',
+      bullets: [
+        'How to develop, document, maintain and exercise an Airport Emergency Plan (AEP)',
+        'Command structure, roles and responsibilities — who does what during an aircraft accident or incident',
+        'Mutual aid agreements and coordination with off-airport fire, police, EMS and hospitals',
+        'Emergency Operations Center (EOC) setup, communications, and post-incident review'
+      ] },
+    { doc: 'Regulation (EU) No 139/2013, AMC1 GM1 ADR-OPS', org: 'EASA', scope: 'Aerodrome licensing and operations requirements.',
+      bullets: [
+        'Aerodrome licensing requirements — safety management systems and operator accountability',
+        'Emergency planning and rescue services expected of licensed aerodromes',
+        'Operations and maintenance standards that affect emergency response readiness',
+        'Compliance monitoring, inspections and the aerodrome operator\'s safety duties'
+      ] },
+    { doc: 'MACL Airport Emergency Plan (AEP) + CAAML aerodrome requirements', org: 'Maldives', scope: 'National airport emergency planning framework.',
+      bullets: [
+        'National airport emergency planning framework for Maldivian airports',
+        'CAAML aerodrome licensing, certification and safety requirements',
+        'Roles of MACL, individual airports and responding agencies during an emergency',
+        'Local response arrangements, mutual aid and coordination within the Maldives'
+      ] },
+    { doc: 'NFPA 1600 — Standard on Disaster/Emergency Management', org: 'NFPA', scope: 'Continuity, emergency and crisis management standard.',
+      bullets: [
+        'Framework for continuity, emergency and crisis management programmes',
+        'Risk assessment, resource management and incident command structure',
+        'Exercises, evaluation and continuous improvement of the emergency programme',
+        'Coordination with external agencies, mutual aid and community preparedness'
+      ] }
   ]
 };

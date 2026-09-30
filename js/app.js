@@ -3946,7 +3946,13 @@
     if (!grid || !TTX_DATA.references) return;
     var html = '';
     TTX_DATA.references.forEach(function (r) {
-      html += '<div class="ref-card"><div class="ref-doc">' + r.doc + '</div><div class="ref-org">' + r.org + '</div><div class="ref-scope">' + r.scope + '</div></div>';
+      html += '<div class="ref-card"><div class="ref-doc">' + r.doc + '</div><div class="ref-org">' + r.org + '</div><div class="ref-scope">' + r.scope + '</div>';
+      if (r.bullets && r.bullets.length) {
+        html += '<ul class="ref-bullets">';
+        r.bullets.forEach(function (b) { html += '<li>' + b + '</li>'; });
+        html += '</ul>';
+      }
+      html += '</div>';
     });
     grid.innerHTML = html;
   };

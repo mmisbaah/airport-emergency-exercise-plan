@@ -1091,6 +1091,9 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
 .ref-doc{font-size:13px;font-weight:600;color:var(--card-strong);line-height:1.4;margin-bottom:4px;}
 .ref-org{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--blue);margin-bottom:6px;}
 .ref-scope{font-size:12px;color:var(--muted);line-height:1.5;}
+.ref-bullets{margin:10px 0 0;padding-left:18px;}
+.ref-bullets li{font-size:12.5px;color:var(--card-text);line-height:1.55;margin-bottom:5px;}
+.ref-bullets li::before{background:var(--muted2);}
 
 /* ---------- Aircraft sub-nav ---------- */
 .sub-nav{
