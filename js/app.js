@@ -1184,11 +1184,122 @@
       html += '<div style="background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;padding:10px;text-align:center;"><span style="font-size:16px;font-weight:700;color:var(--stat-text);">' + scenario.resources.buses + '</span><span style="font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.08em;display:block;margin-top:2px;">Buses</span></div>';
       html += '</div>';
 
+      /* Interactive resource tracker mount (committed vs required) */
+      html += '<div id="scenarioResTracker"></div>';
+
       panel.innerHTML = html;
 
       // Render the exercise clock & inject player into its mount
       if (typeof renderClockPanel === 'function') renderClockPanel();
+
+      // Render the scenario resource tracker
+      renderScenarioResTracker(scenario);
     }
+
+    /* ================= SCENARIO RESOURCE TRACKER (in panel) ============= */
+    /* Per-scenario committed-vs-required unit counts, shown whenever a
+       scenario is selected. Saved per scenario id so switching scenarios
+       keeps each exercise's own picture. */
+    var SCENARIO_RES_KEY = 'ttx-scenario-resources';
+    var SCENARIO_RES_TYPES = [
+      { key: 'arff', label: 'ARFF Vehicles', icon: '🚒' },
+      { key: 'ambulances', label: 'Ambulances', icon: '🚑' },
+      { key: 'fireTrucks', label: 'Fire Trucks', icon: '🧯' },
+      { key: 'buses', label: 'Buses', icon: '🚌' }
+    ];
+
+    var loadScenarioResState = function () {
+      try {
+        var v = JSON.parse(localStorage.getItem(SCENARIO_RES_KEY) || 'null');
+        if (v && typeof v === 'object' && !Array.isArray(v)) return v;
+      } catch (e) {}
+      return {};
+    };
+
+    var saveScenarioResState = function (obj) {
+      try { localStorage.setItem(SCENARIO_RES_KEY, JSON.stringify(obj)); } catch (e) {}
+    };
+
+    var activeResScenario = function () {
+      var sel = document.getElementById('scenarioSelect');
+      if (!sel || !sel.value) return null;
+      var list = (typeof allScenarios !== 'undefined' && allScenarios && allScenarios.length)
+        ? allScenarios : TTX_DATA.scenarios;
+      var found = list.find(function (s) { return s.id === sel.value; });
+      return found || null;
+    };
+
+    var renderScenarioResTracker = function (scenario) {
+      var mount = document.getElementById('scenarioResTracker');
+      if (!mount) return;
+      if (!scenario || !scenario.resources) { mount.innerHTML = ''; return; }
+
+      var req = scenario.resources;
+      var rows = SCENARIO_RES_TYPES.filter(function (t) { return (req[t.key] || 0) > 0; });
+      var state = loadScenarioResState()[scenario.id] || {};
+
+      var html = '<h4 style="margin:16px 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Resource Tracker — committed vs required</h4>';
+
+      if (!rows.length) {
+        html += '<p style="color:var(--muted);font-size:13px;margin:0 0 10px;">No specific resources required for this scenario — use the full resource tracker for unit-level status.</p>';
+      } else {
+        html += '<div class="res-track">';
+        rows.forEach(function (t) {
+          var need = req[t.key] || 0;
+          var committed = Math.min(state[t.key] || 0, 99);
+          var short = Math.max(need - committed, 0);
+          html += '<div class="res-row' + (short === 0 ? ' covered' : '') + '">';
+          html += '<span class="res-icon" aria-hidden="true">' + t.icon + '</span>';
+          html += '<span class="res-info"><span class="res-label">' + t.label + '</span>';
+          html += '<span class="res-req">' + committed + ' of ' + need + ' committed</span></span>';
+          html += '<span class="res-stepper">';
+          html += '<button type="button" class="res-btn" aria-label="Stand down one ' + t.label + '" onclick="window.__bumpScenarioRes(\'' + t.key + ',-1\')">−</button>';
+          html += '<span class="res-count" role="status" aria-live="polite" aria-label="' + committed + ' committed of ' + need + ' required">' + committed + '</span>';
+          html += '<button type="button" class="res-btn" aria-label="Commit one more ' + t.label + '" onclick="window.__bumpScenarioRes(\'' + t.key + ',1\')">+</button>';
+          html += '</span>';
+          html += '<span class="res-badge">' + (short === 0 ? '✓ Covered' : short + ' needed') + '</span>';
+          html += '</div>';
+        });
+        html += '</div>';
+      }
+
+      html += '<div class="res-track-foot">';
+      html += '<button type="button" class="reset-btn" onclick="window.__resetScenarioRes()">Reset counts</button>';
+      html += '<button type="button" class="reset-btn" onclick="document.getElementById(\'resourceBtn\').click()">🚒 Full resource tracker →</button>';
+      html += '</div>';
+      html += '<p class="res-track-hint">Counts are saved per scenario on this device. 🚒 Full tracker manages individual units (location, notes, police &amp; medical).</p>';
+
+      mount.innerHTML = html;
+    };
+
+    window.__bumpScenarioRes = function (arg) {
+      var parts = String(arg || '').split(',');
+      var key = parts[0];
+      var delta = parseInt(parts[1], 10) || 0;
+      var sc = activeResScenario();
+      if (!sc || !key) return;
+      var all = loadScenarioResState();
+      var st = all[sc.id] || {};
+      var v = (st[key] || 0) + delta;
+      if (v < 0) v = 0;
+      if (v > 99) v = 99;
+      st[key] = v;
+      all[sc.id] = st;
+      saveScenarioResState(all);
+      renderScenarioResTracker(sc);
+      flashSaved('resources');
+    };
+
+    window.__resetScenarioRes = function () {
+      var sc = activeResScenario();
+      if (!sc) return;
+      if (!confirm('Reset committed resource counts for this scenario?')) return;
+      var all = loadScenarioResState();
+      delete all[sc.id];
+      saveScenarioResState(all);
+      renderScenarioResTracker(sc);
+      flashSaved('resources');
+    };
 
     /* ================= TIMELINE / INJECT TRACKER ================= */
     var TIMELINE_STORAGE_KEY = 'ttx-timeline-events';
@@ -3470,6 +3581,7 @@
       'ttx-theme', 'ttx-font-scale',
       'ttx-checklist-state', 'ttx-pin-positions', 'ttx-crash-zone-positions',
       'ttx-custom-scenarios', 'ttx-casualty-tracker', 'ttx-resource-tracker',
+      'ttx-scenario-resources',
       'ttx-timeline-events', 'ttx-restore-points', 'ttx-version-history',
       'ttx-clock', 'ttx-aar-notes', 'ttx-map-config'
     ];
