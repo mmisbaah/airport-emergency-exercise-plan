@@ -5,7 +5,7 @@
    VERSION must be bumped whenever index.html / css / js change so the
    update toast fires (keep it in step with the ?v= asset versions). */
 
-var VERSION = 'eop-20260930.4';
+var VERSION = 'eop-20261004.42';
 var SHELL_CACHE = 'eop-shell-' + VERSION;
 
 var SHELL = [
