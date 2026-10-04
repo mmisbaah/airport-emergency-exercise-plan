@@ -4152,6 +4152,8 @@
       'Home page opens on Emergency Types (first section)',
       'Phone navigation: ☰ collapsible panel with all seven sections + quick actions replaces the scrolling tab strip below 700px',
       'Updates install silently on reload — removed the "New version ready" toast',
+      'Emergency Types tab: Alert 1/2/3 call-out levels (pre-alert → full call-out → mutual aid) with definitions, escalation guidance and a typical alert range on every category card',
+      'Emergency Types tab: aircraft incident states — Local Standby → Full Emergency → Aircraft Accident, wound down via Reduced → All Clear, mapped to the alert levels',
       'Press ? anywhere for the keyboard shortcut list',
       'Periodic backup reminder toast (dismiss for 7 days)',
       'Loud error banner if a feature fails to load (no more silent skips)',

@@ -32,7 +32,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" href="css/styles.css?v=20260929.16">
+  <link rel="stylesheet" href="css/styles.css?v=20260929.17">
 </head>
 <body>
 
@@ -570,11 +570,68 @@
     <h2 class="section-head">Types of Airport Emergencies</h2>
     <p class="section-sub">Categorizing potential emergencies helps you test specific response plans and resource coordination. Frameworks from ICAO, EASA and the FAA group them broadly like this.</p>
 
+    <h3 class="emg-block-head">Alert call-out levels</h3>
+    <!-- Alert call-out levels (ICAO-style Alert 1/2/3 used across airport AEPs) -->
+    <div class="alert-levels" role="group" aria-label="Emergency alert levels 1 to 3">
+      <div class="alert-card alert-l1">
+        <div class="alert-head">
+          <span class="alert-badge">Alert 1</span>
+          <h4>Pre-alert</h4>
+        </div>
+        <p>One rescue &amp; firefighting unit with crew responds immediately while the situation is assessed — e.g. a technical problem, disabled aircraft, Local Standby or a minor ground incident.</p>
+      </div>
+      <div class="alert-card alert-l2">
+        <div class="alert-head">
+          <span class="alert-badge">Alert 2</span>
+          <h4>Full call-out</h4>
+        </div>
+        <p>All airport rescue &amp; firefighting units and airport emergency services are called out and ARFF command is established — fire, an accident on the airport, fuel or HazMat release, any confirmed emergency.</p>
+      </div>
+      <div class="alert-card alert-l3">
+        <div class="alert-head">
+          <span class="alert-badge">Alert 3</span>
+          <h4>Mutual aid</h4>
+        </div>
+        <p>Alert 2 plus external mutual aid — police, ambulance and city fire — with the airport EOC / command post activated. Major accident with casualties, compound emergencies, or anything beyond airport resources.</p>
+      </div>
+    </div>
+    <p class="alert-note"><strong>How alerts escalate:</strong> levels are raised (and lowered) as the situation develops — declare early, and let your airport emergency plan govern the exact triggers. In an exercise, the facilitator announces the alert level alongside each inject so players practise the matching call-out.</p>
+
+    <h3 class="emg-block-head">Aircraft accident / incident states</h3>
+    <div class="state-flow" role="group" aria-label="Aircraft incident states from Local Standby to All Clear">
+      <div class="state-chip s-standby">
+        <b>Local Standby</b>
+        <span>Aircraft has a minor problem and wants no assistance yet — emergency units alert and stand ready.</span>
+      </div>
+      <span class="state-arrow" aria-hidden="true">→</span>
+      <div class="state-chip s-full">
+        <b>Full Emergency</b>
+        <span>Emergency declared by the crew or ATC — the full fire and medical response meets the aircraft.</span>
+      </div>
+      <span class="state-arrow" aria-hidden="true">→</span>
+      <div class="state-chip s-accident">
+        <b>Aircraft Accident</b>
+        <span>Accident confirmed — full call-out plus mutual aid, command post up, scene secured and triage started.</span>
+      </div>
+      <span class="state-arrow wind" aria-hidden="true">→</span>
+      <div class="state-chip s-reduced">
+        <b>Reduced</b>
+        <span>Situation stabilised — scale the response down and release units in stages.</span>
+      </div>
+      <span class="state-arrow wind" aria-hidden="true">→</span>
+      <div class="state-chip s-clear">
+        <b>All Clear</b>
+        <span>Resolved — units stand down and return to service; normal operations resume.</span>
+      </div>
+    </div>
+    <p class="alert-note"><strong>Link to the alert levels:</strong> Local Standby typically holds at <strong>Alert 1</strong> (units standing by), a Full Emergency brings <strong>Alert 2</strong>, and an Aircraft Accident brings <strong>Alert 3</strong> — then the response winds down through <strong>Reduced</strong> to <strong>All Clear</strong>. Your airport emergency plan governs the exact triggers.</p>
+
     <div class="emg-grid">
       <div class="emg-card">
         <div class="emg-head">
           <div class="emg-icon" style="background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3)">✈️</div>
           <h4>Aircraft-Related</h4>
+          <span class="alert-range r13" title="Typical alert level range for these emergencies">Alert 1–3</span>
         </div>
         <ul class="clean">
           <li>Accidents on or off the airport</li>
@@ -588,6 +645,7 @@
         <div class="emg-head">
           <div class="emg-icon" style="background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3)">🏢</div>
           <h4>Non-Aircraft</h4>
+          <span class="alert-range r23" title="Typical alert level range for these emergencies">Alert 2–3</span>
         </div>
         <ul class="clean">
           <li>Structural fires — terminal, hangar, cargo</li>
@@ -603,6 +661,7 @@
         <div class="emg-head">
           <div class="emg-icon" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.3)">🔒</div>
           <h4>Security &amp; Unlawful Interference</h4>
+          <span class="alert-range r23" title="Typical alert level range for these emergencies">Alert 2–3</span>
         </div>
         <ul class="clean">
           <li>Sabotage and bomb threats</li>
@@ -616,6 +675,7 @@
         <div class="emg-head">
           <div class="emg-icon" style="background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3)">🩺</div>
           <h4>Public Health &amp; Environmental</h4>
+          <span class="alert-range r23" title="Typical alert level range for these emergencies">Alert 2–3</span>
         </div>
         <ul class="clean">
           <li>Communicable disease spread via air travel</li>
@@ -629,6 +689,7 @@
         <div class="emg-head">
           <div class="emg-icon" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3)">⚡</div>
           <h4>Compound Emergencies</h4>
+          <span class="alert-range r3" title="Typical alert level range for these emergencies">Alert 3</span>
         </div>
         <ul class="clean">
           <li>Two or more emergencies simultaneously or in quick succession</li>
@@ -1404,7 +1465,7 @@
       <h3>📑 The 7 sections</h3>
       <table class="guide-table">
         <tr><th style="width:1%;">Tab</th><th>What's inside</th></tr>
-        <tr><td>Emergency Types</td><td>Cards covering the airport emergency categories used in exercises.</td></tr>
+        <tr><td>Emergency Types</td><td>Cards covering the airport emergency categories used in exercises, plus the <strong>Alert 1 / 2 / 3</strong> call-out levels (pre-alert → full call-out → mutual aid), the aircraft incident states (<strong>Local Standby → Full Emergency → Aircraft Accident → Reduced → All Clear</strong>) and the typical alert range each category can trigger.</td></tr>
         <tr><td>Aircraft Specs</td><td>Reference specifications for <strong>9 aircraft types</strong> with a comparison table, detail cards, side and top diagrams, a passenger &amp; baggage flow, and emergency planning implications.</td></tr>
         <tr><td>Incident Zones</td><td>Concentric hot, warm and cold zone diagram with guidance for each ring.</td></tr>
         <tr><td>IC Role</td><td>Incident Commander responsibilities across three phases: <strong>Before</strong> (Preparation), <strong>During</strong> (Execution) and <strong>After</strong> (Evaluation), plus 8 Command &amp; General Staff role cards.</td></tr>
@@ -1565,7 +1626,7 @@
   </div>
 </div>
 
-<script src="js/data.js?v=20260929.16"></script>
-<script src="js/app.js?v=20260929.16"></script>
+<script src="js/data.js?v=20260929.17"></script>
+<script src="js/app.js?v=20260929.17"></script>
 </body>
 </html>

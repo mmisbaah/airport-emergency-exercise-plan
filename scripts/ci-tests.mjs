@@ -91,12 +91,15 @@ try {
     checklist: document.querySelectorAll('#checkGrid .check-item').length,
     pins: document.querySelectorAll('#pinLayer .pin').length,
     tabs: document.querySelectorAll('.tabs .tab').length,
-    modals: document.querySelectorAll('[id$="Modal"][role="dialog"]').length
+    modals: document.querySelectorAll('[id$="Modal"][role="dialog"]').length,
+    alertCards: document.querySelectorAll('#emergencies .alert-card').length,
+    alertRanges: document.querySelectorAll('#emergencies .alert-range').length,
+    stateChips: document.querySelectorAll('#emergencies .state-chip').length
   }));
 
-  console.log(`app smoke: ${boot.checklist} checklist items, ${boot.pins} pins, ${boot.tabs} tabs, ${boot.modals} labelled dialogs`);
+  console.log(`app smoke: ${boot.checklist} checklist items, ${boot.pins} pins, ${boot.tabs} tabs, ${boot.modals} labelled dialogs, ${boot.alertCards} alert levels, ${boot.alertRanges} alert ranges, ${boot.stateChips} incident states`);
 
-  if (boot.checklist === 0 || boot.pins === 0 || boot.tabs === 0) {
+  if (boot.checklist === 0 || boot.pins === 0 || boot.tabs === 0 || boot.alertCards < 3 || boot.alertRanges < 5 || boot.stateChips < 5) {
     failed = true;
     console.error('App smoke check failed — core UI did not render.');
   }
