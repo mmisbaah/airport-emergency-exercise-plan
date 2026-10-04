@@ -1,10 +1,21 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Airport Emergency Exercise Plan — Incident Commander EOP Exercise Tool">
   <meta name="theme-color" content="#0b1526">
+  <!-- Social preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Airport Emergency Exercise Plan">
+  <meta property="og:title" content="Airport Emergency Exercise Plan — EOP Dashboard">
+  <meta property="og:description" content="Free offline-ready airport emergency exercise tool for Incident Commanders: scenarios, ICS forms, trackers, interactive map and AAR export.">
+  <meta property="og:url" content="https://airportemergency.mellowpilot.com/">
+  <meta property="og:image" content="https://airportemergency.mellowpilot.com/icons/icon-192.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Airport Emergency Exercise Plan — EOP Dashboard">
+  <meta name="twitter:description" content="Free offline-ready airport emergency exercise tool for Incident Commanders: scenarios, ICS forms, trackers, interactive map and AAR export.">
+  <meta name="twitter:image" content="https://airportemergency.mellowpilot.com/icons/icon-192.png">
   <title>Airport Emergency Exercise Plan — EOP Dashboard</title>
   <script>
     /* Apply saved theme/text-size before first paint to avoid a flash */
@@ -21,11 +32,18 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" href="css/styles.css?v=20260929.13">
+  <link rel="stylesheet" href="css/styles.css?v=20260929.14">
 </head>
 <body>
 
 <a class="skip-link" href="#mainContent">Skip to main content</a>
+
+<noscript>
+  <div class="noscript-note">
+    <h2>JavaScript is required</h2>
+    <p>This dashboard runs entirely in your browser — please enable JavaScript and reload the page. Nothing is sent to a server; your data stays on this device.</p>
+  </div>
+</noscript>
 
 <!-- ============ TAB STATE CONTROLLERS ============ -->
 <input type="radio" name="ttx-tab" id="ttx-tab-emergencies" class="tab-radio">
@@ -46,25 +64,27 @@
       </div>
     </div>
     <div class="header-actions">
-      <button id="guideBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="How to use this app">❔ Guide</button>
-      <div class="font-controls" role="group" aria-label="Text size">
-        <button id="fontDec" class="reset-btn font-btn" type="button" title="Decrease text size" aria-label="Decrease text size">A−</button>
-        <button id="fontReset" class="reset-btn font-btn font-scale" type="button" title="Reset text size to 100%">100%</button>
-        <button id="fontInc" class="reset-btn font-btn" type="button" title="Increase text size" aria-label="Increase text size">A+</button>
+      <div class="hdr-cluster" role="group" aria-label="View controls">
+        <button id="guideBtn" class="reset-btn hdr-btn" type="button" title="How to use this app">❔ Guide</button>
+        <div class="font-controls" role="group" aria-label="Text size">
+          <button id="fontDec" class="reset-btn font-btn" type="button" title="Decrease text size" aria-label="Decrease text size">A−</button>
+          <button id="fontReset" class="reset-btn font-btn font-scale" type="button" title="Reset text size to 100%">100%</button>
+          <button id="fontInc" class="reset-btn font-btn" type="button" title="Increase text size" aria-label="Increase text size">A+</button>
+        </div>
+        <button id="themeToggle" class="reset-btn hdr-btn" type="button" title="Toggle light/dark mode">☀️</button>
       </div>
-      <button id="scenarioEditorBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Open Scenario Editor">📝 Scenarios</button>
-      <button id="icsBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Generate ICS Forms">📋 ICS Forms</button>
-      <button id="resourceBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Track resources">🚒 Resources</button>
-      <button id="casualtyBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Track casualties">🚑 Casualties</button>
-      <button id="weatherBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Check weather">🌤️ Weather</button>
-      <button id="exportPdfBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Export to PDF">📄 PDF</button>
-      <button id="dataExportBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Export/Import data">💾 Data</button>
-      <button id="backupBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Download all dashboard data (scenarios, timeline, checklist, map, theme) as a JSON backup file">💾 Backup</button>
-      <button id="restoreBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Restore dashboard data from a JSON backup file">📂 Restore</button>
-      <input type="file" id="restoreFile" accept="application/json,.json" style="display:none">
-      <button id="historyBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="View version history">📜 History</button>
-      <button id="printBtn" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Print exercise plan">🖨️ Print</button>
-      <button id="themeToggle" class="reset-btn" type="button" style="padding:6px 12px;font-size:12px;" title="Toggle light/dark mode">☀️</button>
+      <div class="hdr-cluster" role="group" aria-label="Exercise tools">
+        <button id="scenarioEditorBtn" class="reset-btn hdr-btn" type="button" title="Open Scenario Editor">📝 Scenarios</button>
+        <button id="icsBtn" class="reset-btn hdr-btn" type="button" title="Generate ICS Forms">📋 ICS Forms</button>
+        <button id="resourceBtn" class="reset-btn hdr-btn" type="button" title="Track individual units (roster) with status, location and notes">🚒 Resources</button>
+        <button id="casualtyBtn" class="reset-btn hdr-btn" type="button" title="Track casualties">🚑 Casualties</button>
+        <button id="weatherBtn" class="reset-btn hdr-btn" type="button" title="Check weather">🌤️ Weather</button>
+        <button id="exportPdfBtn" class="reset-btn hdr-btn" type="button" title="Export to PDF">📄 PDF</button>
+      </div>
+      <div class="hdr-cluster" role="group" aria-label="Data and output">
+        <button id="dataExportBtn" class="reset-btn hdr-btn" type="button" title="Backup, restore, import and export data">💾 Data</button>
+        <button id="printBtn" class="reset-btn hdr-btn" type="button" title="Print exercise plan">🖨️ Print</button>
+      </div>
       <div class="status-chip">
         <span class="dot-live"></span>
         Exercise Planning Mode
@@ -1105,7 +1125,7 @@
 <div id="resourceModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
   <div style="max-width:800px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-      <h2 style="margin:0;font-size:18px;">Resource Tracker</h2>
+      <h2 style="margin:0;font-size:18px;">Unit Roster</h2>
       <button id="closeResourceModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
     </div>
 
@@ -1224,21 +1244,21 @@
 
     <!-- Export Section -->
     <div style="margin-bottom:24px;">
-      <h3 style="margin:0 0 12px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Export Data</h3>
-      <p style="margin:0 0 12px;font-size:13px;color:var(--muted);">Download all your custom scenarios, resources, casualties, and timeline events as a JSON file.</p>
+      <h3 style="margin:0 0 12px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Backup</h3>
+      <p style="margin:0 0 12px;font-size:13px;color:var(--muted);">Download everything (custom scenarios, timeline, checklist, map layout, clock, theme) as one dated JSON backup file.</p>
       <div style="display:flex;gap:8px;">
-        <button id="exportAllBtn" class="reset-btn" type="button" style="padding:8px 20px;">Export All Data</button>
+        <button id="exportAllBtn" class="reset-btn" type="button" style="padding:8px 20px;" title="Download all dashboard data (scenarios, timeline, checklist, map, theme) as a JSON backup file">💾 Download Backup</button>
         <button id="exportScenariosBtn" class="reset-btn" type="button" style="padding:8px 20px;">Export Scenarios Only</button>
       </div>
     </div>
 
     <!-- Import Section -->
     <div style="margin-bottom:24px;">
-      <h3 style="margin:0 0 12px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Import Data</h3>
-      <p style="margin:0 0 12px;font-size:13px;color:var(--muted);">Import a JSON file to restore or share scenarios and exercise data.</p>
+      <h3 style="margin:0 0 12px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Restore &amp; Import</h3>
+      <p style="margin:0 0 12px;font-size:13px;color:var(--muted);">Pick a JSON file: a <strong>full backup</strong> replaces everything (a rollback point is saved first), while a <strong>scenarios export</strong> merges scenarios in.</p>
       <div style="display:flex;gap:8px;align-items:center;">
-        <input type="file" id="importFile" accept=".json" style="flex:1;font-size:13px;color:var(--muted);">
-        <button id="importBtn" class="reset-btn" type="button" style="padding:8px 20px;">Import</button>
+        <input type="file" id="importFile" accept=".json,application/json" style="flex:1;font-size:13px;color:var(--muted);">
+        <button id="importBtn" class="reset-btn" type="button" style="padding:8px 20px;" title="Restore dashboard data from a JSON backup file">📂 Restore / Import</button>
       </div>
     </div>
 
@@ -1246,6 +1266,9 @@
     <div>
       <h3 style="margin:0 0 12px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Current Data Summary</h3>
       <div id="dataSummary" style="padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;font-size:13px;color:var(--text);"></div>
+      <div style="margin-top:12px;">
+        <button id="historyBtn" class="reset-btn" type="button" style="padding:8px 20px;" title="View version history">📜 Version History</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1265,6 +1288,37 @@
       <div id="restoreList" style="margin-top:20px;"></div>
     </div>
   </div>
+</div>
+
+<!-- ============ KEYBOARD SHORTCUTS (?) ============ -->
+<div id="shortcutsModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
+  <div style="max-width:560px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h2 style="margin:0;font-size:18px;">Keyboard Shortcuts</h2>
+      <button id="closeShortcutsModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+    </div>
+    <table class="guide-table">
+      <tr><th style="width:1%;">Keys</th><th>Action</th></tr>
+      <tr><td><span class="kg">Ctrl + 1–7</span></td><td>Switch section (tabs left to right)</td></tr>
+      <tr><td><span class="kg">Ctrl + E</span></td><td>Open the scenario editor</td></tr>
+      <tr><td><span class="kg">Ctrl + P</span></td><td>Print the exercise plan</td></tr>
+      <tr><td><span class="kg">Ctrl + T</span></td><td>Cycle theme: dark → light → high contrast</td></tr>
+      <tr><td><span class="kg">Ctrl + / − / 0</span></td><td>Text size: increase / decrease / reset</td></tr>
+      <tr><td><span class="kg">Ctrl + Z</span></td><td>Undo the last timeline change</td></tr>
+      <tr><td><span class="kg">Ctrl + Shift + Z</span> / <span class="kg">Ctrl + Y</span></td><td>Redo</td></tr>
+      <tr><td><span class="kg">?</span></td><td>Open this shortcut list</td></tr>
+      <tr><td><span class="kg">Esc</span></td><td>Close the open window</td></tr>
+    </table>
+    <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0;">Shortcuts are ignored while you are typing in a field. On Mac use ⌘ in place of Ctrl.</p>
+  </div>
+</div>
+
+<!-- ============ BACKUP NUDGE TOAST ============ -->
+<div id="backupNudge" class="backup-nudge" role="status" hidden>
+  <span class="nudge-ico" aria-hidden="true">💾</span>
+  <span class="nudge-text">Your exercise data lives only in this browser — keep a backup file.</span>
+  <button id="nudgeBackupBtn" class="reset-btn" type="button" style="padding:5px 12px;font-size:12px;">Download</button>
+  <button id="nudgeCloseBtn" class="reset-btn" type="button" style="padding:5px 10px;font-size:12px;" aria-label="Dismiss backup reminder">✕</button>
 </div>
 
 <!-- ============ USER GUIDE ============ -->
@@ -1331,7 +1385,7 @@
       <ul>
         <li><strong>13 built-in scenarios</strong> cover a range of emergency types — just pick one from the dropdown.</li>
         <li><strong>📝 Scenarios (Ctrl+E)</strong> opens the scenario editor: create your own with name, aircraft, souls on board, fuel load, fire involvement, category, estimated casualties (red / yellow / green / deceased), required resources (ARFF, ambulances, fire trucks, buses) and exercise injects. Custom scenarios are saved on your device and appear in the dropdown.</li>
-        <li><strong>Scenario panel</strong> (appears once a scenario is selected): key facts &amp; estimated casualties, required resources, and a <strong>Resource Tracker</strong> — commit or stand down units with the <strong>+/−</strong> steppers and watch the "Covered / needed" badge until committed meets required. Counts are saved <em>per scenario</em> (Reset counts clears them); the 🚒 <strong>Full resource tracker</strong> button manages individual units with location and notes.</li>
+        <li><strong>Scenario panel</strong> (appears once a scenario is selected): key facts &amp; estimated casualties, resource requirements, and <strong>Scenario Resources</strong> — commit or stand down units with the <strong>+/−</strong> steppers and watch the "Covered / needed" badge until committed meets required. Counts are saved <em>per scenario</em> (Reset counts clears them); the 🚒 <strong>Unit roster</strong> button opens the full unit-level tracker with location and notes. Before you pick a scenario, the panel shows a <strong>3-step start guide</strong>.</li>
         <li><strong>Exercise Timeline</strong> (appears once a scenario is selected):
           <ul>
             <li>Add events: <strong>time</strong>, <strong>description</strong> and a <strong>category</strong> — Info, Inject, Decision, Milestone or Casualty (colour-coded).</li>
@@ -1352,13 +1406,11 @@
         <li><strong>A− / 100% / A+</strong> — text size controls (<span class="kg">Ctrl + / − / 0</span>); your choice is remembered and applied instantly.</li>
         <li><strong>📝 Scenarios</strong> — scenario editor (<span class="kg">Ctrl+E</span>): build and manage custom scenarios, or <strong>⚖ Compare</strong> any two side by side.</li>
         <li><strong>📋 ICS Forms</strong> — seven styled forms: ICS 201 Briefing, 202 Objectives, 203 Organization, 204 Assignment List, 205 Communications List, 206 Medical Plan and 209 Incident Summary — auto-filled from the scenario, timeline and trackers. Print them, download as .txt, or copy to clipboard.</li>
-        <li><strong>🚒 Resources</strong> — track the 10 default units (ARFF, EMS, fire, transport, security, medical) with status, location and notes. Export a status report or reset everything.</li>
+        <li><strong>🚒 Resources</strong> — the <strong>Unit Roster</strong>: track the 10 default units (ARFF, EMS, fire, transport, security, medical) with status, location and notes. Export a status report or reset everything. (The scenario panel has its own <strong>Scenario Resources</strong> tracker for committed-vs-required counts.)</li>
         <li><strong>🚑 Casualties</strong> — log tagged casualties with triage category, location, notes and transported flag; export a casualty report or clear all.</li>
         <li><strong>🌤️ Weather</strong> — current weather for any place worldwide (Open-Meteo; needs internet): temperature, feels-like, wind, humidity and pressure. The <strong>header widget</strong> shows the last searched place at a glance.</li>
         <li><strong>📄 PDF</strong> — builds a complete exercise package (scenario, ICS forms, resources, casualties, checklist) and opens the print dialog — choose "Save as PDF".</li>
-        <li><strong>💾 Data</strong> — export everything (or scenarios only) as JSON, and import a file to restore or move data to another device.</li>
-        <li><strong>💾 Backup / 📂 Restore</strong> — one-click full backup of <em>all</em> dashboard data (scenarios, timeline, checklist, map layout, zone sizes, clock, theme, text size) as a dated JSON file; restore validates the file, saves a rollback point and reloads.</li>
-        <li><strong>📜 History</strong> — a timestamped audit trail of the last 50 changes per scenario.</li>
+        <li><strong>💾 Data</strong> — the data hub: <strong>Download Backup</strong> (all dashboard data as one dated JSON file), <strong>Restore / Import</strong> a file (full backups replace everything with a rollback point saved first), a summary of what's stored, and <strong>📜 Version History</strong> — a timestamped audit trail of the last 50 changes per scenario. A periodic reminder offers the backup if you haven't downloaded one lately.</li>
         <li><strong>🖨️ Print</strong> — prints the whole plan (<span class="kg">Ctrl+P</span>); header, tabs and dock are left out of printouts.</li>
         <li><strong>☀️ / 🌙 / 👁️</strong> — theme cycle: dark → light → <strong>high contrast</strong> (<span class="kg">Ctrl+T</span>); your choice is remembered and applied before the page paints.</li>
       </ul>
@@ -1396,6 +1448,7 @@
         <tr><td><span class="kg">Ctrl + / − / 0</span></td><td>Text size: increase / decrease / reset to 100%</td></tr>
         <tr><td><span class="kg">Ctrl + Z</span></td><td>Undo the last timeline change</td></tr>
         <tr><td><span class="kg">Ctrl + Shift + Z</span> / <span class="kg">Ctrl + Y</span></td><td>Redo</td></tr>
+        <tr><td><span class="kg">?</span></td><td>Open this shortcut list from anywhere</td></tr>
         <tr><td><span class="kg">Esc</span></td><td>Close the open window (guide, forms, trackers, editors…)</td></tr>
       </table>
       <p style="font-size:12.5px;color:var(--muted);margin:8px 0 0;">Shortcuts are ignored while you are typing in a field. On Mac use ⌘ in place of Ctrl.</p>
@@ -1407,8 +1460,8 @@
         <li><strong>No account, no server</strong> — everything is stored in this browser on this device.</li>
         <li>Same device and browser = your scenarios, checklist, timeline, map layout &amp; zone sizes, trackers, clock, theme, text size and facilitator notes <strong>persist</strong> after you close the tab.</li>
         <li>Clearing site data — or switching browser/device — <strong>erases it</strong>, so export regularly.</li>
-        <li><strong>💾 Backup</strong> creates a full JSON snapshot of everything; <strong>📂 Restore</strong> puts it back (a rollback point is saved first). The <strong>💾 Data</strong> modal exports the same format, or scenarios only.</li>
-        <li><strong>📜 History</strong> keeps an audit trail of scenario changes.</li>
+        <li><strong>💾 Data → Download Backup</strong> creates a full JSON snapshot of everything; <strong>Restore / Import</strong> puts it back (a rollback point is saved first), or merges a scenarios-only export.</li>
+        <li><strong>📜 Version History</strong> (inside 💾 Data) keeps an audit trail of scenario changes — and a periodic toast reminds you to grab a backup while you work.</li>
       </ul>
     </div>
 
@@ -1478,7 +1531,7 @@
   </div>
 </div>
 
-<script src="js/data.js?v=20260929.13"></script>
-<script src="js/app.js?v=20260929.13"></script>
+<script src="js/data.js?v=20260929.14"></script>
+<script src="js/app.js?v=20260929.14"></script>
 </body>
 </html>
