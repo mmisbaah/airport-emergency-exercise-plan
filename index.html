@@ -32,7 +32,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" href="css/styles.css?v=20260929.15">
+  <link rel="stylesheet" href="css/styles.css?v=20260929.16">
 </head>
 <body>
 
@@ -46,10 +46,10 @@
 </noscript>
 
 <!-- ============ TAB STATE CONTROLLERS ============ -->
-<input type="radio" name="ttx-tab" id="ttx-tab-emergencies" class="tab-radio">
+<input type="radio" name="ttx-tab" id="ttx-tab-emergencies" class="tab-radio" checked>
 <input type="radio" name="ttx-tab" id="ttx-tab-aircraft" class="tab-radio">
 <input type="radio" name="ttx-tab" id="ttx-tab-zones" class="tab-radio">
-<input type="radio" name="ttx-tab" id="ttx-tab-phases" class="tab-radio" checked>
+<input type="radio" name="ttx-tab" id="ttx-tab-phases" class="tab-radio">
 <input type="radio" name="ttx-tab" id="ttx-tab-locations" class="tab-radio">
 <input type="radio" name="ttx-tab" id="ttx-tab-teams" class="tab-radio">
 <input type="radio" name="ttx-tab" id="ttx-tab-checklist" class="tab-radio">
@@ -103,6 +103,9 @@
 
 <nav class="tabs" aria-label="Exercise plan sections">
   <div class="wrap">
+    <button id="navToggle" class="nav-toggle" type="button" aria-expanded="false" aria-controls="navDrawer">
+      ☰ <span id="navCurrentTab">Emergency Types</span><span class="nav-caret" aria-hidden="true">▾</span>
+    </button>
     <label class="tab" for="ttx-tab-emergencies">Emergency Types</label>
     <label class="tab" for="ttx-tab-aircraft">Aircraft Specs</label>
     <label class="tab" for="ttx-tab-zones">Incident Zones</label>
@@ -110,6 +113,37 @@
     <label class="tab" for="ttx-tab-locations">Key Locations</label>
     <label class="tab" for="ttx-tab-teams">Team Labels</label>
     <label class="tab" for="ttx-tab-checklist">TTX Flow &amp; Checklist</label>
+  </div>
+</nav>
+
+<!-- Collapsible navigation panel (phones) — body siblings of the tab
+     radios so the checked state can highlight the active section -->
+<div class="nav-scrim" id="navScrim"></div>
+<nav class="nav-drawer" id="navDrawer" aria-label="Navigation panel">
+  <div class="nav-drawer-head">
+    <strong>Navigate</strong>
+    <button id="navClose" class="reset-btn nav-close" type="button" aria-label="Close navigation panel">✕</button>
+  </div>
+  <div class="nav-list">
+    <label class="nav-item" for="ttx-tab-emergencies">Emergency Types</label>
+    <label class="nav-item" for="ttx-tab-aircraft">Aircraft Specs</label>
+    <label class="nav-item" for="ttx-tab-zones">Incident Zones</label>
+    <label class="nav-item" for="ttx-tab-phases">IC Role</label>
+    <label class="nav-item" for="ttx-tab-locations">Key Locations</label>
+    <label class="nav-item" for="ttx-tab-teams">Team Labels</label>
+    <label class="nav-item" for="ttx-tab-checklist">TTX Flow &amp; Checklist</label>
+  </div>
+  <div class="nav-sep" role="separator"></div>
+  <div class="nav-quick">
+    <span class="nav-quick-title">Quick actions</span>
+    <button type="button" class="nav-q" data-target="scenarioEditorBtn">📝 Scenario editor</button>
+    <button type="button" class="nav-q" data-target="icsBtn">📋 ICS Forms</button>
+    <button type="button" class="nav-q" data-target="resourceBtn">🚒 Unit roster</button>
+    <button type="button" class="nav-q" data-target="casualtyBtn">🚑 Casualties</button>
+    <button type="button" class="nav-q" data-target="dataExportBtn">💾 Backup &amp; data</button>
+    <button type="button" class="nav-q" data-target="weatherBtn">🌤️ Weather</button>
+    <button type="button" class="nav-q" data-target="guideBtn">❔ Guide</button>
+    <button type="button" class="nav-q" data-target="printBtn">🖨️ Print</button>
   </div>
 </nav>
 
@@ -1468,7 +1502,7 @@
     <div class="guide-sec" id="g-mobile">
       <h3>📱 Mobile &amp; touch</h3>
       <ul>
-        <li>The tool buttons become <strong>one swipeable row</strong> under the title; the tab bar scrolls sideways and auto-scrolls so the active tab is always visible.</li>
+        <li>The tool buttons become <strong>one swipeable row</strong> under the title, and the tab bar collapses into a <strong>☰ menu</strong> at the top — tap it for a navigation panel listing all seven sections plus quick actions (Scenarios, ICS Forms, Roster, Casualties, Backup, Weather, Guide, Print). On tablets the tab bar simply scrolls sideways with the active tab kept in view.</li>
         <li>Buttons, tabs and checklist items use <strong>larger tap targets</strong>.</li>
         <li>Drag the map pins with your <strong>finger</strong> — dragging never scrolls the page.</li>
         <li>Form fields use larger text so iOS Safari doesn't zoom when you tap them.</li>
@@ -1480,7 +1514,7 @@
       <ul>
         <li><strong>Works offline</strong> — after the first visit the dashboard loads with <strong>no internet connection</strong> (airport ops networks are unreliable). Weather is the only feature that needs a connection.</li>
         <li><strong>Install as an app</strong> — use your browser's <em>Install app</em> / <em>Add to Home Screen</em> for a home-screen icon and a full-screen window.</li>
-        <li><strong>Updates</strong> — when a new version is published a small reload toast appears; one tap installs it.</li>
+        <li><strong>Updates</strong> — new versions install silently in the background; the next time you reload the page you get the latest one. No pop-ups, no prompts.</li>
       </ul>
     </div>
 
@@ -1531,7 +1565,7 @@
   </div>
 </div>
 
-<script src="js/data.js?v=20260929.15"></script>
-<script src="js/app.js?v=20260929.15"></script>
+<script src="js/data.js?v=20260929.16"></script>
+<script src="js/app.js?v=20260929.16"></script>
 </body>
 </html>

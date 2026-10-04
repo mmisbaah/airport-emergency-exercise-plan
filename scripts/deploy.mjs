@@ -2,9 +2,9 @@
 /* Deploy to Cloudflare Pages.
 
    Every deploy bumps the service worker cache version (eop-YYYYMMDD.N where
-   N is the commit count) so returning visitors get the "update ready" toast
-   and stale shell caches are cleaned up. The bump is committed first, so the
-   deployed tree always matches the repo.
+   N is the commit count) so stale shell caches are cleaned up and returning
+   visitors silently pick up the new version on their next reload. The bump
+   is committed first, so the deployed tree always matches the repo.
 
    Usage:
      $env:CLOUDFLARE_API_TOKEN = '...'   # wrangler API token

@@ -128,9 +128,10 @@ try {
     return { ctx, p };
   };
 
-  await behavior('onboarding gated to TTX tab + ? shortcut dialog', async () => {
+  await behavior('home = Emergency Types, onboarding gated to TTX tab, ? shortcut', async () => {
     const { ctx, p } = await newAppPage();
-    // default tab is IC Role — the start guide must NOT show there
+    assert(await p.isChecked('#ttx-tab-emergencies'), 'home page should open on Emergency Types');
+    // the start guide must NOT show on the home tab
     assert(!(await p.isVisible('#scenarioPanel .onboard')), 'onboarding should be hidden on the default tab');
     // …but it appears on TTX Flow & Checklist (7th tab)
     await p.click('.tabs .tab >> nth=6');
@@ -145,12 +146,12 @@ try {
 
   await behavior('active tab + checklist tick persist across reload', async () => {
     const { ctx, p } = await newAppPage();
-    await p.click('.tabs .tab >> nth=0');
+    await p.click('.tabs .tab >> nth=2'); // Incident Zones — not the default tab
     await p.evaluate(() => document.querySelectorAll('#checkGrid .check-input')[0].click());
     await p.reload({ waitUntil: 'load' });
     await p.waitForSelector('#checkGrid .check-item', { state: 'attached', timeout: 15000 });
     const state = await p.evaluate(() => ({
-      tab: document.getElementById('ttx-tab-emergencies').checked,
+      tab: document.getElementById('ttx-tab-zones').checked,
       tick: document.querySelectorAll('#checkGrid .check-input')[0].checked
     }));
     assert(state.tab, 'active tab not restored after reload');
@@ -237,6 +238,48 @@ try {
     await p.waitForSelector('#backupNudge', { state: 'visible', timeout: 12000 });
     await p.click('#nudgeCloseBtn');
     await p.waitForSelector('#backupNudge', { state: 'hidden', timeout: 3000 });
+    assert(p.errors.length === 0, p.errors.join('; '));
+    await ctx.close();
+  });
+
+  await behavior('phone viewport: collapsible ☰ nav panel', async () => {
+    const ctx = await browser.newContext({ viewport: { width: 375, height: 760 } });
+    const p = await ctx.newPage();
+    p.errors = [];
+    p.on('pageerror', (e) => p.errors.push('pageerror: ' + String(e)));
+    p.on('console', (m) => { if (m.type() === 'error') p.errors.push('console: ' + m.text()); });
+    await p.goto(`${base}/index.html`, { waitUntil: 'load' });
+    await p.waitForSelector('#checkGrid .check-item', { state: 'attached', timeout: 15000 });
+
+    // strip collapses into the toggle on phones
+    assert(await p.isVisible('#navToggle'), 'hamburger toggle missing at 375px');
+    assert(!(await p.isVisible('.tabs .tab >> nth=0')), 'tab strip should be hidden at 375px');
+    assert((await p.textContent('#navCurrentTab')).includes('Emergency Types'),
+      'toggle should show the home section');
+
+    // open → sections + quick actions listed, active section highlighted
+    await p.click('#navToggle');
+    await p.waitForSelector('body.nav-open', { state: 'visible', timeout: 3000 });
+    // wait (retry) rather than single isVisible — the drawer slides in over .25s
+    await p.waitForSelector('#navDrawer .nav-item[for="ttx-tab-zones"]', { state: 'visible', timeout: 3000 });
+    assert(await p.isVisible('#navDrawer .nav-q[data-target="guideBtn"]'), 'drawer quick actions missing');
+    assert((await p.getAttribute('#navToggle', 'aria-expanded')) === 'true', 'aria-expanded not set');
+
+    // pick a section → tab switches, drawer closes, toggle label updates
+    await p.click('#navDrawer .nav-item[for="ttx-tab-zones"]');
+    await p.waitForFunction(() => !document.body.classList.contains('nav-open'), null, { timeout: 3000 });
+    assert(await p.isChecked('#ttx-tab-zones'), 'section did not switch from the drawer');
+    assert((await p.textContent('#navCurrentTab')).includes('Incident Zones'), 'toggle label not updated');
+
+    // scrim closes it too; Escape closes it as well
+    await p.click('#navToggle');
+    await p.waitForSelector('body.nav-open', { state: 'visible', timeout: 3000 });
+    await p.click('#navScrim', { position: { x: 360, y: 400 } });
+    await p.waitForFunction(() => !document.body.classList.contains('nav-open'), null, { timeout: 3000 });
+    await p.click('#navToggle');
+    await p.keyboard.press('Escape');
+    await p.waitForFunction(() => !document.body.classList.contains('nav-open'), null, { timeout: 3000 });
+
     assert(p.errors.length === 0, p.errors.join('; '));
     await ctx.close();
   });

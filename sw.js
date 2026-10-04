@@ -2,8 +2,8 @@
    The app is fully static, so caching the shell makes it work with zero
    connectivity (airport ops networks are unreliable).
 
-   VERSION must be bumped whenever index.html / css / js change so the
-   update toast fires (keep it in step with the ?v= asset versions). */
+   VERSION must be bumped whenever index.html / css / js change so stale
+   caches are dropped on deploy (keep it in step with the ?v= versions). */
 
 var VERSION = 'eop-20261004.45';
 var SHELL_CACHE = 'eop-shell-' + VERSION;
@@ -26,8 +26,9 @@ self.addEventListener('install', function (event) {
       .then(function (cache) { return cache.addAll(SHELL); })
       .catch(function () { /* one 404 must not break install */ })
   );
-  // NOTE: no skipWaiting() here — the page shows an "update ready" toast
-  // and asks for it (see message handler below).
+  // NOTE: no skipWaiting() here — the waiting worker activates naturally
+  // once this page unloads; navigations are network-first, so updates
+  // reach the user silently on their next reload (no toast).
 });
 
 self.addEventListener('message', function (event) {

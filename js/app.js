@@ -339,6 +339,71 @@
       }
     } catch (e) {}
 
+    /* ================= COLLAPSIBLE NAV PANEL (phones) ================= */
+    // Below 700px the tab strip collapses into a ☰ button; this drawer
+    // lists every section plus quick actions that jump to the real
+    // header buttons (single source of handlers — just click() them).
+    (function () {
+      var toggle = document.getElementById('navToggle');
+      var drawer = document.getElementById('navDrawer');
+      var scrim = document.getElementById('navScrim');
+      var closeBtn = document.getElementById('navClose');
+      var currentLbl = document.getElementById('navCurrentTab');
+      if (!toggle || !drawer || !scrim) return;
+
+      var isOpen = false;
+      var open = function () {
+        if (isOpen) return;
+        isOpen = true;
+        document.body.classList.add('nav-open');
+        toggle.setAttribute('aria-expanded', 'true');
+        if (closeBtn) closeBtn.focus();
+      };
+      var close = function (returnFocus) {
+        if (!isOpen) return;
+        isOpen = false;
+        document.body.classList.remove('nav-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        if (returnFocus) toggle.focus();
+      };
+
+      toggle.addEventListener('click', function () { isOpen ? close(true) : open(); });
+      if (closeBtn) closeBtn.addEventListener('click', function () { close(true); });
+      scrim.addEventListener('click', function () { close(false); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isOpen) close(true);
+      });
+
+      var refreshCurrent = function () {
+        if (!currentLbl) return;
+        var checked = document.querySelector('.tab-radio:checked');
+        var idx = checked ? TAB_IDS.indexOf(checked.id) : -1;
+        currentLbl.textContent = idx >= 0 ? TAB_NAMES[idx] : '';
+      };
+      TAB_IDS.forEach(function (id) {
+        var radio = document.getElementById(id);
+        if (!radio) return;
+        radio.addEventListener('change', function () {
+          if (!radio.checked) return;
+          refreshCurrent();
+          close(false); // picking a section returns you to the page
+        });
+      });
+      // re-tap of the active section still closes (no change event) and
+      // mirrors the strip's "back to top" behaviour
+      Array.prototype.forEach.call(drawer.querySelectorAll('.nav-item'), function (item) {
+        item.addEventListener('click', function () { close(false); window.scrollTo(0, 0); });
+      });
+      drawer.addEventListener('click', function (e) {
+        var q = e.target && e.target.closest ? e.target.closest('.nav-q') : null;
+        if (!q) return;
+        var target = document.getElementById(q.getAttribute('data-target'));
+        close(false);
+        if (target) target.click();
+      });
+      refreshCurrent();
+    })();
+
     /* ================= USER GUIDE ================= */
     var guideBtn = document.getElementById('guideBtn');
     var guideDockLink = document.getElementById('guideDockLink');
@@ -4084,6 +4149,9 @@
       'Header regrouped into View / Exercise / Data clusters; Backup, Restore & History moved into 💾 Data',
       'First-run 3-step start guide on the TTX Flow & Checklist tab',
       'Shortcuts stay live after clicking a tab (the invisible tab radio no longer blocks Ctrl+ / ? keys)',
+      'Home page opens on Emergency Types (first section)',
+      'Phone navigation: ☰ collapsible panel with all seven sections + quick actions replaces the scrolling tab strip below 700px',
+      'Updates install silently on reload — removed the "New version ready" toast',
       'Press ? anywhere for the keyboard shortcut list',
       'Periodic backup reminder toast (dismiss for 7 days)',
       'Loud error banner if a feature fails to load (no more silent skips)',
@@ -4416,68 +4484,23 @@
     });
   })();
 
-  /* ================= PWA — OFFLINE + UPDATE TOAST ================= */
+  /* ================= PWA — OFFLINE + SILENT UPDATES ================= */
   (function () {
     if (!('serviceWorker' in navigator)) return;
     var isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
     if (location.protocol !== 'https:' && !isLocal) return;
 
-    var updateRequested = false;
-    var refreshing = false;
-
-    var showUpdateToast = function (worker) {
-      if (document.getElementById('updateToast')) return;
-      var toast = document.createElement('div');
-      toast.id = 'updateToast';
-      toast.setAttribute('role', 'status');
-      toast.innerHTML =
-        '<span>🔄 New version ready — reload to update.</span>' +
-        '<button type="button" id="updateToastBtn">Reload</button>' +
-        '<button type="button" id="updateToastX" aria-label="Dismiss update notice">✕</button>';
-      document.body.appendChild(toast);
-      document.getElementById('updateToastBtn').addEventListener('click', function () {
-        updateRequested = true;
-        toast.parentNode.removeChild(toast);
-        if (worker) worker.postMessage({ type: 'SKIP_WAITING' });
-        else location.reload();
-      });
-      document.getElementById('updateToastX').addEventListener('click', function () {
-        if (toast.parentNode) toast.parentNode.removeChild(toast);
-      });
-    };
-
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('sw.js').then(function (reg) {
+        // Look for a new worker. Updates install silently: navigations are
+        // network-first, so the next reload already serves the new shell,
+        // and the waiting worker activates once this page unloads.
+        // (The old "New version ready" toast was removed by request.)
         reg.update().catch(function () {});
-
-        // A worker may already be waiting from an earlier visit — offer it.
-        if (reg.waiting && navigator.serviceWorker.controller) showUpdateToast(reg.waiting);
-
-        // register() may have ALREADY found an update (updatefound fires
-        // before the promise resolves), so watch reg.installing directly
-        // as well as future updatefound events.
-        var watch = function (w) {
-          if (!w) return;
-          var check = function () {
-            if (w.state === 'installed' && navigator.serviceWorker.controller) {
-              showUpdateToast(w);
-            }
-          };
-          w.addEventListener('statechange', check);
-          check();
-        };
-        watch(reg.installing);
-        reg.addEventListener('updatefound', function () { watch(reg.installing); });
       }).catch(function (err) {
         if (window.console) console.warn('Service worker registration failed:', err);
         /* SW unavailable (e.g. private mode) — app still works online */
       });
-    });
-
-    navigator.serviceWorker.addEventListener('controllerchange', function () {
-      if (!updateRequested || refreshing) return;
-      refreshing = true;
-      location.reload();
     });
   })();
 

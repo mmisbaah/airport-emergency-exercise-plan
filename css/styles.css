@@ -746,32 +746,6 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
   .inject-release{margin-left:auto;}
 }
 
-/* ---------- PWA update toast ---------- */
-#updateToast{
-  position:fixed;left:50%;transform:translateX(-50%);
-  bottom:58px;z-index:400;
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-  max-width:min(94vw,480px);
-  background:var(--panel);border:1px solid var(--line);
-  border-radius:12px;padding:11px 14px;
-  box-shadow:0 10px 34px rgba(0,0,0,.5);
-  font-size:13px;color:var(--text);line-height:1.4;
-}
-#updateToast button{
-  border:none;border-radius:8px;padding:7px 14px;
-  font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;
-  min-height:34px;
-}
-#updateToast #updateToastBtn{background:var(--blue);color:#fff;}
-#updateToast #updateToastBtn:hover{filter:brightness(1.1);}
-#updateToast #updateToastX{
-  background:none;color:var(--muted);padding:7px 9px;
-}
-#updateToast #updateToastX:hover{color:var(--text);}
-@media (max-width: 520px){
-  #updateToast{bottom:14px;}
-}
-
 /* ---------- Map customization ---------- */
 .map-toolbar{
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
@@ -1272,7 +1246,8 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
     font-size:12px;
   }
   .app-header,.tabs,.reset-btn,#scenarioModal,#guideModal,.status-chip,.app-dock,
-  #scenarioEditorBtn,#printBtn,#themeToggle,.notice{
+  #scenarioEditorBtn,#printBtn,#themeToggle,.notice,
+  .nav-drawer,.nav-scrim,.nav-toggle{
     display:none !important;
   }
   .wrap{max-width:100%;padding:0;}
@@ -1529,3 +1504,99 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
 @media print{
   .backup-nudge,.err-banner{display:none !important;}
 }
+
+/* ---------- Collapsible navigation panel (phones) ---------- */
+/* Hidden by default — desktop keeps the horizontal tab strip. Below 700px
+   the strip collapses into a ☰ toggle and this drawer slides in. */
+.nav-toggle,.nav-scrim,.nav-drawer{display:none;}
+
+@media (max-width:700px){
+  /* the tab strip collapses into the ☰ toggle */
+  .tabs .wrap{gap:0;}
+  .tabs .wrap .tab{display:none;}
+  .nav-toggle{
+    display:flex;align-items:center;gap:8px;flex:1;
+    padding:9px 14px;min-height:42px;
+    border:1px solid var(--line);border-radius:999px;
+    background:var(--panel);color:var(--text);
+    font:inherit;font-size:13.5px;font-weight:500;
+    cursor:pointer;text-align:left;
+  }
+  .nav-toggle #navCurrentTab{
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .nav-toggle .nav-caret{margin-left:auto;color:var(--muted);flex:0 0 auto;}
+  .nav-toggle:active{transform:scale(.98);}
+
+  .nav-scrim{
+    display:block;position:fixed;inset:0;
+    background:rgba(4,10,20,.6);
+    opacity:0;visibility:hidden;
+    transition:opacity .25s ease,visibility .25s ease;
+    z-index:690;
+  }
+  .nav-drawer{
+    display:flex;flex-direction:column;
+    position:fixed;top:0;left:0;bottom:0;
+    width:min(86vw,330px);
+    padding:16px 14px calc(18px + env(safe-area-inset-bottom));
+    background:var(--panel);
+    border-right:1px solid var(--line);
+    box-shadow:16px 0 44px rgba(0,0,0,.5);
+    overflow-y:auto;-webkit-overflow-scrolling:touch;
+    transform:translateX(-102%);visibility:hidden;
+    transition:transform .25s ease,visibility .25s ease;
+    z-index:700;
+  }
+  body.nav-open .nav-scrim{opacity:1;visibility:visible;}
+  body.nav-open .nav-drawer{transform:none;visibility:visible;}
+}
+
+/* Drawer contents (revealed with the panel) */
+.nav-drawer-head{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:12px;
+}
+.nav-drawer-head strong{
+  font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);
+}
+.nav-close{padding:6px 13px;min-height:38px;border-radius:10px;}
+.nav-list{display:flex;flex-direction:column;gap:4px;}
+.nav-item{
+  display:flex;align-items:center;
+  padding:12px 14px;border-radius:11px;
+  border:1px solid transparent;
+  color:var(--text);font-size:14.5px;font-weight:500;
+  cursor:pointer;user-select:none;
+  transition:.15s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.nav-item:hover{background:var(--tabs-bg);}
+/* active section — mirrors the pill style of the tab strip */
+#ttx-tab-emergencies:checked ~ #navDrawer .nav-item[for="ttx-tab-emergencies"],
+#ttx-tab-aircraft:checked ~ #navDrawer .nav-item[for="ttx-tab-aircraft"],
+#ttx-tab-zones:checked ~ #navDrawer .nav-item[for="ttx-tab-zones"],
+#ttx-tab-phases:checked ~ #navDrawer .nav-item[for="ttx-tab-phases"],
+#ttx-tab-locations:checked ~ #navDrawer .nav-item[for="ttx-tab-locations"],
+#ttx-tab-teams:checked ~ #navDrawer .nav-item[for="ttx-tab-teams"],
+#ttx-tab-checklist:checked ~ #navDrawer .nav-item[for="ttx-tab-checklist"]{
+  color:var(--tab-active);
+  background:linear-gradient(145deg,#1d4ed8,#1e3a8a);
+  border-color:var(--tab-active-border);
+}
+.nav-sep{height:1px;background:var(--line-soft);margin:14px 0 12px;}
+.nav-quick{display:flex;flex-direction:column;gap:4px;}
+.nav-quick-title{
+  font-size:11px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px;
+}
+.nav-q{
+  text-align:left;padding:11px 14px;
+  border:1px solid var(--line-soft);border-radius:10px;
+  background:transparent;color:var(--text);
+  font:inherit;font-size:13.5px;cursor:pointer;
+  transition:.15s ease;
+}
+.nav-q:hover{background:var(--tabs-bg);border-color:var(--line);}
+.nav-item:active,.nav-q:active{transform:scale(.98);}
