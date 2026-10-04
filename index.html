@@ -3,20 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Airport Emergency Exercise Plan — Incident Commander EOP Exercise Tool">
+  <meta name="description" content="Airport Emergency Exercise Plan â€” Incident Commander EOP Exercise Tool">
   <meta name="theme-color" content="#0b1526">
   <!-- Social preview -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Airport Emergency Exercise Plan">
-  <meta property="og:title" content="Airport Emergency Exercise Plan — EOP Dashboard">
+  <meta property="og:title" content="Airport Emergency Exercise Plan â€” EOP Dashboard">
   <meta property="og:description" content="Free offline-ready airport emergency exercise tool for Incident Commanders: scenarios, ICS forms, trackers, interactive map and AAR export.">
   <meta property="og:url" content="https://airportemergency.mellowpilot.com/">
   <meta property="og:image" content="https://airportemergency.mellowpilot.com/icons/icon-192.png">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Airport Emergency Exercise Plan — EOP Dashboard">
+  <meta name="twitter:title" content="Airport Emergency Exercise Plan â€” EOP Dashboard">
   <meta name="twitter:description" content="Free offline-ready airport emergency exercise tool for Incident Commanders: scenarios, ICS forms, trackers, interactive map and AAR export.">
   <meta name="twitter:image" content="https://airportemergency.mellowpilot.com/icons/icon-192.png">
-  <title>Airport Emergency Exercise Plan — EOP Dashboard</title>
+  <title>Airport Emergency Exercise Plan â€” EOP Dashboard</title>
   <script>
     /* Apply saved theme/text-size before first paint to avoid a flash */
     try {
@@ -32,7 +32,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" href="css/styles.css?v=20260929.14">
+  <link rel="stylesheet" href="css/styles.css?v=20260929.15">
 </head>
 <body>
 
@@ -41,7 +41,7 @@
 <noscript>
   <div class="noscript-note">
     <h2>JavaScript is required</h2>
-    <p>This dashboard runs entirely in your browser — please enable JavaScript and reload the page. Nothing is sent to a server; your data stays on this device.</p>
+    <p>This dashboard runs entirely in your browser â€” please enable JavaScript and reload the page. Nothing is sent to a server; your data stays on this device.</p>
   </div>
 </noscript>
 
@@ -57,7 +57,7 @@
 <header class="app-header">
   <div class="wrap">
     <div class="brand">
-      <div class="brand-mark">✈</div>
+      <div class="brand-mark">âœˆ</div>
       <div>
         <h1>Airport Emergency Exercise Plan</h1>
         <p>Incident Commander EOP Exercise Tool</p>
@@ -65,25 +65,25 @@
     </div>
     <div class="header-actions">
       <div class="hdr-cluster" role="group" aria-label="View controls">
-        <button id="guideBtn" class="reset-btn hdr-btn" type="button" title="How to use this app">❔ Guide</button>
+        <button id="guideBtn" class="reset-btn hdr-btn" type="button" title="How to use this app">â” Guide</button>
         <div class="font-controls" role="group" aria-label="Text size">
-          <button id="fontDec" class="reset-btn font-btn" type="button" title="Decrease text size" aria-label="Decrease text size">A−</button>
+          <button id="fontDec" class="reset-btn font-btn" type="button" title="Decrease text size" aria-label="Decrease text size">Aâˆ’</button>
           <button id="fontReset" class="reset-btn font-btn font-scale" type="button" title="Reset text size to 100%">100%</button>
           <button id="fontInc" class="reset-btn font-btn" type="button" title="Increase text size" aria-label="Increase text size">A+</button>
         </div>
-        <button id="themeToggle" class="reset-btn hdr-btn" type="button" title="Toggle light/dark mode">☀️</button>
+        <button id="themeToggle" class="reset-btn hdr-btn" type="button" title="Toggle light/dark mode">â˜€ï¸</button>
       </div>
       <div class="hdr-cluster" role="group" aria-label="Exercise tools">
-        <button id="scenarioEditorBtn" class="reset-btn hdr-btn" type="button" title="Open Scenario Editor">📝 Scenarios</button>
-        <button id="icsBtn" class="reset-btn hdr-btn" type="button" title="Generate ICS Forms">📋 ICS Forms</button>
-        <button id="resourceBtn" class="reset-btn hdr-btn" type="button" title="Track individual units (roster) with status, location and notes">🚒 Resources</button>
-        <button id="casualtyBtn" class="reset-btn hdr-btn" type="button" title="Track casualties">🚑 Casualties</button>
-        <button id="weatherBtn" class="reset-btn hdr-btn" type="button" title="Check weather">🌤️ Weather</button>
-        <button id="exportPdfBtn" class="reset-btn hdr-btn" type="button" title="Export to PDF">📄 PDF</button>
+        <button id="scenarioEditorBtn" class="reset-btn hdr-btn" type="button" title="Open Scenario Editor">ðŸ“ Scenarios</button>
+        <button id="icsBtn" class="reset-btn hdr-btn" type="button" title="Generate ICS Forms">ðŸ“‹ ICS Forms</button>
+        <button id="resourceBtn" class="reset-btn hdr-btn" type="button" title="Track individual units (roster) with status, location and notes">ðŸš’ Resources</button>
+        <button id="casualtyBtn" class="reset-btn hdr-btn" type="button" title="Track casualties">ðŸš‘ Casualties</button>
+        <button id="weatherBtn" class="reset-btn hdr-btn" type="button" title="Check weather">ðŸŒ¤ï¸ Weather</button>
+        <button id="exportPdfBtn" class="reset-btn hdr-btn" type="button" title="Export to PDF">ðŸ“„ PDF</button>
       </div>
       <div class="hdr-cluster" role="group" aria-label="Data and output">
-        <button id="dataExportBtn" class="reset-btn hdr-btn" type="button" title="Backup, restore, import and export data">💾 Data</button>
-        <button id="printBtn" class="reset-btn hdr-btn" type="button" title="Print exercise plan">🖨️ Print</button>
+        <button id="dataExportBtn" class="reset-btn hdr-btn" type="button" title="Backup, restore, import and export data">ðŸ’¾ Data</button>
+        <button id="printBtn" class="reset-btn hdr-btn" type="button" title="Print exercise plan">ðŸ–¨ï¸ Print</button>
       </div>
       <div class="status-chip">
         <span class="dot-live"></span>
@@ -94,10 +94,10 @@
   <div class="wrap scenario-row" style="padding-top:10px;padding-bottom:10px;">
     <label for="scenarioSelect" style="font-size:12px;color:var(--muted);margin-right:8px;">Scenario:</label>
     <select id="scenarioSelect" style="background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;">
-      <option value="">— Select a scenario —</option>
+      <option value="">â€” Select a scenario â€”</option>
     </select>
     <span id="saveChip" class="save-chip" role="status" aria-live="polite"></span>
-    <div class="weather" id="weatherWidget" title="Current conditions (Open-Meteo) — tap to search a location" aria-live="polite"></div>
+    <div class="weather" id="weatherWidget" title="Current conditions (Open-Meteo) â€” tap to search a location" aria-live="polite"></div>
   </div>
 </header>
 
@@ -118,7 +118,7 @@
   <!-- Print-only header -->
   <div class="print-header" style="display:none;">
     <h1>Airport Emergency Exercise Plan</h1>
-    <p>Incident Commander EOP Exercise Tool — Generated <span id="printDate"></span></p>
+    <p>Incident Commander EOP Exercise Tool â€” Generated <span id="printDate"></span></p>
   </div>
 
   <!-- ============ IC ROLE ============ -->
@@ -128,45 +128,45 @@
 
     <div class="phase-grid">
       <div class="card phase" data-c="1">
-        <span class="phase-num">01 · Before</span>
+        <span class="phase-num">01 Â· Before</span>
         <h3 class="card-title">Preparation</h3>
         <ul class="clean">
-          <li><strong>Review the AEP</strong> — confirm command structure, authorities, and agency roles.</li>
-          <li><strong>Understand scenario &amp; objectives</strong> — know the emergency type and what is being tested.</li>
-          <li><strong>Confirm your role</strong> — ensure official IC designation and ICP-to-EOC reporting lines.</li>
-          <li><strong>Join planning meetings</strong> — help design the exercise around the systems you rely on.</li>
+          <li><strong>Review the AEP</strong> â€” confirm command structure, authorities, and agency roles.</li>
+          <li><strong>Understand scenario &amp; objectives</strong> â€” know the emergency type and what is being tested.</li>
+          <li><strong>Confirm your role</strong> â€” ensure official IC designation and ICP-to-EOC reporting lines.</li>
+          <li><strong>Join planning meetings</strong> â€” help design the exercise around the systems you rely on.</li>
         </ul>
       </div>
 
       <div class="card phase" data-c="2">
-        <span class="phase-num">02 · During</span>
+        <span class="phase-num">02 Â· During</span>
         <h3 class="card-title">Execution</h3>
         <ul class="clean">
-          <li><strong>Establish command &amp; the ICP</strong> — set up a clearly identifiable command location.</li>
-          <li><strong>Conduct size-up</strong> — gather information fast, prioritize, task resources.</li>
-          <li><strong>Build &amp; communicate the IAP</strong> — state objectives, strategy, critical functions.</li>
-          <li><strong>Assign command staff</strong> — Safety Officer, PIO, Liaison Officer.</li>
-          <li><strong>Coordinate multi-agency response</strong> — fire, police, EMS, ops, tenants.</li>
+          <li><strong>Establish command &amp; the ICP</strong> â€” set up a clearly identifiable command location.</li>
+          <li><strong>Conduct size-up</strong> â€” gather information fast, prioritize, task resources.</li>
+          <li><strong>Build &amp; communicate the IAP</strong> â€” state objectives, strategy, critical functions.</li>
+          <li><strong>Assign command staff</strong> â€” Safety Officer, PIO, Liaison Officer.</li>
+          <li><strong>Coordinate multi-agency response</strong> â€” fire, police, EMS, ops, tenants.</li>
         </ul>
       </div>
 
       <div class="card phase" data-c="3">
-        <span class="phase-num">03 · After</span>
+        <span class="phase-num">03 Â· After</span>
         <h3 class="card-title">Evaluation</h3>
         <ul class="clean">
-          <li><strong>Hot Wash</strong> — immediate feedback on what worked and what did not.</li>
-          <li><strong>After Action Report</strong> — document strengths, gaps, corrective actions, timelines.</li>
-          <li><strong>Update the AEP</strong> — fold lessons learned back into procedures.</li>
+          <li><strong>Hot Wash</strong> â€” immediate feedback on what worked and what did not.</li>
+          <li><strong>After Action Report</strong> â€” document strengths, gaps, corrective actions, timelines.</li>
+          <li><strong>Update the AEP</strong> â€” fold lessons learned back into procedures.</li>
         </ul>
       </div>
     </div>
 
     <div class="notice">
-      <span class="ni">💡</span>
+      <span class="ni">ðŸ’¡</span>
       <div><strong>Command principle:</strong> the IC directs, but does not personally fight the fire. Establish the ICP early, delegate the Safety Officer, PIO and Liaison Officer, and keep your own span of control manageable.</div>
     </div>
 
-    <h3 class="sub" id="role-cards">IC Role Cards — Command &amp; General Staff</h3>
+    <h3 class="sub" id="role-cards">IC Role Cards â€” Command &amp; General Staff</h3>
     <div class="role-grid" id="roleGrid">
       <!-- cards rendered from TTX_DATA.roleCards -->
     </div>
@@ -177,11 +177,11 @@
     <h2 class="section-head">Tabletop Exercise Team Labels</h2>
     <p class="section-sub">Two distinct sets of labels matter: the staff who <em>run</em> the drill, and the simulated response teams that <em>play</em> in it.</p>
 
-    <h3 class="sub">Exercise Staff — Who Runs the Drill</h3>
+    <h3 class="sub">Exercise Staff â€” Who Runs the Drill</h3>
     <div class="team-grid">
       <div class="team-card">
         <h4><span class="swatch sw-blue"></span>Players / Participants</h4>
-        <p>Actively role-play their real-world positions — including you as IC — and respond to the scenario.</p>
+        <p>Actively role-play their real-world positions â€” including you as IC â€” and respond to the scenario.</p>
       </div>
       <div class="team-card">
         <h4><span class="swatch sw-cyan"></span>Facilitators</h4>
@@ -201,60 +201,60 @@
       </div>
     </div>
 
-    <h3 class="sub">Simulated Response Teams — Functional Groups</h3>
+    <h3 class="sub">Simulated Response Teams â€” Functional Groups</h3>
     <div class="team-grid">
       <div class="team-card">
-        <h4><span class="icon-badge">🎯</span>Incident / Unified Command</h4>
+        <h4><span class="icon-badge">ðŸŽ¯</span>Incident / Unified Command</h4>
         <p>Core leadership: IC, Safety Officer, Liaison Officer, PIO.</p>
       </div>
       <div class="team-card">
-        <h4><span class="icon-badge">🚒</span>Fire / Rescue &amp; ARFF</h4>
+        <h4><span class="icon-badge">ðŸš’</span>Fire / Rescue &amp; ARFF</h4>
         <p>Aircraft Rescue and Firefighting plus structural fire response.</p>
       </div>
       <div class="team-card">
-        <h4><span class="icon-badge">🚑</span>EMS / Medical / Triage</h4>
+        <h4><span class="icon-badge">ðŸš‘</span>EMS / Medical / Triage</h4>
         <p>Emergency medical services, casualty collection, hospital coordination.</p>
       </div>
       <div class="team-card">
-        <h4><span class="icon-badge">🚔</span>Law Enforcement / Security</h4>
+        <h4><span class="icon-badge">ðŸš”</span>Law Enforcement / Security</h4>
         <p>Airport police, perimeter control, scene security.</p>
       </div>
       <div class="team-card">
-        <h4><span class="icon-badge">🛫</span>Airport Operations / Airside</h4>
+        <h4><span class="icon-badge">ðŸ›«</span>Airport Operations / Airside</h4>
         <p>Runway closures, NOTAMs, airfield management.</p>
       </div>
       <div class="team-card">
-        <h4><span class="icon-badge">👨‍👩‍👧</span>Passenger / Family Assistance</h4>
+        <h4><span class="icon-badge">ðŸ‘¨â€ðŸ‘©â€ðŸ‘§</span>Passenger / Family Assistance</h4>
         <p>Uninjured passenger gathering, Friends &amp; Relatives Center, reunification.</p>
       </div>
       <div class="team-card">
-        <h4><span class="icon-badge">📢</span>Public Information / Media</h4>
+        <h4><span class="icon-badge">ðŸ“¢</span>Public Information / Media</h4>
         <p>Press briefings and public messaging.</p>
       </div>
       <div class="team-card">
-        <h4><span class="icon-badge">📦</span>Logistics / Finance</h4>
+        <h4><span class="icon-badge">ðŸ“¦</span>Logistics / Finance</h4>
         <p>Resource ordering, tracking, cost documentation.</p>
       </div>
       <div class="team-card">
-        <h4><span class="icon-badge">🏢</span>Airlines / Tenant Reps</h4>
+        <h4><span class="icon-badge">ðŸ¢</span>Airlines / Tenant Reps</h4>
         <p>Airline operations and ground handler coordination.</p>
       </div>
     </div>
 
     <div class="notice">
-      <span class="ni">💡</span>
+      <span class="ni">ðŸ’¡</span>
       <div><strong>How to choose labels:</strong> match them to your exercise objectives. Use <strong>ICS sections</strong> (Operations, Planning, Logistics, Finance/Admin) to test internal command. Use <strong>department names</strong> for smaller single-organization drills. Always mirror the terminology in your <strong>AEP</strong>.</div>
     </div>
   </section>
 
   <!-- ============ LOCATIONS ============ -->
   <section id="locations" class="view">
-    <h2 class="section-head">Key Locations — Airport Reference Layout</h2>
-    <p class="section-sub">Generic airport layout for exercise planning: <strong>Runway oriented north–south</strong>, parallel taxiway and apron on the <strong>west</strong> side, passenger terminal beyond the apron, <strong>perimeter road</strong> along the east boundary, and the airport support zone to the south. Hover any numbered marker to highlight it.</p>
+    <h2 class="section-head">Key Locations â€” Airport Reference Layout</h2>
+    <p class="section-sub">Generic airport layout for exercise planning: <strong>Runway oriented northâ€“south</strong>, parallel taxiway and apron on the <strong>west</strong> side, passenger terminal beyond the apron, <strong>perimeter road</strong> along the east boundary, and the airport support zone to the south. Hover any numbered marker to highlight it.</p>
 
     <div class="map-toolbar">
-      <button id="editMapBtn" class="reset-btn" type="button">✏️ Customize Map</button>
-      <span class="map-toolbar-hint">Rename or add locations, adjust zone rings — saved in this browser.</span>
+      <button id="editMapBtn" class="reset-btn" type="button">âœï¸ Customize Map</button>
+      <span class="map-toolbar-hint">Rename or add locations, adjust zone rings â€” saved in this browser.</span>
     </div>
 
     <div class="map-layout">
@@ -293,7 +293,7 @@
             <text x="507" y="145" font-size="13" fill="#a8c4e0" text-anchor="middle" font-weight="700" letter-spacing="2">09</text>
             <text x="507" y="420" font-size="13" fill="#a8c4e0" text-anchor="middle" font-weight="700" letter-spacing="2" transform="rotate(180,507,415)">27</text>
           </g>
-          <text x="507" y="485" font-size="9.5" fill="#5d7a9e" text-anchor="middle" letter-spacing="2" font-weight="600">RUNWAY · ADJUST TO YOUR AIRPORT</text>
+          <text x="507" y="485" font-size="9.5" fill="#5d7a9e" text-anchor="middle" letter-spacing="2" font-weight="600">RUNWAY Â· ADJUST TO YOUR AIRPORT</text>
 
           <!-- taxiway west of runway -->
           <g>
@@ -404,7 +404,7 @@
             <!-- crash site -->
             <circle id="hotZone" cx="507" cy="270" r="38" fill="rgba(239,68,68,.10)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5 5"/>
             <circle cx="507" cy="270" r="16" fill="#ef4444" stroke="#0a1220" stroke-width="2"/>
-            <text x="507" y="275" font-size="15" fill="#fff" text-anchor="middle" font-weight="700">✕</text>
+            <text x="507" y="275" font-size="15" fill="#fff" text-anchor="middle" font-weight="700">âœ•</text>
             <text id="crashSiteLabel" x="507" y="222" font-size="10" fill="#f87171" text-anchor="middle" font-weight="700" letter-spacing="1.8">CRASH SITE</text>
             <title>Crash Site &amp; Zones (drag to move)</title>
           </g>
@@ -424,8 +424,8 @@
     </div>
 
     <div class="notice">
-      <span class="ni">💡</span>
-      <div><strong>Placement logic:</strong> the runway runs north–south with the apron and terminal on the west side. ARFF sits southwest of the apron for rapid runway access. The ICP is positioned upwind (west of the crash site) and outside the warm zone. Triage and CCP are further west, using the apron and ARFF zone. The FAC is in the terminal complex, off the operational area. The morgue uses a remote corner of the airfield, well away from the terminal.</div>
+      <span class="ni">ðŸ’¡</span>
+      <div><strong>Placement logic:</strong> the runway runs northâ€“south with the apron and terminal on the west side. ARFF sits southwest of the apron for rapid runway access. The ICP is positioned upwind (west of the crash site) and outside the warm zone. Triage and CCP are further west, using the apron and ARFF zone. The FAC is in the terminal complex, off the operational area. The morgue uses a remote corner of the airfield, well away from the terminal.</div>
     </div>
   </section>
 
@@ -442,11 +442,11 @@
 
           <circle id="zoneCold" cx="380" cy="350" r="280" fill="rgba(34,197,94,.07)" stroke="#22c55e" stroke-width="1.6"/>
           <text id="zoneColdLabel" x="380" y="120" font-size="13" fill="#4ade80" text-anchor="middle" font-weight="700" letter-spacing="2.2">COLD ZONE</text>
-          <text id="zoneColdSub" x="380" y="140" font-size="10.5" fill="#5f8f74" text-anchor="middle" letter-spacing=".6">GREEN · SUPPORT</text>
+          <text id="zoneColdSub" x="380" y="140" font-size="10.5" fill="#5f8f74" text-anchor="middle" letter-spacing=".6">GREEN Â· SUPPORT</text>
 
           <circle id="zoneWarm" cx="380" cy="350" r="185" fill="rgba(245,158,11,.09)" stroke="#f59e0b" stroke-width="1.6"/>
           <text id="zoneWarmLabel" x="380" y="208" font-size="13" fill="#fbbf24" text-anchor="middle" font-weight="700" letter-spacing="2.2">WARM ZONE</text>
-          <text id="zoneWarmSub" x="380" y="227" font-size="10.5" fill="#a98338" text-anchor="middle" letter-spacing=".6">YELLOW · TRANSITION</text>
+          <text id="zoneWarmSub" x="380" y="227" font-size="10.5" fill="#a98338" text-anchor="middle" letter-spacing=".6">YELLOW Â· TRANSITION</text>
 
           <circle id="zoneInner" cx="380" cy="350" r="135" fill="none" stroke="#94a3b8" stroke-width="1.4" stroke-dasharray="7 7"/>
 
@@ -457,7 +457,7 @@
                   fill="#fca5a5" opacity="0.92"/>
           </g>
           <text x="380" y="386" font-size="13" fill="#f87171" text-anchor="middle" font-weight="700" letter-spacing="2.2">HOT ZONE</text>
-          <text x="380" y="405" font-size="10.5" fill="#a86666" text-anchor="middle" letter-spacing=".6">RED · EXCLUSION</text>
+          <text x="380" y="405" font-size="10.5" fill="#a86666" text-anchor="middle" letter-spacing=".6">RED Â· EXCLUSION</text>
 
           <line x1="380" y1="350" x2="700" y2="350" stroke="#1e2f4a" stroke-width="1" stroke-dasharray="3 6"/>
           <line x1="380" y1="350" x2="380" y2="672" stroke="#1e2f4a" stroke-width="1" stroke-dasharray="3 6"/>
@@ -472,7 +472,7 @@
             <h4><span class="swatch sw-red"></span>Hot Zone</h4>
             <p class="aka">Red / Exclusion Zone</p>
             <p>The immediate hazard area: wreckage, active fire, fuel, structural collapse, and hazardous cargo.</p>
-            <div class="who">Only fully PPE-equipped rescue personnel (e.g. ARFF) enter — and only for life-saving missions. The IC remains outside this zone.</div>
+            <div class="who">Only fully PPE-equipped rescue personnel (e.g. ARFF) enter â€” and only for life-saving missions. The IC remains outside this zone.</div>
           </div>
 
           <div class="zone-card" data-z="warm">
@@ -494,7 +494,7 @@
         <div class="team-grid">
           <div class="team-card">
             <h4><span class="swatch sw-cyan"></span>Inner Cordon</h4>
-            <p>Controls access to the immediate hazard area — roughly the Hot / Warm boundary.</p>
+            <p>Controls access to the immediate hazard area â€” roughly the Hot / Warm boundary.</p>
           </div>
           <div class="team-card">
             <h4><span class="swatch sw-blue"></span>Outer Cordon</h4>
@@ -511,13 +511,13 @@
         <div class="fn-title">Extrication &amp; Rescue</div>
         <div class="fn-sub">ARFF removes survivors from the wreckage</div>
       </div>
-      <div class="flow-arrow">➜</div>
+      <div class="flow-arrow">âžœ</div>
       <div class="flow-node" data-z="warm">
         <div class="fn-label">Warm Zone</div>
         <div class="fn-title">Triage &amp; Treatment</div>
         <div class="fn-sub">Sorted Red / Yellow / Green, stabilised</div>
       </div>
-      <div class="flow-arrow">➜</div>
+      <div class="flow-arrow">âžœ</div>
       <div class="flow-node" data-z="cold">
         <div class="fn-label">Cold Zone</div>
         <div class="fn-title">Transport &amp; Evacuation</div>
@@ -526,7 +526,7 @@
     </div>
 
     <div class="notice">
-      <span class="ni">💡</span>
+      <span class="ni">ðŸ’¡</span>
       <div><strong>Test the zones in your TTX:</strong> inject <em>"wind shifts 45 degrees"</em> or <em>"secondary explosion"</em> to see whether your team knows how to re-establish boundaries. Inject a <em>"media breach of the Outer Cordon"</em> to test your Liaison Officer and security response.</div>
     </div>
   </section>
@@ -539,12 +539,12 @@
     <div class="emg-grid">
       <div class="emg-card">
         <div class="emg-head">
-          <div class="emg-icon" style="background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3)">✈️</div>
+          <div class="emg-icon" style="background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3)">âœˆï¸</div>
           <h4>Aircraft-Related</h4>
         </div>
         <ul class="clean">
           <li>Accidents on or off the airport</li>
-          <li>In-flight emergencies — <strong>Full Emergency</strong> and <strong>Local Standby</strong></li>
+          <li>In-flight emergencies â€” <strong>Full Emergency</strong> and <strong>Local Standby</strong></li>
           <li>Gear-up landing, disabled aircraft on runway</li>
           <li>Ground collisions and taxiway incidents</li>
         </ul>
@@ -552,11 +552,11 @@
 
       <div class="emg-card">
         <div class="emg-head">
-          <div class="emg-icon" style="background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3)">🏢</div>
+          <div class="emg-icon" style="background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3)">ðŸ¢</div>
           <h4>Non-Aircraft</h4>
         </div>
         <ul class="clean">
-          <li>Structural fires — terminal, hangar, cargo</li>
+          <li>Structural fires â€” terminal, hangar, cargo</li>
           <li>Fuel farm / storage fires</li>
           <li>HazMat / Dangerous Goods spills</li>
           <li>Radiological incidents</li>
@@ -567,7 +567,7 @@
 
       <div class="emg-card">
         <div class="emg-head">
-          <div class="emg-icon" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.3)">🔒</div>
+          <div class="emg-icon" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.3)">ðŸ”’</div>
           <h4>Security &amp; Unlawful Interference</h4>
         </div>
         <ul class="clean">
@@ -580,20 +580,20 @@
 
       <div class="emg-card">
         <div class="emg-head">
-          <div class="emg-icon" style="background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3)">🩺</div>
+          <div class="emg-icon" style="background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3)">ðŸ©º</div>
           <h4>Public Health &amp; Environmental</h4>
         </div>
         <ul class="clean">
           <li>Communicable disease spread via air travel</li>
           <li>Severe outbreak affecting airport staff</li>
-          <li>Natural disasters — earthquake, flood, tornado</li>
+          <li>Natural disasters â€” earthquake, flood, tornado</li>
           <li>Volcanic ash events</li>
         </ul>
       </div>
 
       <div class="emg-card">
         <div class="emg-head">
-          <div class="emg-icon" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3)">⚡</div>
+          <div class="emg-icon" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3)">âš¡</div>
           <h4>Compound Emergencies</h4>
         </div>
         <ul class="clean">
@@ -608,7 +608,7 @@
   <!-- ============ AIRCRAFT SPECIFICATIONS ============ -->
   <section id="aircraft" class="view">
     <h2 class="section-head">Aircraft Reference Specifications</h2>
-    <p class="section-sub">Reference specifications for common regional aircraft types used in airport emergency planning. Figures are typical published values — always confirm against the operator's current type manual before an exercise.</p>
+    <p class="section-sub">Reference specifications for common regional aircraft types used in airport emergency planning. Figures are typical published values â€” always confirm against the operator's current type manual before an exercise.</p>
 
     <nav class="sub-nav" id="aircraftSubNav">
       <a href="#ac-comparison" class="sub-nav-link">Comparison</a>
@@ -641,7 +641,7 @@
     </div>
 
     <div class="notice">
-      <span class="ni">⚠️</span>
+      <span class="ni">âš ï¸</span>
       <div><strong>Verify before the exercise:</strong> seat counts vary by operator and cabin fit. Confirm exact pax/crew numbers and fuel figures with the operator's load sheet or type manual, and use those numbers in your casualty-count planning.</div>
     </div>
 
@@ -650,7 +650,7 @@
       <!-- cards rendered from TTX_DATA.aircraftDetails -->
     </div>
 
-    <h3 class="sub">Where Everything Is — Diagrams</h3>
+    <h3 class="sub">Where Everything Is â€” Diagrams</h3>
     <div class="diagram-grid">
 
       <!-- SIDE PROFILE -->
@@ -699,7 +699,7 @@
 
           <!-- leader lines + labels -->
           <line x1="273" y1="120" x2="273" y2="144" stroke="#22c55e" stroke-width="1" opacity=".7"/>
-          <text x="273" y="112" font-size="10.5" fill="#4ade80" text-anchor="middle" font-weight="600" letter-spacing=".8">REAR DOOR — BOARDING</text>
+          <text x="273" y="112" font-size="10.5" fill="#4ade80" text-anchor="middle" font-weight="600" letter-spacing=".8">REAR DOOR â€” BOARDING</text>
 
           <line x1="663" y1="120" x2="663" y2="144" stroke="#3b82f6" stroke-width="1" opacity=".7"/>
           <text x="663" y="112" font-size="10.5" fill="#93c5fd" text-anchor="middle" font-weight="600" letter-spacing=".8">FWD DOOR / CARGO</text>
@@ -713,11 +713,11 @@
           <line x1="600" y1="255" x2="540" y2="255" stroke="#7ba3d1" stroke-width="1" opacity=".6"/>
           <text x="672" y="259" font-size="10.5" fill="#7ba3d1" text-anchor="middle" font-weight="600" letter-spacing=".8">PROPELLER</text>
 
-          <text x="742" y="334" font-size="10.5" fill="#f59e0b" text-anchor="middle" font-weight="600" letter-spacing=".8">NOSE GEAR · 2 WHEELS</text>
-          <text x="452" y="334" font-size="10.5" fill="#f59e0b" text-anchor="middle" font-weight="600" letter-spacing=".8">MAIN GEAR · 2 WHEELS</text>
+          <text x="742" y="334" font-size="10.5" fill="#f59e0b" text-anchor="middle" font-weight="600" letter-spacing=".8">NOSE GEAR Â· 2 WHEELS</text>
+          <text x="452" y="334" font-size="10.5" fill="#f59e0b" text-anchor="middle" font-weight="600" letter-spacing=".8">MAIN GEAR Â· 2 WHEELS</text>
 
           <!-- title -->
-          <text x="450" y="24" font-size="11" fill="#8ea4c4" text-anchor="middle" letter-spacing="2.4" font-weight="600">SIDE PROFILE — DOORS · HOLDS · GEAR</text>
+          <text x="450" y="24" font-size="11" fill="#8ea4c4" text-anchor="middle" letter-spacing="2.4" font-weight="600">SIDE PROFILE â€” DOORS Â· HOLDS Â· GEAR</text>
         </svg>
         <div class="diagram-cap">Typical turboprop layout (ATR / Dash 8 family). Rear door is the normal boarding point on ATR types.</div>
       </div>
@@ -775,7 +775,7 @@
           <text x="64" y="339" font-size="10" fill="#8ea4c4">Integral wing fuel tanks</text>
 
           <!-- title -->
-          <text x="450" y="24" font-size="11" fill="#8ea4c4" text-anchor="middle" letter-spacing="2.4" font-weight="600">TOP VIEW — WINGS · FUEL · GEAR POSITIONS</text>
+          <text x="450" y="24" font-size="11" fill="#8ea4c4" text-anchor="middle" letter-spacing="2.4" font-weight="600">TOP VIEW â€” WINGS Â· FUEL Â· GEAR POSITIONS</text>
         </svg>
         <div class="diagram-cap">Fuel is carried inside the wing structure (integral tanks). Landing gear retracts into the fuselage and wing roots.</div>
       </div>
@@ -784,7 +784,7 @@
 
     <h3 class="sub">Fuel &amp; Airport Considerations</h3>
     <div class="notice warn">
-      <span class="ni">⛽</span>
+      <span class="ni">â›½</span>
       <div>
         <strong>Check your airport's fuel storage and refuelling capability.</strong> Some smaller airports have no aviation fuel storage or refuelling facility on-site. Aircraft arriving must carry sufficient fuel for the return leg, or fuel must be pre-positioned by the operator.
         <br><br>
@@ -793,8 +793,8 @@
     </div>
 
     <div class="notice">
-      <span class="ni">💡</span>
-      <div><strong>Exercise injects this enables:</strong> "Aircraft declares minimum fuel and requests priority landing — no fuel available for turn-around." Or "Operator requests emergency fuel bowser delivery by road/sea." Both test your logistics and liaison functions hard.</div>
+      <span class="ni">ðŸ’¡</span>
+      <div><strong>Exercise injects this enables:</strong> "Aircraft declares minimum fuel and requests priority landing â€” no fuel available for turn-around." Or "Operator requests emergency fuel bowser delivery by road/sea." Both test your logistics and liaison functions hard.</div>
     </div>
 
     <h3 class="sub" id="ac-flow">Passenger &amp; Baggage Flow</h3>
@@ -807,7 +807,7 @@
       <div class="board-step">
         <span class="n">2</span>
         <b>Walk to Aircraft</b>
-        <span>Passengers walk across the apron or use buses — plan for remote stands vs jet bridges.</span>
+        <span>Passengers walk across the apron or use buses â€” plan for remote stands vs jet bridges.</span>
       </div>
       <div class="board-step">
         <span class="n">3</span>
@@ -830,59 +830,59 @@
     <div class="emg-grid">
       <div class="emg-card">
         <div class="emg-head">
-          <div class="emg-icon" style="background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3)">🚪</div>
+          <div class="emg-icon" style="background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.3)">ðŸšª</div>
           <h4>Evacuation Routes</h4>
         </div>
         <ul class="clean">
           <li><strong>Turboprops:</strong> four main exits (two per side) plus overwing exits</li>
           <li><strong>Jets:</strong> two to four main passenger doors plus overwing exits</li>
           <li><strong>Small types:</strong> main door plus rear exit</li>
-          <li>Survivors will exit onto the apron or runway surface — plan triage accordingly</li>
+          <li>Survivors will exit onto the apron or runway surface â€” plan triage accordingly</li>
         </ul>
       </div>
 
       <div class="emg-card">
         <div class="emg-head">
-          <div class="emg-icon" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3)">⛽</div>
+          <div class="emg-icon" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.3)">â›½</div>
           <h4>Fuel Load &amp; Fire Risk</h4>
         </div>
         <ul class="clean">
           <li>An ATR 72 may carry up to <strong>5,000 kg</strong> of Jet A-1 in the wings</li>
           <li>Wing tanks mean a wing strike can release large volumes of fuel</li>
-          <li>A Boeing 737-800 can carry up to <strong>26,020 L</strong> — the largest fuel load in this table</li>
+          <li>A Boeing 737-800 can carry up to <strong>26,020 L</strong> â€” the largest fuel load in this table</li>
           <li>Check your airport's foam concentrate stock against the largest expected fuel load</li>
         </ul>
       </div>
 
       <div class="emg-card">
         <div class="emg-head">
-          <div class="emg-icon" style="background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3)">🧳</div>
+          <div class="emg-icon" style="background:rgba(59,130,246,.12);border-color:rgba(59,130,246,.3)">ðŸ§³</div>
           <h4>Baggage &amp; Security</h4>
         </div>
         <ul class="clean">
           <li>Forward and aft holds must be identified early for any security or HazMat scenario</li>
-          <li>Small types have low hold weight limits — expect light loads</li>
-          <li>Hold access doors are usually on the <strong>right side</strong> — useful for ARFF positioning</li>
+          <li>Small types have low hold weight limits â€” expect light loads</li>
+          <li>Hold access doors are usually on the <strong>right side</strong> â€” useful for ARFF positioning</li>
         </ul>
       </div>
 
       <div class="emg-card">
         <div class="emg-head">
-          <div class="emg-icon" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.3)">🛞</div>
+          <div class="emg-icon" style="background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.3)">ðŸ›ž</div>
           <h4>Disabled Aircraft Recovery</h4>
         </div>
         <ul class="clean">
           <li>All types in this table use <strong>tricycle retractable gear</strong></li>
           <li>A gear-up landing means the aircraft rests on its engine nacelles and rear fuselage</li>
           <li>A disabled aircraft on the only runway closes the airport entirely</li>
-          <li>Recovery equipment may need to come by sea or air — factor this into your timeline</li>
+          <li>Recovery equipment may need to come by sea or air â€” factor this into your timeline</li>
         </ul>
       </div>
     </div>
 
     <div class="notice">
-      <span class="ni">💡</span>
-      <div><strong>Planning number to use:</strong> take the souls-on-board figure from your scenario — it drives your triage capacity, ambulance requirements, hospital notification, and Family Assistance Center sizing.</div>
+      <span class="ni">ðŸ’¡</span>
+      <div><strong>Planning number to use:</strong> take the souls-on-board figure from your scenario â€” it drives your triage capacity, ambulance requirements, hospital notification, and Family Assistance Center sizing.</div>
     </div>
   </section>
 
@@ -894,23 +894,23 @@
     <h3 class="sub">Exercise Flow</h3>
     <div class="steps">
       <div class="step-chip"><b>1</b> Alert &amp; Notification</div>
-      <span class="step-sep">→</span>
+      <span class="step-sep">â†’</span>
       <div class="step-chip"><b>2</b> Size-Up &amp; Assessment</div>
-      <span class="step-sep">→</span>
+      <span class="step-sep">â†’</span>
       <div class="step-chip"><b>3</b> ICP Establishment</div>
-      <span class="step-sep">→</span>
+      <span class="step-sep">â†’</span>
       <div class="step-chip"><b>4</b> IAP Development</div>
-      <span class="step-sep">→</span>
+      <span class="step-sep">â†’</span>
       <div class="step-chip"><b>5</b> Resource Tasking</div>
-      <span class="step-sep">→</span>
+      <span class="step-sep">â†’</span>
       <div class="step-chip"><b>6</b> Zone Establishment</div>
-      <span class="step-sep">→</span>
+      <span class="step-sep">â†’</span>
       <div class="step-chip"><b>7</b> Casualty Management</div>
-      <span class="step-sep">→</span>
+      <span class="step-sep">â†’</span>
       <div class="step-chip"><b>8</b> Family Assistance</div>
-      <span class="step-sep">→</span>
+      <span class="step-sep">â†’</span>
       <div class="step-chip"><b>9</b> Media Management</div>
-      <span class="step-sep">→</span>
+      <span class="step-sep">â†’</span>
       <div class="step-chip"><b>10</b> Recovery &amp; AAR</div>
     </div>
 
@@ -924,13 +924,13 @@
     <div class="check-grid" id="checkGrid"></div>
 
     <div class="notice">
-      <span class="ni">💡</span>
+      <span class="ni">ðŸ’¡</span>
       <div><strong>How to use:</strong> check off each item as the IC completes it during the exercise. The progress bar tracks completion. Use the Reset button to start over. State is saved in your browser between sessions.</div>
     </div>
 
     <h3 class="sub" id="glossary">Glossary</h3>
     <div class="glossary-tools">
-      <input type="search" id="glossaryFilter" class="glossary-filter" placeholder="Filter terms… (e.g. ICP, AAR)" aria-label="Filter glossary terms">
+      <input type="search" id="glossaryFilter" class="glossary-filter" placeholder="Filter termsâ€¦ (e.g. ICP, AAR)" aria-label="Filter glossary terms">
       <span class="glossary-count" id="glossaryCount"></span>
     </div>
     <div class="glossary-grid" id="glossaryGrid">
@@ -950,36 +950,36 @@
 <footer class="app-dock">
   <div class="wrap dock-inner">
     <div class="dock-left">
-      <span class="dock-mark">✈</span>
+      <span class="dock-mark">âœˆ</span>
       <strong>Airport Emergency Exercise Plan</strong>
       <span class="dock-sub">Incident Commander EOP Exercise Tool</span>
     </div>
     <div class="dock-center">
       <span id="dockScenarioCount">13 scenarios</span>
-      <span class="dock-sep">·</span>
+      <span class="dock-sep">Â·</span>
       <span>7 sections</span>
-      <span class="dock-sep">·</span>
-      <span>Browser-based, no server — your data stays on this device</span>
+      <span class="dock-sep">Â·</span>
+      <span>Browser-based, no server â€” your data stays on this device</span>
     </div>
     <div class="dock-right">
-      <span class="dock-kbd">Ctrl+1–7 tabs · Ctrl+T theme · Ctrl+P print</span>
+      <span class="dock-kbd">Ctrl+1â€“7 tabs Â· Ctrl+T theme Â· Ctrl+P print</span>
       <a href="#" id="guideDockLink">Guide</a>
       <a href="https://github.com/mmisbaah/airport-emergency-exercise-plan" target="_blank" rel="noopener">GitHub</a>
       <a href="tests/tests" target="_blank">Tests</a>
       <span class="footer-ver" id="footerVer"></span>
-      <button id="changelogBtn" class="reset-btn" type="button" style="padding:5px 12px;font-size:12px;" title="View version history">🕘 Version History</button>
+      <button id="changelogBtn" class="reset-btn" type="button" style="padding:5px 12px;font-size:12px;" title="View version history">ðŸ•˜ Version History</button>
     </div>
   </div>
 </footer>
 
-<button id="backToTop" class="back-to-top" type="button" title="Back to top">↑</button>
+<button id="backToTop" class="back-to-top" type="button" title="Back to top">â†‘</button>
 
 <!-- ============ SCENARIO EDITOR MODAL ============ -->
 <div id="scenarioModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
   <div style="max-width:800px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <h2 style="margin:0;font-size:18px;">Scenario Editor</h2>
-      <button id="closeScenarioModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <button id="closeScenarioModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
 
     <!-- Scenario List -->
@@ -1072,7 +1072,7 @@
       </div>
 
       <h4 style="margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Exercise Injects (one per line)</h4>
-      <textarea id="editInjects" rows="6" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;resize:vertical;" placeholder="09:00 — Aircraft reports gear malfunction&#10;09:05 — Aircraft crashes short of runway"></textarea>
+      <textarea id="editInjects" rows="6" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;resize:vertical;" placeholder="09:00 â€” Aircraft reports gear malfunction&#10;09:05 â€” Aircraft crashes short of runway"></textarea>
 
       <div style="display:flex;gap:8px;margin-top:16px;">
         <button id="saveScenarioBtn" class="reset-btn" type="button" style="padding:8px 20px;background:var(--blue);color:#fff;border-color:var(--blue);">Save Scenario</button>
@@ -1087,13 +1087,13 @@
   <div style="max-width:900px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <h2 style="margin:0;font-size:18px;">ICS Form Generator</h2>
-      <button id="closeIcsModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <button id="closeIcsModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
 
     <div id="icsContent" class="ics-stack"></div>
 
     <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
-      <button id="icsPrintBtn" class="reset-btn" type="button" style="padding:8px 20px;">🖨 Print Forms</button>
+      <button id="icsPrintBtn" class="reset-btn" type="button" style="padding:8px 20px;">ðŸ–¨ Print Forms</button>
       <button id="icsDownloadBtn" class="reset-btn" type="button" style="padding:8px 20px;background:var(--blue);color:#fff;border-color:var(--blue);">Download ICS Forms</button>
       <button id="icsCopyBtn" class="reset-btn" type="button" style="padding:8px 20px;">Copy to Clipboard</button>
     </div>
@@ -1104,18 +1104,18 @@
 <div id="aarModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
   <div style="max-width:860px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h2 style="margin:0;font-size:18px;">📋 After Action Report</h2>
-      <button id="closeAarModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <h2 style="margin:0;font-size:18px;">ðŸ“‹ After Action Report</h2>
+      <button id="closeAarModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
 
-    <label for="aarNotes" class="aar-notes-label">Facilitator notes — included in the report</label>
-    <textarea id="aarNotes" rows="3" placeholder="Observations, commendations, issues for the improvement plan…"></textarea>
+    <label for="aarNotes" class="aar-notes-label">Facilitator notes â€” included in the report</label>
+    <textarea id="aarNotes" rows="3" placeholder="Observations, commendations, issues for the improvement planâ€¦"></textarea>
 
     <div id="aarContent" class="aar-preview"></div>
 
     <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
-      <button id="aarPrintBtn" class="reset-btn" type="button" style="padding:8px 20px;">🖨 Print</button>
-      <button id="aarMdBtn" class="reset-btn" type="button" style="padding:8px 20px;background:var(--blue);color:#fff;border-color:var(--blue);">⤓ Download .md</button>
+      <button id="aarPrintBtn" class="reset-btn" type="button" style="padding:8px 20px;">ðŸ–¨ Print</button>
+      <button id="aarMdBtn" class="reset-btn" type="button" style="padding:8px 20px;background:var(--blue);color:#fff;border-color:var(--blue);">â¤“ Download .md</button>
       <button id="aarCopyBtn" class="reset-btn" type="button" style="padding:8px 20px;">Copy Markdown</button>
     </div>
   </div>
@@ -1126,7 +1126,7 @@
   <div style="max-width:800px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <h2 style="margin:0;font-size:18px;">Unit Roster</h2>
-      <button id="closeResourceModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <button id="closeResourceModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
 
     <div id="resourceContent"></div>
@@ -1143,7 +1143,7 @@
   <div style="max-width:900px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <h2 style="margin:0;font-size:18px;">Casualty Tracker</h2>
-      <button id="closeCasualtyModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <button id="closeCasualtyModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
 
     <!-- Summary -->
@@ -1193,12 +1193,12 @@
   <div style="max-width:600px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <h2 style="margin:0;font-size:18px;">Weather Conditions</h2>
-      <button id="closeWeatherModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <button id="closeWeatherModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
 
     <div id="weatherContent">
       <div style="text-align:center;padding:40px;color:var(--muted);">
-        <div style="font-size:48px;margin-bottom:12px;">🌤️</div>
+        <div style="font-size:48px;margin-bottom:12px;">ðŸŒ¤ï¸</div>
         <p>Enter your airport location to fetch current weather conditions.</p>
       </div>
       <div style="display:flex;gap:8px;margin-top:16px;">
@@ -1214,8 +1214,8 @@
 <div id="mapModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
   <div style="max-width:780px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
-      <h2 style="margin:0;font-size:18px;">✏️ Customize Map</h2>
-      <button id="closeMapModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <h2 style="margin:0;font-size:18px;">âœï¸ Customize Map</h2>
+      <button id="closeMapModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
 
     <div id="mapZoneEditor"></div>
@@ -1223,12 +1223,12 @@
 
     <div class="map-modal-actions">
       <input type="file" id="mapImportFile" accept=".json,application/json" style="display:none;">
-      <button id="mapResetBtn" class="reset-btn" type="button">↺ Reset all to defaults</button>
+      <button id="mapResetBtn" class="reset-btn" type="button">â†º Reset all to defaults</button>
       <span style="flex:1;"></span>
-      <button id="mapImportBtn" class="reset-btn" type="button">⤓ Import</button>
-      <button id="mapExportBtn" class="reset-btn" type="button">⤒ Export JSON</button>
+      <button id="mapImportBtn" class="reset-btn" type="button">â¤“ Import</button>
+      <button id="mapExportBtn" class="reset-btn" type="button">â¤’ Export JSON</button>
       <button id="mapCancelBtn" class="reset-btn" type="button">Cancel</button>
-      <button id="mapSaveBtn" class="reset-btn" type="button" style="background:var(--blue);color:#fff;border-color:transparent;">💾 Save changes</button>
+      <button id="mapSaveBtn" class="reset-btn" type="button" style="background:var(--blue);color:#fff;border-color:transparent;">ðŸ’¾ Save changes</button>
     </div>
     <p style="font-size:12px;color:var(--muted);margin:14px 0 0;">Changes apply to this browser only (stored in local storage). Pins and the TWR/ARFF markers you drag afterwards keep their own saved positions.</p>
   </div>
@@ -1239,7 +1239,7 @@
   <div style="max-width:700px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <h2 style="margin:0;font-size:18px;">Data Export / Import</h2>
-      <button id="closeDataModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <button id="closeDataModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
 
     <!-- Export Section -->
@@ -1247,7 +1247,7 @@
       <h3 style="margin:0 0 12px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Backup</h3>
       <p style="margin:0 0 12px;font-size:13px;color:var(--muted);">Download everything (custom scenarios, timeline, checklist, map layout, clock, theme) as one dated JSON backup file.</p>
       <div style="display:flex;gap:8px;">
-        <button id="exportAllBtn" class="reset-btn" type="button" style="padding:8px 20px;" title="Download all dashboard data (scenarios, timeline, checklist, map, theme) as a JSON backup file">💾 Download Backup</button>
+        <button id="exportAllBtn" class="reset-btn" type="button" style="padding:8px 20px;" title="Download all dashboard data (scenarios, timeline, checklist, map, theme) as a JSON backup file">ðŸ’¾ Download Backup</button>
         <button id="exportScenariosBtn" class="reset-btn" type="button" style="padding:8px 20px;">Export Scenarios Only</button>
       </div>
     </div>
@@ -1258,7 +1258,7 @@
       <p style="margin:0 0 12px;font-size:13px;color:var(--muted);">Pick a JSON file: a <strong>full backup</strong> replaces everything (a rollback point is saved first), while a <strong>scenarios export</strong> merges scenarios in.</p>
       <div style="display:flex;gap:8px;align-items:center;">
         <input type="file" id="importFile" accept=".json,application/json" style="flex:1;font-size:13px;color:var(--muted);">
-        <button id="importBtn" class="reset-btn" type="button" style="padding:8px 20px;" title="Restore dashboard data from a JSON backup file">📂 Restore / Import</button>
+        <button id="importBtn" class="reset-btn" type="button" style="padding:8px 20px;" title="Restore dashboard data from a JSON backup file">ðŸ“‚ Restore / Import</button>
       </div>
     </div>
 
@@ -1267,7 +1267,7 @@
       <h3 style="margin:0 0 12px;font-size:14px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Current Data Summary</h3>
       <div id="dataSummary" style="padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;font-size:13px;color:var(--text);"></div>
       <div style="margin-top:12px;">
-        <button id="historyBtn" class="reset-btn" type="button" style="padding:8px 20px;" title="View version history">📜 Version History</button>
+        <button id="historyBtn" class="reset-btn" type="button" style="padding:8px 20px;" title="View version history">ðŸ“œ Version History</button>
       </div>
     </div>
   </div>
@@ -1278,7 +1278,7 @@
   <div style="max-width:800px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <h2 style="margin:0;font-size:18px;">Version History</h2>
-      <button id="closeHistoryModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <button id="closeHistoryModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
 
     <div id="historyContent">
@@ -1295,40 +1295,40 @@
   <div style="max-width:560px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
       <h2 style="margin:0;font-size:18px;">Keyboard Shortcuts</h2>
-      <button id="closeShortcutsModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <button id="closeShortcutsModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
     <table class="guide-table">
       <tr><th style="width:1%;">Keys</th><th>Action</th></tr>
-      <tr><td><span class="kg">Ctrl + 1–7</span></td><td>Switch section (tabs left to right)</td></tr>
+      <tr><td><span class="kg">Ctrl + 1â€“7</span></td><td>Switch section (tabs left to right)</td></tr>
       <tr><td><span class="kg">Ctrl + E</span></td><td>Open the scenario editor</td></tr>
       <tr><td><span class="kg">Ctrl + P</span></td><td>Print the exercise plan</td></tr>
-      <tr><td><span class="kg">Ctrl + T</span></td><td>Cycle theme: dark → light → high contrast</td></tr>
-      <tr><td><span class="kg">Ctrl + / − / 0</span></td><td>Text size: increase / decrease / reset</td></tr>
+      <tr><td><span class="kg">Ctrl + T</span></td><td>Cycle theme: dark â†’ light â†’ high contrast</td></tr>
+      <tr><td><span class="kg">Ctrl + / âˆ’ / 0</span></td><td>Text size: increase / decrease / reset</td></tr>
       <tr><td><span class="kg">Ctrl + Z</span></td><td>Undo the last timeline change</td></tr>
       <tr><td><span class="kg">Ctrl + Shift + Z</span> / <span class="kg">Ctrl + Y</span></td><td>Redo</td></tr>
       <tr><td><span class="kg">?</span></td><td>Open this shortcut list</td></tr>
       <tr><td><span class="kg">Esc</span></td><td>Close the open window</td></tr>
     </table>
-    <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0;">Shortcuts are ignored while you are typing in a field. On Mac use ⌘ in place of Ctrl.</p>
+    <p style="font-size:12.5px;color:var(--muted);margin:10px 0 0;">Shortcuts are ignored while you are typing in a field. On Mac use âŒ˜ in place of Ctrl.</p>
   </div>
 </div>
 
 <!-- ============ BACKUP NUDGE TOAST ============ -->
 <div id="backupNudge" class="backup-nudge" role="status" hidden>
-  <span class="nudge-ico" aria-hidden="true">💾</span>
-  <span class="nudge-text">Your exercise data lives only in this browser — keep a backup file.</span>
+  <span class="nudge-ico" aria-hidden="true">ðŸ’¾</span>
+  <span class="nudge-text">Your exercise data lives only in this browser â€” keep a backup file.</span>
   <button id="nudgeBackupBtn" class="reset-btn" type="button" style="padding:5px 12px;font-size:12px;">Download</button>
-  <button id="nudgeCloseBtn" class="reset-btn" type="button" style="padding:5px 10px;font-size:12px;" aria-label="Dismiss backup reminder">✕</button>
+  <button id="nudgeCloseBtn" class="reset-btn" type="button" style="padding:5px 10px;font-size:12px;" aria-label="Dismiss backup reminder">âœ•</button>
 </div>
 
 <!-- ============ USER GUIDE ============ -->
 <div id="guideModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
   <div style="max-width:860px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-      <h2 style="margin:0;font-size:18px;">❔ User Guide — How to Use This App</h2>
-      <button id="closeGuideModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <h2 style="margin:0;font-size:18px;">â” User Guide â€” How to Use This App</h2>
+      <button id="closeGuideModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
-    <p class="section-sub" style="margin:0 0 14px;">A browser-based tool for running airport emergency tabletop exercises (TTX). Everything runs locally — no account, no server — and your data stays on this device.</p>
+    <p class="section-sub" style="margin:0 0 14px;">A browser-based tool for running airport emergency tabletop exercises (TTX). Everything runs locally â€” no account, no server â€” and your data stays on this device.</p>
 
     <div class="guide-toc">
       <a href="#g-start">Quick start</a>
@@ -1346,28 +1346,28 @@
     </div>
 
     <div class="guide-sec" id="g-start">
-      <h3>🚀 Quick start</h3>
+      <h3>ðŸš€ Quick start</h3>
       <ol>
-        <li><strong>Pick a scenario</strong> — choose one in the <strong>Scenario</strong> dropdown in the header. The scenario panel (key facts &amp; injects) and the <strong>Exercise Timeline</strong> appear at the top of the page.</li>
-        <li><strong>Review the reference tabs</strong> — use the <strong>7 tabs</strong> below the header to walk through your IC role, team labels, the airport map, incident zones, emergency types and aircraft specs.</li>
-        <li><strong>Run the exercise</strong> — log injects and decisions in the <strong>Timeline</strong>, check off the <strong>IC Checklist</strong>, and keep <strong>Resources</strong> and <strong>Casualties</strong> up to date as the play unfolds.</li>
-        <li><strong>Wrap up</strong> — export the <strong>📋 After Action Report</strong> (.md), review <strong>History</strong>, back up with <strong>Data</strong>, then <strong>Print</strong> or export the <strong>PDF</strong> package.</li>
+        <li><strong>Pick a scenario</strong> â€” choose one in the <strong>Scenario</strong> dropdown in the header. The scenario panel (key facts &amp; injects) and the <strong>Exercise Timeline</strong> appear at the top of the page.</li>
+        <li><strong>Review the reference tabs</strong> â€” use the <strong>7 tabs</strong> below the header to walk through your IC role, team labels, the airport map, incident zones, emergency types and aircraft specs.</li>
+        <li><strong>Run the exercise</strong> â€” log injects and decisions in the <strong>Timeline</strong>, check off the <strong>IC Checklist</strong>, and keep <strong>Resources</strong> and <strong>Casualties</strong> up to date as the play unfolds.</li>
+        <li><strong>Wrap up</strong> â€” export the <strong>ðŸ“‹ After Action Report</strong> (.md), review <strong>History</strong>, back up with <strong>Data</strong>, then <strong>Print</strong> or export the <strong>PDF</strong> package.</li>
       </ol>
     </div>
 
     <div class="guide-sec" id="g-layout">
-      <h3>🧭 Screen layout</h3>
+      <h3>ðŸ§­ Screen layout</h3>
       <ul>
-        <li><strong>Header (top)</strong> — app title plus the tool buttons. It scrolls away as you read, giving the content full space.</li>
-        <li><strong>Scenario row</strong> — the dropdown that selects the active exercise scenario, plus a live weather widget.</li>
-        <li><strong>Tab bar</strong> — the 7 sections. It stays <strong>pinned to the top</strong> of the screen while you scroll. On phones it scrolls sideways and keeps the active tab in view.</li>
-        <li><strong>Main content</strong> — everything belonging to the selected section.</li>
-        <li><strong>Bottom dock</strong> — app info, live scenario count, shortcut hints, the app version, and the <em>Guide · GitHub · Tests</em> links plus version history.</li>
+        <li><strong>Header (top)</strong> â€” app title plus the tool buttons. It scrolls away as you read, giving the content full space.</li>
+        <li><strong>Scenario row</strong> â€” the dropdown that selects the active exercise scenario, plus a live weather widget.</li>
+        <li><strong>Tab bar</strong> â€” the 7 sections. It stays <strong>pinned to the top</strong> of the screen while you scroll. On phones it scrolls sideways and keeps the active tab in view.</li>
+        <li><strong>Main content</strong> â€” everything belonging to the selected section.</li>
+        <li><strong>Bottom dock</strong> â€” app info, live scenario count, shortcut hints, the app version, and the <em>Guide Â· GitHub Â· Tests</em> links plus version history.</li>
       </ul>
     </div>
 
     <div class="guide-sec" id="g-tabs">
-      <h3>📑 The 7 sections</h3>
+      <h3>ðŸ“‘ The 7 sections</h3>
       <table class="guide-table">
         <tr><th style="width:1%;">Tab</th><th>What's inside</th></tr>
         <tr><td>Emergency Types</td><td>Cards covering the airport emergency categories used in exercises.</td></tr>
@@ -1381,121 +1381,121 @@
     </div>
 
     <div class="guide-sec" id="g-scenario">
-      <h3>📝 Scenarios &amp; the Exercise Timeline</h3>
+      <h3>ðŸ“ Scenarios &amp; the Exercise Timeline</h3>
       <ul>
-        <li><strong>13 built-in scenarios</strong> cover a range of emergency types — just pick one from the dropdown.</li>
-        <li><strong>📝 Scenarios (Ctrl+E)</strong> opens the scenario editor: create your own with name, aircraft, souls on board, fuel load, fire involvement, category, estimated casualties (red / yellow / green / deceased), required resources (ARFF, ambulances, fire trucks, buses) and exercise injects. Custom scenarios are saved on your device and appear in the dropdown.</li>
-        <li><strong>Scenario panel</strong> (appears once a scenario is selected): key facts &amp; estimated casualties, resource requirements, and <strong>Scenario Resources</strong> — commit or stand down units with the <strong>+/−</strong> steppers and watch the "Covered / needed" badge until committed meets required. Counts are saved <em>per scenario</em> (Reset counts clears them); the 🚒 <strong>Unit roster</strong> button opens the full unit-level tracker with location and notes. Before you pick a scenario, the panel shows a <strong>3-step start guide</strong>.</li>
+        <li><strong>13 built-in scenarios</strong> cover a range of emergency types â€” just pick one from the dropdown.</li>
+        <li><strong>ðŸ“ Scenarios (Ctrl+E)</strong> opens the scenario editor: create your own with name, aircraft, souls on board, fuel load, fire involvement, category, estimated casualties (red / yellow / green / deceased), required resources (ARFF, ambulances, fire trucks, buses) and exercise injects. Custom scenarios are saved on your device and appear in the dropdown.</li>
+        <li><strong>Scenario panel</strong> (appears once a scenario is selected): key facts &amp; estimated casualties, resource requirements, and <strong>Scenario Resources</strong> â€” commit or stand down units with the <strong>+/âˆ’</strong> steppers and watch the "Covered / needed" badge until committed meets required. Counts are saved <em>per scenario</em> (Reset counts clears them); the ðŸš’ <strong>Unit roster</strong> button opens the full unit-level tracker with location and notes. Before you pick a scenario, the <strong>TTX Flow &amp; Checklist</strong> tab shows a <strong>3-step start guide</strong>.</li>
         <li><strong>Exercise Timeline</strong> (appears once a scenario is selected):
           <ul>
-            <li>Add events: <strong>time</strong>, <strong>description</strong> and a <strong>category</strong> — Info, Inject, Decision, Milestone or Casualty (colour-coded).</li>
-            <li>Delete a single event with its <strong>×</strong> button.</li>
-            <li><strong>↩ Undo / ↪ Redo</strong> (<span class="kg">Ctrl+Z</span> / <span class="kg">Ctrl+Shift+Z</span> or <span class="kg">Ctrl+Y</span>).</li>
+            <li>Add events: <strong>time</strong>, <strong>description</strong> and a <strong>category</strong> â€” Info, Inject, Decision, Milestone or Casualty (colour-coded).</li>
+            <li>Delete a single event with its <strong>Ã—</strong> button.</li>
+            <li><strong>â†© Undo / â†ª Redo</strong> (<span class="kg">Ctrl+Z</span> / <span class="kg">Ctrl+Shift+Z</span> or <span class="kg">Ctrl+Y</span>).</li>
             <li><strong>Clear All Events</strong>, or <strong>Export for AAR</strong> to download the log as a timestamped .txt file.</li>
           </ul>
         </li>
-        <li><strong>⏱ Exercise clock</strong> — Start / Pause / Reset a live T+ clock for the exercise. It survives page reloads, shows each inject's release moment as a <strong>T+ badge</strong>, and can <strong>release injects automatically</strong> on schedule (or one at a time with ▶). Released injects are logged to the timeline with a sound cue.</li>
-        <li><strong>📋 After Action Report</strong> (button under the timeline) — a live report combining checklist progress, the full timeline table, resource status, casualty triage totals and a blank improvement plan. Type <strong>facilitator notes</strong> (saved as you type), then <strong>Download .md</strong>, <strong>Copy Markdown</strong> or <strong>Print</strong>.</li>
+        <li><strong>â± Exercise clock</strong> â€” Start / Pause / Reset a live T+ clock for the exercise. It survives page reloads, shows each inject's release moment as a <strong>T+ badge</strong>, and can <strong>release injects automatically</strong> on schedule (or one at a time with â–¶). Released injects are logged to the timeline with a sound cue.</li>
+        <li><strong>ðŸ“‹ After Action Report</strong> (button under the timeline) â€” a live report combining checklist progress, the full timeline table, resource status, casualty triage totals and a blank improvement plan. Type <strong>facilitator notes</strong> (saved as you type), then <strong>Download .md</strong>, <strong>Copy Markdown</strong> or <strong>Print</strong>.</li>
       </ul>
     </div>
 
     <div class="guide-sec" id="g-tools">
-      <h3>🧰 Header tools</h3>
+      <h3>ðŸ§° Header tools</h3>
       <ul>
-        <li><strong>❔ Guide</strong> — this help page, always available here and from the dock.</li>
-        <li><strong>A− / 100% / A+</strong> — text size controls (<span class="kg">Ctrl + / − / 0</span>); your choice is remembered and applied instantly.</li>
-        <li><strong>📝 Scenarios</strong> — scenario editor (<span class="kg">Ctrl+E</span>): build and manage custom scenarios, or <strong>⚖ Compare</strong> any two side by side.</li>
-        <li><strong>📋 ICS Forms</strong> — seven styled forms: ICS 201 Briefing, 202 Objectives, 203 Organization, 204 Assignment List, 205 Communications List, 206 Medical Plan and 209 Incident Summary — auto-filled from the scenario, timeline and trackers. Print them, download as .txt, or copy to clipboard.</li>
-        <li><strong>🚒 Resources</strong> — the <strong>Unit Roster</strong>: track the 10 default units (ARFF, EMS, fire, transport, security, medical) with status, location and notes. Export a status report or reset everything. (The scenario panel has its own <strong>Scenario Resources</strong> tracker for committed-vs-required counts.)</li>
-        <li><strong>🚑 Casualties</strong> — log tagged casualties with triage category, location, notes and transported flag; export a casualty report or clear all.</li>
-        <li><strong>🌤️ Weather</strong> — current weather for any place worldwide (Open-Meteo; needs internet): temperature, feels-like, wind, humidity and pressure. The <strong>header widget</strong> shows the last searched place at a glance.</li>
-        <li><strong>📄 PDF</strong> — builds a complete exercise package (scenario, ICS forms, resources, casualties, checklist) and opens the print dialog — choose "Save as PDF".</li>
-        <li><strong>💾 Data</strong> — the data hub: <strong>Download Backup</strong> (all dashboard data as one dated JSON file), <strong>Restore / Import</strong> a file (full backups replace everything with a rollback point saved first), a summary of what's stored, and <strong>📜 Version History</strong> — a timestamped audit trail of the last 50 changes per scenario. A periodic reminder offers the backup if you haven't downloaded one lately.</li>
-        <li><strong>🖨️ Print</strong> — prints the whole plan (<span class="kg">Ctrl+P</span>); header, tabs and dock are left out of printouts.</li>
-        <li><strong>☀️ / 🌙 / 👁️</strong> — theme cycle: dark → light → <strong>high contrast</strong> (<span class="kg">Ctrl+T</span>); your choice is remembered and applied before the page paints.</li>
+        <li><strong>â” Guide</strong> â€” this help page, always available here and from the dock.</li>
+        <li><strong>Aâˆ’ / 100% / A+</strong> â€” text size controls (<span class="kg">Ctrl + / âˆ’ / 0</span>); your choice is remembered and applied instantly.</li>
+        <li><strong>ðŸ“ Scenarios</strong> â€” scenario editor (<span class="kg">Ctrl+E</span>): build and manage custom scenarios, or <strong>âš– Compare</strong> any two side by side.</li>
+        <li><strong>ðŸ“‹ ICS Forms</strong> â€” seven styled forms: ICS 201 Briefing, 202 Objectives, 203 Organization, 204 Assignment List, 205 Communications List, 206 Medical Plan and 209 Incident Summary â€” auto-filled from the scenario, timeline and trackers. Print them, download as .txt, or copy to clipboard.</li>
+        <li><strong>ðŸš’ Resources</strong> â€” the <strong>Unit Roster</strong>: track the 10 default units (ARFF, EMS, fire, transport, security, medical) with status, location and notes. Export a status report or reset everything. (The scenario panel has its own <strong>Scenario Resources</strong> tracker for committed-vs-required counts.)</li>
+        <li><strong>ðŸš‘ Casualties</strong> â€” log tagged casualties with triage category, location, notes and transported flag; export a casualty report or clear all.</li>
+        <li><strong>ðŸŒ¤ï¸ Weather</strong> â€” current weather for any place worldwide (Open-Meteo; needs internet): temperature, feels-like, wind, humidity and pressure. The <strong>header widget</strong> shows the last searched place at a glance.</li>
+        <li><strong>ðŸ“„ PDF</strong> â€” builds a complete exercise package (scenario, ICS forms, resources, casualties, checklist) and opens the print dialog â€” choose "Save as PDF".</li>
+        <li><strong>ðŸ’¾ Data</strong> â€” the data hub: <strong>Download Backup</strong> (all dashboard data as one dated JSON file), <strong>Restore / Import</strong> a file (full backups replace everything with a rollback point saved first), a summary of what's stored, and <strong>ðŸ“œ Version History</strong> â€” a timestamped audit trail of the last 50 changes per scenario. A periodic reminder offers the backup if you haven't downloaded one lately.</li>
+        <li><strong>ðŸ–¨ï¸ Print</strong> â€” prints the whole plan (<span class="kg">Ctrl+P</span>); header, tabs and dock are left out of printouts.</li>
+        <li><strong>â˜€ï¸ / ðŸŒ™ / ðŸ‘ï¸</strong> â€” theme cycle: dark â†’ light â†’ <strong>high contrast</strong> (<span class="kg">Ctrl+T</span>); your choice is remembered and applied before the page paints.</li>
       </ul>
     </div>
 
     <div class="guide-sec" id="g-map">
-      <h3>🗺️ Interactive map (Key Locations tab)</h3>
+      <h3>ðŸ—ºï¸ Interactive map (Key Locations tab)</h3>
       <ul>
-        <li>Drag the <strong>numbered pins</strong> — and the <strong>TWR</strong> and <strong>ARFF</strong> station markers — with a mouse <em>or a finger</em> to match your airport's layout.</li>
+        <li>Drag the <strong>numbered pins</strong> â€” and the <strong>TWR</strong> and <strong>ARFF</strong> station markers â€” with a mouse <em>or a finger</em> to match your airport's layout.</li>
         <li>Drag the <strong>crash site and zone rings</strong> together as one group.</li>
         <li>The <strong>legend</strong> explains each pin category and includes reset buttons to restore the defaults.</li>
-        <li><strong>✏️ Customize Map</strong> — rename, recategorise, delete and add locations, and tune the <strong>zone ring radii</strong> for both the map and the zone diagram.</li>
-        <li><strong>Export / Import JSON</strong> — move a layout to another device or share it with a co-facilitator; <strong>Reset</strong> restores the factory defaults (with confirmation).</li>
+        <li><strong>âœï¸ Customize Map</strong> â€” rename, recategorise, delete and add locations, and tune the <strong>zone ring radii</strong> for both the map and the zone diagram.</li>
+        <li><strong>Export / Import JSON</strong> â€” move a layout to another device or share it with a co-facilitator; <strong>Reset</strong> restores the factory defaults (with confirmation).</li>
         <li>Positions, layout and zone sizes are <strong>saved automatically</strong> on this device.</li>
       </ul>
     </div>
 
     <div class="guide-sec" id="g-checklist">
-      <h3>✅ Exercise flow &amp; IC checklist (last tab)</h3>
+      <h3>âœ… Exercise flow &amp; IC checklist (last tab)</h3>
       <ul>
-        <li>The <strong>Exercise Flow</strong> shows the 10-step sequence: Alert → Size-Up → ICP → IAP → Resources → Zones → Casualties → Family Assistance → Media → Recovery &amp; AAR.</li>
+        <li>The <strong>Exercise Flow</strong> shows the 10-step sequence: Alert â†’ Size-Up â†’ ICP â†’ IAP â†’ Resources â†’ Zones â†’ Casualties â†’ Family Assistance â†’ Media â†’ Recovery &amp; AAR.</li>
         <li>Check off each of the <strong>11 IC checklist items</strong> as it is completed; the progress bar and counter track completion.</li>
-        <li><strong>Reset</strong> starts over — and your ticks are saved in the browser between sessions.</li>
+        <li><strong>Reset</strong> starts over â€” and your ticks are saved in the browser between sessions.</li>
       </ul>
     </div>
 
     <div class="guide-sec" id="g-keys">
-      <h3>⌨️ Keyboard shortcuts</h3>
+      <h3>âŒ¨ï¸ Keyboard shortcuts</h3>
       <table class="guide-table">
         <tr><th style="width:1%;">Keys</th><th>Action</th></tr>
-        <tr><td><span class="kg">Ctrl + 1–7</span></td><td>Switch section (tabs left to right)</td></tr>
+        <tr><td><span class="kg">Ctrl + 1â€“7</span></td><td>Switch section (tabs left to right)</td></tr>
         <tr><td><span class="kg">Ctrl + E</span></td><td>Open the scenario editor</td></tr>
         <tr><td><span class="kg">Ctrl + P</span></td><td>Print the exercise plan</td></tr>
-        <tr><td><span class="kg">Ctrl + T</span></td><td>Cycle theme: dark → light → high contrast</td></tr>
-        <tr><td><span class="kg">Ctrl + / − / 0</span></td><td>Text size: increase / decrease / reset to 100%</td></tr>
+        <tr><td><span class="kg">Ctrl + T</span></td><td>Cycle theme: dark â†’ light â†’ high contrast</td></tr>
+        <tr><td><span class="kg">Ctrl + / âˆ’ / 0</span></td><td>Text size: increase / decrease / reset to 100%</td></tr>
         <tr><td><span class="kg">Ctrl + Z</span></td><td>Undo the last timeline change</td></tr>
         <tr><td><span class="kg">Ctrl + Shift + Z</span> / <span class="kg">Ctrl + Y</span></td><td>Redo</td></tr>
         <tr><td><span class="kg">?</span></td><td>Open this shortcut list from anywhere</td></tr>
-        <tr><td><span class="kg">Esc</span></td><td>Close the open window (guide, forms, trackers, editors…)</td></tr>
+        <tr><td><span class="kg">Esc</span></td><td>Close the open window (guide, forms, trackers, editorsâ€¦)</td></tr>
       </table>
-      <p style="font-size:12.5px;color:var(--muted);margin:8px 0 0;">Shortcuts are ignored while you are typing in a field. On Mac use ⌘ in place of Ctrl.</p>
+      <p style="font-size:12.5px;color:var(--muted);margin:8px 0 0;">Shortcuts are ignored while you are typing in a field. On Mac use âŒ˜ in place of Ctrl.</p>
     </div>
 
     <div class="guide-sec" id="g-data">
-      <h3>💾 Saving, privacy &amp; backup</h3>
+      <h3>ðŸ’¾ Saving, privacy &amp; backup</h3>
       <ul>
-        <li><strong>No account, no server</strong> — everything is stored in this browser on this device.</li>
+        <li><strong>No account, no server</strong> â€” everything is stored in this browser on this device.</li>
         <li>Same device and browser = your scenarios, checklist, timeline, map layout &amp; zone sizes, trackers, clock, theme, text size and facilitator notes <strong>persist</strong> after you close the tab.</li>
-        <li>Clearing site data — or switching browser/device — <strong>erases it</strong>, so export regularly.</li>
-        <li><strong>💾 Data → Download Backup</strong> creates a full JSON snapshot of everything; <strong>Restore / Import</strong> puts it back (a rollback point is saved first), or merges a scenarios-only export.</li>
-        <li><strong>📜 Version History</strong> (inside 💾 Data) keeps an audit trail of scenario changes — and a periodic toast reminds you to grab a backup while you work.</li>
+        <li>Clearing site data â€” or switching browser/device â€” <strong>erases it</strong>, so export regularly.</li>
+        <li><strong>ðŸ’¾ Data â†’ Download Backup</strong> creates a full JSON snapshot of everything; <strong>Restore / Import</strong> puts it back (a rollback point is saved first), or merges a scenarios-only export.</li>
+        <li><strong>ðŸ“œ Version History</strong> (inside ðŸ’¾ Data) keeps an audit trail of scenario changes â€” and a periodic toast reminds you to grab a backup while you work.</li>
       </ul>
     </div>
 
     <div class="guide-sec" id="g-mobile">
-      <h3>📱 Mobile &amp; touch</h3>
+      <h3>ðŸ“± Mobile &amp; touch</h3>
       <ul>
         <li>The tool buttons become <strong>one swipeable row</strong> under the title; the tab bar scrolls sideways and auto-scrolls so the active tab is always visible.</li>
         <li>Buttons, tabs and checklist items use <strong>larger tap targets</strong>.</li>
-        <li>Drag the map pins with your <strong>finger</strong> — dragging never scrolls the page.</li>
+        <li>Drag the map pins with your <strong>finger</strong> â€” dragging never scrolls the page.</li>
         <li>Form fields use larger text so iOS Safari doesn't zoom when you tap them.</li>
       </ul>
     </div>
 
     <div class="guide-sec" id="g-install">
-      <h3>📲 Offline &amp; installing</h3>
+      <h3>ðŸ“² Offline &amp; installing</h3>
       <ul>
-        <li><strong>Works offline</strong> — after the first visit the dashboard loads with <strong>no internet connection</strong> (airport ops networks are unreliable). Weather is the only feature that needs a connection.</li>
-        <li><strong>Install as an app</strong> — use your browser's <em>Install app</em> / <em>Add to Home Screen</em> for a home-screen icon and a full-screen window.</li>
-        <li><strong>Updates</strong> — when a new version is published a small reload toast appears; one tap installs it.</li>
+        <li><strong>Works offline</strong> â€” after the first visit the dashboard loads with <strong>no internet connection</strong> (airport ops networks are unreliable). Weather is the only feature that needs a connection.</li>
+        <li><strong>Install as an app</strong> â€” use your browser's <em>Install app</em> / <em>Add to Home Screen</em> for a home-screen icon and a full-screen window.</li>
+        <li><strong>Updates</strong> â€” when a new version is published a small reload toast appears; one tap installs it.</li>
       </ul>
     </div>
 
     <div class="guide-sec" id="g-export">
-      <h3>🖨️ Printing &amp; exports</h3>
+      <h3>ðŸ–¨ï¸ Printing &amp; exports</h3>
       <ul>
-        <li><strong>🖨️ Print</strong> — the full plan in a clean paper layout (app chrome hidden).</li>
-        <li><strong>📄 PDF</strong> — a monochrome "complete exercise package" for the record.</li>
-        <li><strong>Print (ICS / AAR)</strong> — the ICS forms and the After Action Report print <em>on their own</em>, clean and monochrome, without the app around them.</li>
-        <li><strong>.txt / .md exports</strong> — timeline, resource status and casualty report as .txt; ICS forms as .txt; the After Action Report as Markdown (.md).</li>
-        <li><strong>JSON exports</strong> — full data or scenarios only, for backup and transfer (<strong>💾 Data</strong>).</li>
+        <li><strong>ðŸ–¨ï¸ Print</strong> â€” the full plan in a clean paper layout (app chrome hidden).</li>
+        <li><strong>ðŸ“„ PDF</strong> â€” a monochrome "complete exercise package" for the record.</li>
+        <li><strong>Print (ICS / AAR)</strong> â€” the ICS forms and the After Action Report print <em>on their own</em>, clean and monochrome, without the app around them.</li>
+        <li><strong>.txt / .md exports</strong> â€” timeline, resource status and casualty report as .txt; ICS forms as .txt; the After Action Report as Markdown (.md).</li>
+        <li><strong>JSON exports</strong> â€” full data or scenarios only, for backup and transfer (<strong>ðŸ’¾ Data</strong>).</li>
       </ul>
       <div class="notice" style="margin-top:12px;">
-        <span class="ni">💡</span>
-        <div><strong>Tip:</strong> this guide is always one tap away — the <strong>❔ Guide</strong> button in the header or the <strong>Guide</strong> link in the bottom dock. The <strong>Tests</strong> link runs the app's automated checks, and <strong>GitHub</strong> hosts the source.</div>
+        <span class="ni">ðŸ’¡</span>
+        <div><strong>Tip:</strong> this guide is always one tap away â€” the <strong>â” Guide</strong> button in the header or the <strong>Guide</strong> link in the bottom dock. The <strong>Tests</strong> link runs the app's automated checks, and <strong>GitHub</strong> hosts the source.</div>
       </div>
     </div>
   </div>
@@ -1508,8 +1508,8 @@
 <div id="compareModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
   <div style="max-width:860px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h2 style="margin:0;font-size:18px;">⚖ Scenario Comparison</h2>
-      <button id="closeCompareModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <h2 style="margin:0;font-size:18px;">âš– Scenario Comparison</h2>
+      <button id="closeCompareModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
     <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
       <select id="cmpA" style="background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;font-size:13px;"></select>
@@ -1524,14 +1524,14 @@
 <div id="changelogModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;overflow-y:auto;padding:40px 20px;">
   <div style="max-width:700px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h2 style="margin:0;font-size:18px;">🕘 Version History</h2>
-      <button id="closeChangelogModal" class="reset-btn" type="button" style="padding:4px 12px;">✕ Close</button>
+      <h2 style="margin:0;font-size:18px;">ðŸ•˜ Version History</h2>
+      <button id="closeChangelogModal" class="reset-btn" type="button" style="padding:4px 12px;">âœ• Close</button>
     </div>
     <div id="changelogContent"></div>
   </div>
 </div>
 
-<script src="js/data.js?v=20260929.14"></script>
-<script src="js/app.js?v=20260929.14"></script>
+<script src="js/data.js?v=20260929.15"></script>
+<script src="js/app.js?v=20260929.15"></script>
 </body>
 </html>

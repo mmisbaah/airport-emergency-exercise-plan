@@ -128,9 +128,13 @@ try {
     return { ctx, p };
   };
 
-  await behavior('first-run onboarding + ? shortcut dialog', async () => {
+  await behavior('onboarding gated to TTX tab + ? shortcut dialog', async () => {
     const { ctx, p } = await newAppPage();
-    assert(await p.isVisible('#scenarioPanel .onboard'), 'onboarding card missing on first run');
+    // default tab is IC Role — the start guide must NOT show there
+    assert(!(await p.isVisible('#scenarioPanel .onboard')), 'onboarding should be hidden on the default tab');
+    // …but it appears on TTX Flow & Checklist (7th tab)
+    await p.click('.tabs .tab >> nth=6');
+    await p.waitForSelector('#scenarioPanel .onboard', { state: 'visible', timeout: 3000 });
     await p.keyboard.press('Shift+Slash');
     await p.waitForSelector('#shortcutsModal', { state: 'visible', timeout: 3000 });
     await p.keyboard.press('Escape');

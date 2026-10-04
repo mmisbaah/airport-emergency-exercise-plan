@@ -96,9 +96,19 @@
     };
 
     document.addEventListener('keydown', function (e) {
-      // Don't trigger shortcuts when typing in inputs
-      var tag = (e.target.tagName || '').toLowerCase();
-      if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+      // Don't trigger shortcuts when typing in text fields — but radios and
+      // checkboxes accept no characters (the invisible tab radios get focus
+      // when their label is clicked), so shortcuts stay live for them.
+      var el = e.target;
+      var tag = (el.tagName || '').toLowerCase();
+      if (tag === 'textarea' || tag === 'select') return;
+      if (tag === 'input') {
+        var t = (el.type || 'text').toLowerCase();
+        var noText = t === 'radio' || t === 'checkbox' || t === 'button' ||
+          t === 'submit' || t === 'reset' || t === 'range' ||
+          t === 'color' || t === 'file' || t === 'image';
+        if (!noText) return;
+      }
 
       // Ctrl/Cmd + 1-7: Switch tabs
       if ((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '7') {
@@ -1207,6 +1217,7 @@
       }
 
       if (!scenario) {
+        panel.classList.add('onboard-mode');
         panel.innerHTML =
           '<div class="onboard">' +
           '<h3 class="onboard-title">👋 Welcome — start your exercise in 3 steps</h3>' +
@@ -1220,6 +1231,7 @@
         return;
       }
 
+      panel.classList.remove('onboard-mode');
       var html = '<h3 style="margin:0 0 16px;font-size:16px;color:var(--text);">' + escHtml(scenario.name) + '</h3>';
 
       /* Exercise clock + inject player (rendered by renderClockPanel) */
@@ -4070,7 +4082,8 @@
       'Escaping hardened — every user-entered string is HTML-escaped (XSS audit)',
       'Share preview (Open Graph / Twitter) + noscript fallback message',
       'Header regrouped into View / Exercise / Data clusters; Backup, Restore & History moved into 💾 Data',
-      'First-run 3-step start guide in the scenario panel',
+      'First-run 3-step start guide on the TTX Flow & Checklist tab',
+      'Shortcuts stay live after clicking a tab (the invisible tab radio no longer blocks Ctrl+ / ? keys)',
       'Press ? anywhere for the keyboard shortcut list',
       'Periodic backup reminder toast (dismiss for 7 days)',
       'Loud error banner if a feature fails to load (no more silent skips)',

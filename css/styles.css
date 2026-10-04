@@ -1462,7 +1462,11 @@ ul.clean li strong{color:var(--card-strong);font-weight:600;}
   text-transform:uppercase;letter-spacing:.08em;
 }
 
-/* First-run onboarding (scenario panel empty state) */
+/* First-run onboarding (scenario panel empty state).
+   Shown ONLY on the TTX Flow & Checklist tab — the radio inputs are body
+   siblings of <main>, same pattern as the view switch selectors. */
+#scenarioPanel.onboard-mode{display:none;}
+#ttx-tab-checklist:checked ~ main #scenarioPanel.onboard-mode{display:block;}
 .onboard{
   border:1px solid rgba(59,130,246,.35);
   background:linear-gradient(180deg, rgba(59,130,246,.10), rgba(59,130,246,.03));
