@@ -9,8 +9,8 @@
   try {
 
     /* ================= KEYBOARD SHORTCUTS ================= */
-    var TAB_IDS = ['ttx-tab-phases', 'ttx-tab-teams', 'ttx-tab-locations', 'ttx-tab-zones', 'ttx-tab-emergencies', 'ttx-tab-aircraft', 'ttx-tab-checklist'];
-    var TAB_NAMES = ['IC Role', 'Team Labels', 'Key Locations', 'Incident Zones', 'Emergency Types', 'Aircraft Specs', 'TTX Flow & Checklist'];
+    var TAB_IDS = ['ttx-tab-emergencies', 'ttx-tab-aircraft', 'ttx-tab-zones', 'ttx-tab-phases', 'ttx-tab-locations', 'ttx-tab-teams', 'ttx-tab-checklist'];
+    var TAB_NAMES = ['Emergency Types', 'Aircraft Specs', 'Incident Zones', 'IC Role', 'Key Locations', 'Team Labels', 'TTX Flow & Checklist'];
 
     /* ================= SAVE CHIP ================= */
     // Subtle "✓ saved" confirmation shown in the scenario row whenever

@@ -21,19 +21,19 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" href="css/styles.css?v=20260929.12">
+  <link rel="stylesheet" href="css/styles.css?v=20260929.13">
 </head>
 <body>
 
 <a class="skip-link" href="#mainContent">Skip to main content</a>
 
 <!-- ============ TAB STATE CONTROLLERS ============ -->
-<input type="radio" name="ttx-tab" id="ttx-tab-phases" class="tab-radio" checked>
-<input type="radio" name="ttx-tab" id="ttx-tab-teams" class="tab-radio">
-<input type="radio" name="ttx-tab" id="ttx-tab-locations" class="tab-radio">
-<input type="radio" name="ttx-tab" id="ttx-tab-zones" class="tab-radio">
 <input type="radio" name="ttx-tab" id="ttx-tab-emergencies" class="tab-radio">
 <input type="radio" name="ttx-tab" id="ttx-tab-aircraft" class="tab-radio">
+<input type="radio" name="ttx-tab" id="ttx-tab-zones" class="tab-radio">
+<input type="radio" name="ttx-tab" id="ttx-tab-phases" class="tab-radio" checked>
+<input type="radio" name="ttx-tab" id="ttx-tab-locations" class="tab-radio">
+<input type="radio" name="ttx-tab" id="ttx-tab-teams" class="tab-radio">
 <input type="radio" name="ttx-tab" id="ttx-tab-checklist" class="tab-radio">
 
 <header class="app-header">
@@ -83,12 +83,12 @@
 
 <nav class="tabs" aria-label="Exercise plan sections">
   <div class="wrap">
-    <label class="tab" for="ttx-tab-phases">IC Role</label>
-    <label class="tab" for="ttx-tab-teams">Team Labels</label>
-    <label class="tab" for="ttx-tab-locations">Key Locations</label>
-    <label class="tab" for="ttx-tab-zones">Incident Zones</label>
     <label class="tab" for="ttx-tab-emergencies">Emergency Types</label>
     <label class="tab" for="ttx-tab-aircraft">Aircraft Specs</label>
+    <label class="tab" for="ttx-tab-zones">Incident Zones</label>
+    <label class="tab" for="ttx-tab-phases">IC Role</label>
+    <label class="tab" for="ttx-tab-locations">Key Locations</label>
+    <label class="tab" for="ttx-tab-teams">Team Labels</label>
     <label class="tab" for="ttx-tab-checklist">TTX Flow &amp; Checklist</label>
   </div>
 </nav>
@@ -1316,12 +1316,12 @@
       <h3>📑 The 7 sections</h3>
       <table class="guide-table">
         <tr><th style="width:1%;">Tab</th><th>What's inside</th></tr>
-        <tr><td>IC Role</td><td>Incident Commander responsibilities across three phases: <strong>Before</strong> (Preparation), <strong>During</strong> (Execution) and <strong>After</strong> (Evaluation), plus 8 Command &amp; General Staff role cards.</td></tr>
-        <tr><td>Team Labels</td><td>14 label cards for assigning tabletop roles to players and participating agencies.</td></tr>
-        <tr><td>Key Locations</td><td>Interactive airport map with draggable numbered pins, movable TWR/ARFF station markers, the crash site, zone rings and a legend.</td></tr>
-        <tr><td>Incident Zones</td><td>Concentric hot, warm and cold zone diagram with guidance for each ring.</td></tr>
         <tr><td>Emergency Types</td><td>Cards covering the airport emergency categories used in exercises.</td></tr>
         <tr><td>Aircraft Specs</td><td>Reference specifications for <strong>9 aircraft types</strong> with a comparison table, detail cards, side and top diagrams, a passenger &amp; baggage flow, and emergency planning implications.</td></tr>
+        <tr><td>Incident Zones</td><td>Concentric hot, warm and cold zone diagram with guidance for each ring.</td></tr>
+        <tr><td>IC Role</td><td>Incident Commander responsibilities across three phases: <strong>Before</strong> (Preparation), <strong>During</strong> (Execution) and <strong>After</strong> (Evaluation), plus 8 Command &amp; General Staff role cards.</td></tr>
+        <tr><td>Key Locations</td><td>Interactive airport map with draggable numbered pins, movable TWR/ARFF station markers, the crash site, zone rings and a legend.</td></tr>
+        <tr><td>Team Labels</td><td>14 label cards for assigning tabletop roles to players and participating agencies.</td></tr>
         <tr><td>TTX Flow &amp; Checklist</td><td>The 10-step exercise flow, the 11-item IC checklist with a live progress bar, a filterable <strong>glossary</strong> and the <strong>regulatory references</strong> behind the content.</td></tr>
       </table>
     </div>
@@ -1478,7 +1478,7 @@
   </div>
 </div>
 
-<script src="js/data.js?v=20260929.12"></script>
-<script src="js/app.js?v=20260929.12"></script>
+<script src="js/data.js?v=20260929.13"></script>
+<script src="js/app.js?v=20260929.13"></script>
 </body>
 </html>
