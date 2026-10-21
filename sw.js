@@ -5,7 +5,7 @@
    VERSION must be bumped whenever index.html / css / js change so stale
    caches are dropped on deploy (keep it in step with the ?v= versions). */
 
-var VERSION = 'eop-20261022.mv1';
+var VERSION = 'eop-20261022.mv2';
 var SHELL_CACHE = 'eop-shell-' + VERSION;
 
 var SHELL = [
@@ -73,10 +73,14 @@ self.addEventListener('fetch', function (event) {
         }
         // not ok (4xx/5xx) — serve the cached shell instead of an error page
         return caches.match('./index.html').then(function (hit) {
-          return hit || resp;
+          // Pages redirects index.html to /. A redirected cached Response
+          // cannot satisfy a navigation whose redirect mode is manual.
+          return hit ? new Response(hit.body, { status: 200, headers: hit.headers }) : resp;
         });
       }).catch(function () {
-        return caches.match('./index.html');
+        return caches.match('./index.html').then(function (hit) {
+          return hit ? new Response(hit.body, { status: 200, headers: hit.headers }) : Response.error();
+        });
       })
     );
     return;
