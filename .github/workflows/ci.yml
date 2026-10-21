@@ -31,3 +31,29 @@ jobs:
 
       - name: Run test suite + app smoke test
         run: node scripts/ci-tests.mjs
+
+          # Pushes to main go live on Cloudflare Pages once the tests pass.
+  # Needs repo secrets CLOUDFLARE_API_TOKEN (Cloudflare Pages: Edit) and CLOUDFLARE_ACCOUNT_ID.
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # same bump as scripts/deploy.mjs, but only in the deployed tree (no commit)
+      - name: Bump service worker cache version
+        run: |
+          next="eop-$(date -u +%Y%m%d).$(git rev-list --count HEAD)"
+          sed -i -E "s/var VERSION = '[^']+';/var VERSION = '${next}';/" sw.js
+          sed -i -E "s#((css|js)/[A-Za-z0-9_.-]+\.(css|js))\?v=[A-Za-z0-9_.-]+#\1?v=${next#eop-}#g" index.html
+          grep -n "var VERSION" sw.js
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy . --project-name=airport-emergency --branch=main --commit-dirty=true
