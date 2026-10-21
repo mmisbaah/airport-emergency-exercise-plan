@@ -46,4 +46,14 @@ export async function browserTests({behavior,newAppPage,assert}){
   assert(p.errors.length===0,p.errors.join('; '));await ctx.close();
  });
 }
-if(process.argv[1]===fileURLToPath(import.meta.url))unitTests();
+export async function workerTests(){
+ const listeners={};
+ const cached=new Response('<html>Offline exercise shell</html>',{headers:{'Content-Type':'text/html'}});
+ Object.defineProperty(cached,'redirected',{value:true});
+ const context=vm.createContext({Response,URL,Promise,self:{addEventListener:(n,cb)=>listeners[n]=cb,location:{origin:'https://airport.example'},clients:{claim(){}}},caches:{match:async()=>cached},fetch:async()=>{throw new Error('offline');}});
+ vm.runInContext(readFileSync(new URL('sw.js',root),'utf8'),context);
+ let result;listeners.fetch({request:{method:'GET',mode:'navigate',url:'https://airport.example/'},respondWith:p=>result=p});
+ const response=await result;assert.equal(response.status,200);assert.equal(response.redirected,false);assert.match(await response.text(),/Offline exercise shell/);
+ console.log('Service-worker regression passed: redirected Pages shell is normalised for offline navigation.');
+}
+if(process.argv[1]===fileURLToPath(import.meta.url)){unitTests();await workerTests();}
