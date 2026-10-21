@@ -118,19 +118,21 @@ var TTX_AIRPORTS = [
     ],
     agencies: [
       'Airport RFF (Hanimaadhoo)',
-      'MNDF Northern Area — Coast Guard, Fire & Rescue (Kulhudhuffushi)',
+      'MNDF Northern Area Command — initial response from MNDF Hanimaadhoo post',
+      'MNDF Kulhudhuffushi post — reinforcement by sea, approximately 35–40 minutes to the site',
       'Maldives Police Service — Haa Dhaalu',
       'Hanimaadhoo Island Council · HDh Atoll Council',
       'Ministry of Health / HPA',
       'NDMA'
     ],
     local: { arff: 2, ambulances: 1, fireTrucks: 0, buses: 2, boats: 1 },
-    mutualAid: 'Kulhudhuffushi by sea (≈45–60 min); Malé by air (≈1.5 h)',
+    mutualAid: 'Initial MNDF response: MNDF Hanimaadhoo post (Northern Area Command). MNDF Kulhudhuffushi post provides reinforcement by sea, approximately 35–40 minutes to the site; confirm mobilisation and sea conditions. Hospital transfer estimates are separate.',
     eod: 'MNDF EOD support flown from Malé (≈2–3 h)',
     recovery: 'heavy recovery kit shipped or flown from Velana (1–3 days)',
     utility: 'FENAKA (Hanimaadhoo)',
     referral: 'air ambulance or domestic flight to Velana then road to IGMH (≈1.5–2 h)',
-    notes: 'No hospital on the island — every serious casualty needs sea or air transport, and capacity at Kulhudhuffushi is finite.'
+    mndf: { presence: 'Established MNDF post', initial: 'MNDF Hanimaadhoo post — Northern Area Command initial response', support: 'MNDF Kulhudhuffushi post', supportEta: 'Approximately 35–40 minutes to the site by sea', source: 'Site owner operational correction, 22 October 2026' },
+    notes: 'MNDF responds initially from Hanimaadhoo post. Kulhudhuffushi post reinforces in approximately 35–40 minutes. Personnel numbers and specialist capabilities require confirmation. Serious casualties need a confirmed receiving hospital and sea or air transport.'
   },
   {
     id: 'VRMK', icao: 'VRMK', iata: 'KDO',
@@ -247,6 +249,636 @@ var TTX_AIRPORTS = [
     utility: 'Villa / FENAKA',
     referral: 'air ambulance or seaplane to Velana then road to IGMH (≈1–1.5 h)',
     notes: 'South Ari resort gateway — whale-shark season brings extra tourist traffic and day-boats in the lagoon.'
+  },
+  {
+    "id": "VRBK",
+    "icao": "VRBK",
+    "iata": "HDK",
+    "name": "Kulhudhuffushi Domestic Airport",
+    "short": "Kulhudhuffushi",
+    "island": "Kulhudhuffushi",
+    "atoll": "Haa Dhaalu Atoll",
+    "operator": "Regional Airports Company Limited (RACL)",
+    "type": "Domestic",
+    "lat": 6.630833333333334,
+    "lon": 73.06777777777778,
+    "runways": [
+      {
+        "id": "12/30",
+        "ends": [
+          "12",
+          "30"
+        ],
+        "hdg": 120,
+        "length": 1220,
+        "width": 30,
+        "surface": "Asphalt"
+      }
+    ],
+    "apronSide": "right",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": false,
+      "roadHospital": true
+    },
+    "rff": "Confirm certified RFF category and current capability against AIP / AEP",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": null,
+      "widebody": null,
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 180,
+        "kind": "road",
+        "label": "Road route → Kulhudhuffushi Regional Hospital (route schematic; confirm AEP)"
+      }
+    ],
+    "hospitals": [
+      {
+        "name": "Kulhudhuffushi Regional Hospital",
+        "role": "Primary receiving hospital — acceptance required",
+        "how": "road on island",
+        "eta": "Confirm mobilisation, loading, travel and handover times"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral — acceptance required",
+        "how": "confirmed air medical transport + road",
+        "eta": "Confirm tasking and complete transfer time"
+      }
+    ],
+    "agencies": [
+      "Airport RFF (Kulhudhuffushi)",
+      "MNDF Kulhudhuffushi post",
+      "Maldives Police Service / airport AVSEC",
+      "Kulhudhuffushi Island / City Council · Haa Dhaalu Atoll Council",
+      "Local health service and receiving hospital",
+      "Resort / vessel operators — confirmed support only",
+      "Ministry of Health / HPA",
+      "NDMA"
+    ],
+    "local": {
+      "arff": 0,
+      "ambulances": 0,
+      "fireTrucks": 0,
+      "buses": 0,
+      "boats": 0
+    },
+    "localConfirmed": false,
+    "mutualAid": "MNDF Kulhudhuffushi post. MNDF Hanimaadhoo post; confirm tasking and mobilisation. Other island / resort assistance requires confirmation.",
+    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
+    "utility": "Confirm airport utility provider and island service contacts",
+    "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
+    "mndf": {
+      "presence": "Established MNDF post",
+      "initial": "MNDF Kulhudhuffushi post",
+      "support": "MNDF Hanimaadhoo post; confirm tasking and mobilisation",
+      "supportEta": "Confirm deployment-specific estimate",
+      "source": "Site owner operational information, 22 October 2026"
+    },
+    "sources": [
+      {
+        "title": "MCAA land aerodrome list — identifiers, coordinates and listed operators (06 Nov 2024)",
+        "url": "https://www.caa.gov.mv/attachments/Om5BM5Rjp8j83fqs5KyPmp3EKbmsXI3XK8FsdVVp.pdf"
+      },
+      {
+        "title": "Current AIP / AEP — validate physical data and operating conditions",
+        "url": "https://www.macl.aero/air-navigation-services/aip"
+      }
+    ],
+    "notes": "MNDF Kulhudhuffushi post has an established personnel presence and supports Hanimaadhoo. The owner-provided 35–40 minute estimate applies to deployment from Kulhudhuffushi to a Hanimaadhoo incident, not a generic hospital-transfer time. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+  },
+  {
+    "id": "VRDA",
+    "icao": "VRDA",
+    "iata": "NMF",
+    "name": "Maafaru International Airport",
+    "short": "Maafaru",
+    "island": "Maafaru",
+    "atoll": "Noonu Atoll",
+    "operator": "Island Aviation Services Limited",
+    "type": "International",
+    "lat": 5.818333333333333,
+    "lon": 73.46972222222223,
+    "runways": [
+      {
+        "id": "06/24",
+        "ends": [
+          "06",
+          "24"
+        ],
+        "hdg": 60,
+        "length": 2850,
+        "width": 45,
+        "surface": "Asphalt"
+      }
+    ],
+    "apronSide": "right",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": true,
+      "roadHospital": false
+    },
+    "rff": "Confirm certified RFF category and current capability against AIP / AEP",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": "Airbus A320-200",
+      "widebody": "Boeing 777-300ER",
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 180,
+        "kind": "sea",
+        "label": "Sea transfer → Noonu Atoll Hospital, Manadhoo (route schematic; confirm AEP)"
+      }
+    ],
+    "hospitals": [
+      {
+        "name": "Maafaru local medical / first-aid service — confirm facility",
+        "role": "First aid / stabilisation",
+        "how": "local access arrangements to be confirmed",
+        "eta": "Confirm exercise estimate"
+      },
+      {
+        "name": "Noonu Atoll Hospital, Manadhoo",
+        "role": "Primary receiving hospital — acceptance required",
+        "how": "sea ambulance / suitable medical transport",
+        "eta": "Confirm mobilisation, loading, travel and handover times"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral — acceptance required",
+        "how": "confirmed air medical transport + road",
+        "eta": "Confirm tasking and complete transfer time"
+      }
+    ],
+    "agencies": [
+      "Airport RFF (Maafaru)",
+      "MNDF Maafaru post",
+      "Maldives Police Service / airport AVSEC",
+      "Maafaru Island / City Council · Noonu Atoll Council",
+      "Local health service and receiving hospital",
+      "Resort / vessel operators — confirmed support only",
+      "Ministry of Health / HPA",
+      "NDMA"
+    ],
+    "local": {
+      "arff": 0,
+      "ambulances": 0,
+      "fireTrucks": 0,
+      "buses": 0,
+      "boats": 0
+    },
+    "localConfirmed": false,
+    "mutualAid": "MNDF Maafaru post. Additional MNDF support through command; confirm origin, tasking and transport. Other island / resort assistance requires confirmation.",
+    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
+    "utility": "Confirm airport utility provider and island service contacts",
+    "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
+    "mndf": {
+      "presence": "Established MNDF post",
+      "initial": "MNDF Maafaru post",
+      "support": "Additional MNDF support through command; confirm origin, tasking and transport",
+      "supportEta": "Confirm deployment-specific estimate",
+      "source": "Site owner operational information, 22 October 2026"
+    },
+    "sources": [
+      {
+        "title": "MCAA land aerodrome list — identifiers, coordinates and listed operators (06 Nov 2024)",
+        "url": "https://www.caa.gov.mv/attachments/Om5BM5Rjp8j83fqs5KyPmp3EKbmsXI3XK8FsdVVp.pdf"
+      },
+      {
+        "title": "Current AIP / AEP — validate physical data and operating conditions",
+        "url": "https://www.macl.aero/library/files/AIRAC%20AIP%20AMDT%201-26.pdf"
+      }
+    ],
+    "notes": "Initial MNDF response is from the Maafaru post. Widebody exercise aircraft are planning examples, not an operational clearance. AIP Amendment 1/26 lists a 120 m displaced threshold on RWY 06 (LDA 2730 m); physical runway length is 2850 m. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+  },
+  {
+    "id": "VREI",
+    "icao": "VREI",
+    "iata": "IFU",
+    "name": "Ifuru Airport",
+    "short": "Ifuru",
+    "island": "Ifuru",
+    "atoll": "Raa Atoll",
+    "operator": "Island Aviation Services Limited (CAA operator listing; confirm current arrangements)",
+    "type": "Domestic",
+    "lat": 5.708333333333334,
+    "lon": 73.025,
+    "runways": [
+      {
+        "id": "18/36",
+        "ends": [
+          "18",
+          "36"
+        ],
+        "hdg": 180,
+        "length": 1200,
+        "width": 30,
+        "surface": "Asphalt"
+      }
+    ],
+    "apronSide": "right",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": true,
+      "roadHospital": false
+    },
+    "rff": "Confirm certified RFF category and current capability against AIP / AEP",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": null,
+      "widebody": null,
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 180,
+        "kind": "sea",
+        "label": "Sea transfer → Ungoofaaru Regional Hospital (route schematic; confirm AEP)"
+      }
+    ],
+    "hospitals": [
+      {
+        "name": "Ifuru local medical / first-aid service — confirm facility",
+        "role": "First aid / stabilisation",
+        "how": "local access arrangements to be confirmed",
+        "eta": "Confirm exercise estimate"
+      },
+      {
+        "name": "Ungoofaaru Regional Hospital",
+        "role": "Primary receiving hospital — acceptance required",
+        "how": "sea ambulance / suitable medical transport",
+        "eta": "Confirm mobilisation, loading, travel and handover times"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral — acceptance required",
+        "how": "confirmed air medical transport + road",
+        "eta": "Confirm tasking and complete transfer time"
+      }
+    ],
+    "agencies": [
+      "Airport RFF (Ifuru)",
+      "Limited local MNDF personnel — confirm available strength and role",
+      "Maldives Police Service / airport AVSEC",
+      "Ifuru Island / City Council · Raa Atoll Council",
+      "Local health service and receiving hospital",
+      "Resort / vessel operators — confirmed support only",
+      "Ministry of Health / HPA",
+      "NDMA"
+    ],
+    "local": {
+      "arff": 0,
+      "ambulances": 0,
+      "fireTrucks": 0,
+      "buses": 0,
+      "boats": 0
+    },
+    "localConfirmed": false,
+    "mutualAid": "Limited local MNDF personnel — confirm available strength and role. Request additional MNDF personnel and capabilities through command; confirm support origin, availability and transport. Other island / resort assistance requires confirmation.",
+    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
+    "utility": "Confirm airport utility provider and island service contacts",
+    "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
+    "mndf": {
+      "presence": "Limited local MNDF personnel",
+      "initial": "Limited local MNDF personnel — confirm available strength and role",
+      "support": "Additional MNDF support through command; origin and ETA to be confirmed",
+      "supportEta": "Confirm deployment-specific estimate",
+      "source": "Site owner operational information, 22 October 2026"
+    },
+    "sources": [
+      {
+        "title": "MCAA land aerodrome list — identifiers, coordinates and listed operators (06 Nov 2024)",
+        "url": "https://www.caa.gov.mv/attachments/Om5BM5Rjp8j83fqs5KyPmp3EKbmsXI3XK8FsdVVp.pdf"
+      },
+      {
+        "title": "Current AIP / AEP — validate physical data and operating conditions",
+        "url": "https://www.macl.aero/air-navigation-services/aip"
+      }
+    ],
+    "notes": "Limited local MNDF personnel; additional response requires confirmed tasking and inter-island transport. Confirm local first-aid arrangements and receiving-hospital acceptance. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+  },
+  {
+    "id": "VRAH",
+    "icao": "VRAH",
+    "iata": "HRF",
+    "name": "Hoarafushi Airport",
+    "short": "Hoarafushi",
+    "island": "Hoarafushi",
+    "atoll": "Haa Alifu Atoll",
+    "operator": "Regional Airports Company Limited (RACL)",
+    "type": "Domestic",
+    "lat": 6.969444444444445,
+    "lon": 72.8963888888889,
+    "runways": [
+      {
+        "id": "06/24",
+        "ends": [
+          "06",
+          "24"
+        ],
+        "hdg": 60,
+        "length": 1200,
+        "width": 30,
+        "surface": "Asphalt"
+      }
+    ],
+    "apronSide": "right",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": true,
+      "roadHospital": false
+    },
+    "rff": "Confirm certified RFF category and current capability against AIP / AEP",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": null,
+      "widebody": null,
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 180,
+        "kind": "sea",
+        "label": "Sea transfer → Haa Alifu Atoll Hospital, Dhidhdhoo (route schematic; confirm AEP)"
+      }
+    ],
+    "hospitals": [
+      {
+        "name": "Hoarafushi local medical / first-aid service — confirm facility",
+        "role": "First aid / stabilisation",
+        "how": "local access arrangements to be confirmed",
+        "eta": "Confirm exercise estimate"
+      },
+      {
+        "name": "Haa Alifu Atoll Hospital, Dhidhdhoo",
+        "role": "Primary receiving hospital — acceptance required",
+        "how": "sea ambulance / suitable medical transport",
+        "eta": "Confirm mobilisation, loading, travel and handover times"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral — acceptance required",
+        "how": "confirmed air medical transport + road",
+        "eta": "Confirm tasking and complete transfer time"
+      }
+    ],
+    "agencies": [
+      "Airport RFF (Hoarafushi)",
+      "Limited local MNDF personnel — confirm available strength and role",
+      "Maldives Police Service / airport AVSEC",
+      "Hoarafushi Island / City Council · Haa Alifu Atoll Council",
+      "Local health service and receiving hospital",
+      "Resort / vessel operators — confirmed support only",
+      "Ministry of Health / HPA",
+      "NDMA"
+    ],
+    "local": {
+      "arff": 0,
+      "ambulances": 0,
+      "fireTrucks": 0,
+      "buses": 0,
+      "boats": 0
+    },
+    "localConfirmed": false,
+    "mutualAid": "Limited local MNDF personnel — confirm available strength and role. Request additional MNDF personnel and capabilities through command; confirm support origin, availability and transport. Other island / resort assistance requires confirmation.",
+    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
+    "utility": "Confirm airport utility provider and island service contacts",
+    "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
+    "mndf": {
+      "presence": "Limited local MNDF personnel",
+      "initial": "Limited local MNDF personnel — confirm available strength and role",
+      "support": "Additional MNDF support through command; origin and ETA to be confirmed",
+      "supportEta": "Confirm deployment-specific estimate",
+      "source": "Site owner operational information, 22 October 2026"
+    },
+    "sources": [
+      {
+        "title": "MCAA land aerodrome list — identifiers, coordinates and listed operators (06 Nov 2024)",
+        "url": "https://www.caa.gov.mv/attachments/Om5BM5Rjp8j83fqs5KyPmp3EKbmsXI3XK8FsdVVp.pdf"
+      },
+      {
+        "title": "Current AIP / AEP — validate physical data and operating conditions",
+        "url": "https://www.macl.aero/air-navigation-services/aip"
+      }
+    ],
+    "notes": "Limited local MNDF personnel; coordinate reinforcement through MNDF command. Confirm access between the reclaimed airport area, island health facility and casualty transfer jetty. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+  },
+  {
+    "id": "VRCF",
+    "icao": "VRCF",
+    "iata": "FND",
+    "name": "Funadhoo Airport",
+    "short": "Funadhoo",
+    "island": "Funadhoo",
+    "atoll": "Shaviyani Atoll",
+    "operator": "Regional Airports Company Limited (RACL)",
+    "type": "Domestic",
+    "lat": 6.1625000000000005,
+    "lon": 73.2875,
+    "runways": [
+      {
+        "id": "01/19",
+        "ends": [
+          "01",
+          "19"
+        ],
+        "hdg": 10,
+        "length": 1200,
+        "width": 30,
+        "surface": "Asphalt"
+      }
+    ],
+    "apronSide": "right",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": false,
+      "roadHospital": true
+    },
+    "rff": "Confirm certified RFF category and current capability against AIP / AEP",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": null,
+      "widebody": null,
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 180,
+        "kind": "road",
+        "label": "Road route → Shaviyani Atoll Hospital, Funadhoo (route schematic; confirm AEP)"
+      }
+    ],
+    "hospitals": [
+      {
+        "name": "Shaviyani Atoll Hospital, Funadhoo",
+        "role": "Primary receiving hospital — acceptance required",
+        "how": "road on island",
+        "eta": "Confirm mobilisation, loading, travel and handover times"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral — acceptance required",
+        "how": "confirmed air medical transport + road",
+        "eta": "Confirm tasking and complete transfer time"
+      }
+    ],
+    "agencies": [
+      "Airport RFF (Funadhoo)",
+      "Limited local MNDF personnel — confirm available strength and role",
+      "Maldives Police Service / airport AVSEC",
+      "Funadhoo Island / City Council · Shaviyani Atoll Council",
+      "Local health service and receiving hospital",
+      "Resort / vessel operators — confirmed support only",
+      "Ministry of Health / HPA",
+      "NDMA"
+    ],
+    "local": {
+      "arff": 0,
+      "ambulances": 0,
+      "fireTrucks": 0,
+      "buses": 0,
+      "boats": 0
+    },
+    "localConfirmed": false,
+    "mutualAid": "Limited local MNDF personnel — confirm available strength and role. Request additional MNDF personnel and capabilities through command; confirm support origin, availability and transport. Other island / resort assistance requires confirmation.",
+    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
+    "utility": "Confirm airport utility provider and island service contacts",
+    "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
+    "mndf": {
+      "presence": "Limited local MNDF personnel",
+      "initial": "Limited local MNDF personnel — confirm available strength and role",
+      "support": "Additional MNDF support through command; origin and ETA to be confirmed",
+      "supportEta": "Confirm deployment-specific estimate",
+      "source": "Site owner operational information, 22 October 2026"
+    },
+    "sources": [
+      {
+        "title": "MCAA land aerodrome list — identifiers, coordinates and listed operators (06 Nov 2024)",
+        "url": "https://www.caa.gov.mv/attachments/Om5BM5Rjp8j83fqs5KyPmp3EKbmsXI3XK8FsdVVp.pdf"
+      },
+      {
+        "title": "Current AIP / AEP — validate physical data and operating conditions",
+        "url": "https://www.macl.aero/library/files/AIRAC%20AIP%20AMDT%201-26.pdf"
+      }
+    ],
+    "notes": "Funadhoo in Shaviyani, not Fonadhoo in Laamu. AIP Amendment 1/26 lists runway 01/19. Limited local MNDF personnel; request additional support through command. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+  },
+  {
+    "id": "VRGD",
+    "icao": "VRGD",
+    "iata": "LMV",
+    "name": "Madivaru Airport",
+    "short": "Madivaru",
+    "island": "Madivaru",
+    "atoll": "Lhaviyani Atoll",
+    "operator": "Kuredu Holdings Pvt Ltd (CAA operator listing; confirm operating arrangements)",
+    "type": "Domestic",
+    "lat": 5.457777777777778,
+    "lon": 73.37027777777777,
+    "runways": [
+      {
+        "id": "18/36",
+        "ends": [
+          "18",
+          "36"
+        ],
+        "hdg": 180,
+        "length": 1200,
+        "width": 30,
+        "surface": "Asphalt"
+      }
+    ],
+    "apronSide": "right",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": true,
+      "roadHospital": false
+    },
+    "rff": "Confirm certified RFF category and current capability against AIP / AEP",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": null,
+      "widebody": null,
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 180,
+        "kind": "sea",
+        "label": "Sea transfer → Lhaviyani Atoll Hospital, Naifaru (route schematic; confirm AEP)"
+      }
+    ],
+    "hospitals": [
+      {
+        "name": "Madivaru local medical / first-aid service — confirm facility",
+        "role": "First aid / stabilisation",
+        "how": "local access arrangements to be confirmed",
+        "eta": "Confirm exercise estimate"
+      },
+      {
+        "name": "Lhaviyani Atoll Hospital, Naifaru",
+        "role": "Primary receiving hospital — acceptance required",
+        "how": "sea ambulance / suitable medical transport",
+        "eta": "Confirm mobilisation, loading, travel and handover times"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral — acceptance required",
+        "how": "confirmed air medical transport + road",
+        "eta": "Confirm tasking and complete transfer time"
+      }
+    ],
+    "agencies": [
+      "Airport RFF (Madivaru)",
+      "Limited local MNDF personnel — confirm available strength and role",
+      "Maldives Police Service / airport AVSEC",
+      "Madivaru Island / City Council · Lhaviyani Atoll Council",
+      "Local health service and receiving hospital",
+      "Resort / vessel operators — confirmed support only",
+      "Ministry of Health / HPA",
+      "NDMA"
+    ],
+    "local": {
+      "arff": 0,
+      "ambulances": 0,
+      "fireTrucks": 0,
+      "buses": 0,
+      "boats": 0
+    },
+    "localConfirmed": false,
+    "mutualAid": "Limited local MNDF personnel — confirm available strength and role. Request additional MNDF personnel and capabilities through command; confirm support origin, availability and transport. Other island / resort assistance requires confirmation.",
+    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
+    "utility": "Confirm airport utility provider and island service contacts",
+    "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
+    "mndf": {
+      "presence": "Limited local MNDF personnel",
+      "initial": "Limited local MNDF personnel — confirm available strength and role",
+      "support": "Additional MNDF support through command; origin and ETA to be confirmed",
+      "supportEta": "Confirm deployment-specific estimate",
+      "source": "Site owner operational information, 22 October 2026"
+    },
+    "sources": [
+      {
+        "title": "MCAA land aerodrome list — identifiers, coordinates and listed operators (06 Nov 2024)",
+        "url": "https://www.caa.gov.mv/attachments/Om5BM5Rjp8j83fqs5KyPmp3EKbmsXI3XK8FsdVVp.pdf"
+      },
+      {
+        "title": "Current AIP / AEP — validate physical data and operating conditions",
+        "url": "https://www.macl.aero/air-navigation-services/aip"
+      }
+    ],
+    "notes": "Limited local MNDF personnel. Casualty movement requires a confirmed jetty handover and receiving hospital; resort boats are not automatically medical transport. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
   },
   {
     id: 'GENERIC', icao: '—', iata: '—',

@@ -15,9 +15,28 @@ export function unitTests(){
  assert.match(c.TTX_MV.estimate({asset:'sea',patients:6}),/3 trip\(s\); last arrival ≈ 130 min/);
  assert.equal(c.TTX_MV.counts().boats,1);
  assert(!/media helicopter/i.test(readFileSync(new URL('js/data.js',root),'utf8')));
+ const added=['VRBK','VRDA','VREI','VRAH','VRCF','VRGD'];
+ for(const id of added){const ap=c.TTX_AIRPORTS.find(a=>a.id===id);assert(ap,'Missing airport '+id);assert.equal(ap.features.seaplane,false);assert(ap.sources.length);for(const end of ap.runways[0].ends){const ctx=c.TTX_SITE.context({airport:id,runway:ap.runways[0].id,end});assert(c.TTX_SITE.mapSvg(ctx,{}).svg.includes(id));for(const scenario of c.TTX_DATA.scenarios){if(c.TTX_SITE.isApplicable(scenario,ctx)){const resolved=c.TTX_SITE.resolveScenario(scenario,ctx);assert.equal(resolved.airportId,id);assert(!resolved.injects.some(t=>/\{[A-Z_]+\}/.test(t)));}}}}
+ const haq=c.TTX_AIRPORTS.find(a=>a.id==='VRMH');assert.match(haq.mndf.initial,/Hanimaadhoo post/);assert.match(haq.mndf.support,/Kulhudhuffushi post/);assert.match(haq.mndf.supportEta,/35–40/);assert(!haq.agencies.some(a=>a==='MNDF Northern Area — Coast Guard, Fire & Rescue (Kulhudhuffushi)'));
+ assert.equal(c.TTX_AIRPORTS.find(a=>a.id==='VRCF').runways[0].id,'01/19');
  console.log('Maldives unit checks passed: MVT date rollover, airport rosters, capability, transfer cycles, commitments, media references.');
 }
 export async function browserTests({behavior,newAppPage,assert}){
+ await behavior('six northern airport profiles and existing Hanimaadhoo agency migration',async()=>{
+  const {ctx,p}=await newAppPage();
+  await p.waitForSelector('#islandResponseBtn');
+  for(const id of ['VRBK','VRDA','VREI','VRAH','VRCF','VRGD']){
+   await Promise.all([p.waitForEvent('load'),p.selectOption('#airportSelect',id)]);await p.waitForSelector('#islandResponseBtn');
+   const info=await p.evaluate(()=>({ap:TTX_SITE.context().airport,map:document.getElementById('mapBase').textContent,profile:document.getElementById('airportProfile').textContent}));
+   assert(info.map.includes(id),'map missing '+id);assert(info.profile.includes(info.ap.mndf.initial),'MNDF origin missing '+id);assert(info.profile.includes('Equipment inventory not yet confirmed'),'unknown inventory presented as equipment absence');
+   await p.selectOption('#scenarioSelect','atr72-crash');assert((await p.textContent('#scenarioPanel')).includes(info.ap.short),'scenario did not adapt '+id);
+   await p.click('#islandResponseBtn');await p.click('[data-tab="agencies"]');assert((await p.textContent('#mvBody')).includes(info.ap.mndf.initial),'agency list missing local response '+id);await p.click('#mvClose');
+  }
+  await p.evaluate(()=>{localStorage.setItem('ttx-airport',JSON.stringify({airport:'VRMH',runway:'03/21',end:'03'}));localStorage.setItem('ttx-mv-ops:VRMH:initial',JSON.stringify({transfers:[],hospitals:[],facts:[],landmarks:[],settings:{},agencies:[{name:'MNDF Northern Area — Coast Guard, Fire & Rescue (Kulhudhuffushi)',role:'Existing exercise assignment',status:'Acknowledged',eta:'',primary:'Existing channel',fallback:'',initiator:''}]}));});
+  await p.reload({waitUntil:'load'});await p.waitForSelector('#islandResponseBtn');await p.click('#islandResponseBtn');await p.click('[data-tab="agencies"]');
+  const text=await p.textContent('#mvBody');assert(text.includes('Hanimaadhoo post'),'existing agency did not migrate');assert(text.includes('35–40 minutes'),'support estimate missing');assert(text.includes('Existing exercise assignment')&&text.includes('Existing channel'),'migration lost exercise data');assert(!text.includes('Fire & Rescue (Kulhudhuffushi)'),'obsolete agency remains');
+  assert(p.errors.length===0,p.errors.join('; '));await ctx.close();
+ });
  await behavior('island response: capacities, stages, assets, exports and sessions',async()=>{
   const {ctx,p}=await newAppPage();
   await p.waitForSelector('#islandResponseBtn');

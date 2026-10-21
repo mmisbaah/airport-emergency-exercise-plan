@@ -45,6 +45,12 @@ var TTX_MV = (function () {
     if(!state.agencies.length) state.agencies=airport.agencies.map(function(n){return {name:n,role:'Confirm role against local AEP',initiator:'',status:'Not requested',eta:'',primary:'',fallback:'',contact:''};});
   };
   configure();
+  // Correct only the obsolete factory agency name, preserving user assignments.
+  state.agencies.forEach(function(a){if(airport.id==='VRMH'&&a.name==='MNDF Northern Area — Coast Guard, Fire & Rescue (Kulhudhuffushi)'){a.name='MNDF Northern Area Command — initial response from MNDF Hanimaadhoo post';}});
+  if(airport.id==='VRMH'&&!state.agencies.some(function(a){return /MNDF Kulhudhuffushi post/.test(a.name);}))state.agencies.push({name:'MNDF Kulhudhuffushi post — reinforcement by sea, approximately 35–40 minutes to the site',role:'Reinforce initial Hanimaadhoo post response; confirm tasking',initiator:'',status:'Not requested',eta:'Approximately 35–40 minutes to site; confirm deployment',primary:'',fallback:'',contact:''});
+  if(airport.mndf&&!state.facts.some(function(f){return f.fact==='MNDF response origins';}))state.facts.push({fact:'MNDF response origins',value:airport.mndf.initial+'; support: '+airport.mndf.support+'; '+airport.mndf.supportEta,source:airport.mndf.source,date:'2026-10-22',by:'Site owner',status:'Owner-provided operational information'});
+  persist();
+
   var report = function () {
     return '<section class="mv-report"><h2>Maldives island response — '+esc(airport.name)+'</h2><p>'+esc(session.name)+' · '+esc(stamp(new Date()))+'</p>'+
       '<h3>Transfer plan</h3>'+table(['Casualty / group','Route / alternative','Asset','Status / history (UTC)','Patients','Destination / estimate'],state.transfers.map(function(t){return [t.patient,t.origin+' → '+t.embark+' → '+t.disembark+' / '+t.alternative,t.asset,t.status+' / '+(t.history||[]).map(function(x){return x.status+' '+x.at;}).join('; '),t.patients,t.hospital+' / '+estimate(t)];}))+

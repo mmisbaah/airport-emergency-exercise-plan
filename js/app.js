@@ -1082,6 +1082,7 @@
         row('Largest aircraft (planning)', escHtml([ap.fleet.widebody, ap.fleet.jet, ap.fleet.regional].filter(Boolean)[0] || '—') +
           (function () { var c = TTX_SITE.rffForAircraft([ap.fleet.widebody, ap.fleet.jet, ap.fleet.regional].filter(Boolean)[0]); return c ? ' — needs RFF Cat ' + c : ''; })()) +
         row('Seaplane water aerodrome', ap.features.seaplane ? 'Yes' : 'No');
+      if (ap.mndf) html += row('MNDF presence', escHtml(ap.mndf.presence)) + row('Initial MNDF response', escHtml(ap.mndf.initial)) + row('MNDF reinforcement', escHtml(ap.mndf.support + ' · ' + ap.mndf.supportEta));
       if (wind.live && liveWind) {
         var best = TTX_SITE.suggestEnd(liveWind.from, liveWind.speed, ctx);
         html += row('Live wind', escHtml(('00' + Math.round(liveWind.from)).slice(-3) + '° / ' + Math.round(liveWind.speed) + ' km/h') +
@@ -1096,9 +1097,10 @@
         ap.agencies.map(function (a) { return '<li>' + escHtml(a) + '</li>'; }).join('') +
         '</ul><p class="ap-note"><b>Mutual aid:</b> ' + escHtml(ap.mutualAid) + '</p>' +
         '<p class="ap-note"><b>On-island planning assumption:</b> ' +
-        escHtml(ap.local.arff + ' RFF · ' + ap.local.ambulances + ' ambulance' + (ap.local.ambulances === 1 ? '' : 's') + ' · ' +
+        (ap.localConfirmed === false ? 'Equipment inventory not yet confirmed — enter actual assets in Island Response.' : escHtml(ap.local.arff + ' RFF · ' + ap.local.ambulances + ' ambulance' + (ap.local.ambulances === 1 ? '' : 's') + ' · ' +
           ap.local.fireTrucks + ' fire truck' + (ap.local.fireTrucks === 1 ? '' : 's') + ' · ' + ap.local.buses + ' bus' + (ap.local.buses === 1 ? '' : 'es') + ' · ' +
-          ap.local.boats + ' boat' + (ap.local.boats === 1 ? '' : 's')) + '</p></div>';
+          ap.local.boats + ' boat' + (ap.local.boats === 1 ? '' : 's'))) + '</p></div>';
+      if (ap.sources) html += '<div class="ap-col"><h4>Profile sources</h4><ul>' + ap.sources.map(function (source) { return '<li><a href="' + escHtml(source.url) + '" target="_blank" rel="noopener noreferrer">' + escHtml(source.title) + '</a></li>'; }).join('') + '</ul><p>' + escHtml(ap.notes) + '</p></div>';
       html += '</div>';
       html += '<p class="ap-foot">National numbers (check locally): Police 119 · Fire 118 · Ambulance 102 · Coast Guard 191. ' +
         'Runway figures, hospitals and transfer times are planning values from public sources — verify against the MCAA AIP and your AEP.</p>';
