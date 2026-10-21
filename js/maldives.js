@@ -11,7 +11,7 @@ var TTX_MV = (function () {
     {key:'arff', label:'RFF vehicle', type:'ARFF'}, {key:'ambulances',label:'Ambulance',type:'EMS'},
     {key:'fireTrucks',label:'Fire truck',type:'Fire'}, {key:'buses',label:'Bus',type:'Transport'},
     {key:'boats',label:'Rescue boat (capability unconfirmed)',type:'Marine'},
-    {key:'air',label:'Air medical / military SAR asset',type:'Air'},
+    {key:'air',label:'Air medical transport',type:'Air'},
     {key:'medical',label:'Medical team',type:'Medical'}, {key:'security',label:'Police / AVSEC unit',type:'Security'}
   ];
   var defaults = function (ap) {
@@ -45,15 +45,36 @@ var TTX_MV = (function () {
     if(!state.agencies.length) state.agencies=airport.agencies.map(function(n){return {name:n,role:'Confirm role against local AEP',initiator:'',status:'Not requested',eta:'',primary:'',fallback:'',contact:''};});
   };
   configure();
-  // Correct only the obsolete factory agency name, preserving user assignments.
-  state.agencies.forEach(function(a){if(airport.id==='VRMH'&&a.name==='MNDF Northern Area — Coast Guard, Fire & Rescue (Kulhudhuffushi)'){a.name='MNDF Northern Area Command — initial response from MNDF Hanimaadhoo post';}});
-  if(airport.id==='VRMH'&&!state.agencies.some(function(a){return /MNDF Kulhudhuffushi post/.test(a.name);}))state.agencies.push({name:'MNDF Kulhudhuffushi post — reinforcement by sea, approximately 35–40 minutes to the site',role:'Reinforce initial Hanimaadhoo post response; confirm tasking',initiator:'',status:'Not requested',eta:'Approximately 35–40 minutes to site; confirm deployment',primary:'',fallback:'',contact:''});
-  if(airport.mndf&&!state.facts.some(function(f){return f.fact==='MNDF response origins';}))state.facts.push({fact:'MNDF response origins',value:airport.mndf.initial+'; support: '+airport.mndf.support+'; '+airport.mndf.supportEta,source:airport.mndf.source,date:'2026-10-22',by:'Site owner',status:'Owner-provided operational information'});
+  // Public profiles retain MNDF locations only, including older local sessions/backups.
+  function publicRecord(value) {
+    if(Array.isArray(value)) return value.map(publicRecord).filter(function(v){return v!==null;});
+    if(value && typeof value==='object') {
+      if(value.fact && /MNDF|military|defence|Coast Guard|EOD/i.test(value.fact))return null;
+      if(value.name && ('role' in value || 'eta' in value || 'capability' in value || 'type' in value) && /MNDF|military|defence|Coast Guard|EOD/i.test(value.name+' '+(value.owner||'')+' '+(value.capability||''))) {
+        if(value.capability || value.type)return null;
+        return {name:'MNDF — nearest post responds',role:'Nearest MNDF post responds.',status:'',eta:'',primary:'',fallback:'',initiator:'',contact:''};
+      }
+      var out={};Object.keys(value).forEach(function(k){if(k==='mndf')out[k]=airport.mndf;else out[k]=publicRecord(value[k]);});return out;
+    }
+    if(typeof value==='string') {
+      if(/^[\[{]/.test(value.trim())){try{return JSON.stringify(publicRecord(JSON.parse(value)));}catch(e){}}
+      if(/MNDF|military|defence|Coast Guard|EOD/i.test(value))return 'MNDF — nearest post responds';
+    }
+    return value;
+  }
+  function sanitiseSavedRecords(){
+    Object.keys(localStorage).filter(function(k){return /^ttx-/.test(k);}).forEach(function(k){
+      try{var original=localStorage.getItem(k);var cleaned=JSON.stringify(publicRecord(JSON.parse(original)));if(cleaned!==original)localStorage.setItem(k,cleaned);}catch(e){}
+    });
+  }
+  sanitiseSavedRecords();
+  state=publicRecord(state);
+  state.agencies=state.agencies.filter(function(a){return !/MNDF|military|defence|Coast Guard|EOD/i.test(a.name);});
+  state.agencies.push({name:'MNDF — nearest post responds',role:'Nearest MNDF post responds.',status:'',eta:'',primary:'',fallback:'',initiator:'',contact:''});
   persist();
-
   var report = function () {
     return '<section class="mv-report"><h2>Maldives island response — '+esc(airport.name)+'</h2><p>'+esc(session.name)+' · '+esc(stamp(new Date()))+'</p>'+
-      '<h3>Transfer plan</h3>'+table(['Casualty / group','Route / alternative','Asset','Status / history (UTC)','Patients','Destination / estimate'],state.transfers.map(function(t){return [t.patient,t.origin+' → '+t.embark+' → '+t.disembark+' / '+t.alternative,t.asset,t.status+' / '+(t.history||[]).map(function(x){return x.status+' '+x.at;}).join('; '),t.patients,t.hospital+' / '+estimate(t)];}))+
+      '<h3>Public response reference</h3><p>Nearest MNDF post responds. MNDF locations: '+esc(airport.mndf.locations.join(', ')||'See public services directory')+'. Sea ambulance bases: '+esc((airport.seaAmbulanceLocations||[]).map(function(b){return b.island;}).join(', ')||'Atoll capital')+'. Confirm medical service availability.</p><h3>Transfer plan</h3>'+table(['Casualty / group','Route / alternative','Asset','Status / history (UTC)','Patients','Destination / estimate'],state.transfers.map(function(t){return [t.patient,t.origin+' → '+t.embark+' → '+t.disembark+' / '+t.alternative,t.asset,t.status+' / '+(t.history||[]).map(function(x){return x.status+' '+x.at;}).join('; '),t.patients,t.hospital+' / '+estimate(t)];}))+
       '<h3>Hospital acceptance</h3>'+table(['Hospital','Confirmed acceptance','Exercise slots','Contact'],state.hospitals.map(function(h){return [h.name,h.accepted?'Yes':'Unconfirmed',h.capacity,h.contact];}))+
       '<h3>Agency assignments and communications</h3>'+table(['Agency','Assignment / initiator','Status / ETA','Primary / fallback'],state.agencies.map(function(a){return [a.name,a.role+' / '+a.initiator,a.status+' / '+a.eta,a.primary+' / '+a.fallback];}))+
       '<h3>Exercise settings</h3><p>'+esc(JSON.stringify(state.settings))+'</p><h3>Operational landmarks</h3>'+table(['Name','Purpose','Access','Alternative'],state.landmarks.map(function(l){return [l.name,l.purpose,l.access,l.alternative];}))+'<h3>Local data verification</h3>'+table(['Fact','Value','Source','Verified date / by','Status'],state.facts.map(function(f){return [f.fact,f.value,f.source,f.date+' / '+f.by,f.status];}))+'</section>';
@@ -70,21 +91,23 @@ var TTX_MV = (function () {
     render=function(){
       var labels=read('ttx-mv-labels',{});
       dialog.innerHTML='<div class="mv-head"><h2>Island Response · '+esc(airport.short)+'</h2><button type="button" id="mvClose">Close</button></div><p>'+esc(session.name)+' · '+esc(stamp(new Date()))+' · capacities are exercise assumptions until confirmed.</p>'+
-        '<nav class="mv-tabs">'+['transport','assets','hospitals','agencies','verification','locations','settings'].map(function(t){return '<button type="button" data-tab="'+t+'" aria-pressed="'+(activeTab===t)+'">'+t+'</button>';}).join('')+'</nav><div id="mvBody"></div><p id="mvMessage" role="status"></p><button type="button" id="mvExport">Export island response report</button>';
+        '<nav class="mv-tabs">'+['transport','assets','hospitals','agencies','services','verification','locations','settings'].map(function(t){return '<button type="button" data-tab="'+t+'" aria-pressed="'+(activeTab===t)+'">'+t+'</button>';}).join('')+'</nav><div id="mvBody"></div><p id="mvMessage" role="status"></p><button type="button" id="mvExport">Export island response report</button>';
       dialog.querySelector('#mvClose').onclick=function(){dialog.close();};
       dialog.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){activeTab=b.dataset.tab;editIndex=-1;render();};});
       dialog.querySelector('#mvExport').onclick=function(){download('Island-response.html','<!doctype html><meta charset="utf-8"><title>Island response</title>'+report(),'text/html');};
       var body=dialog.querySelector('#mvBody'), h='', fields='', rows=[], headers=[];
-      if(activeTab==='transport') {
+      if(activeTab==='services'){
+        h='<h3>Public service locations</h3><p>Nearest MNDF post responds. Only island locations are listed; this is not an exhaustive MNDF directory.</p>'+table(['Island','Atoll / area','Public location'],TTX_PUBLIC_SERVICES.mndfLocations.map(function(m){return [m.island,m.atoll,m.label];}))+'<h3>Sea ambulance bases</h3><p>One sea ambulance is based at each atoll capital, with additional bases at Hoarafushi (Haa Alifu) and Makunudhoo (Haa Dhaalu), as supplied by the site owner. This directory is not a live availability roster; confirm service availability with the health service.</p>'+table(['Atoll','Island','Base'],TTX_PUBLIC_SERVICES.seaAmbulances.map(function(b){return [b.atoll,b.island,b.kind];}))+'<h3>Public MNDF location references</h3><ul>'+TTX_PUBLIC_SERVICES.mndfLocations.map(function(m){return '<li>'+esc(m.island)+' — '+(m.url?'<a href="'+esc(m.url)+'" target="_blank" rel="noopener noreferrer">'+esc(m.source)+'</a>':esc(m.source))+'</li>';}).join('')+'</ul>';
+      } else if(activeTab==='transport') {
         h='<h3>Casualty movement</h3><p>Reference casualty tags from the Casualties tracker. Rescue capacity and medical transport capacity are separate. Confirm clinical suitability and hospital acceptance before departure.</p>';
         var t=state.transfers[editIndex]||{};
         fields=input('Casualty tag / group','patient',t.patient||'')+input('Number of patients','patients',t.patients||1,'number')+input('Origin / CCP','origin',t.origin||airport.island)+input('Embarkation jetty / gate','embark',t.embark||'')+input('Receiving jetty / gate','disembark',t.disembark||'')+select('Receiving hospital','hospital',state.hospitals.map(function(x){return x.name;}),t.hospital)+select('Asset','asset',roster().map(function(x){return x.id;}),t.asset)+select('Status','status',['Requested','Accepted','Boarding','Departed','Arrived','Handed over'],t.status)+input('Alternative route / asset','alternative',t.alternative||'')+input('Departure (MVT, exercise date)','departure',t.departure||'','datetime-local')+input('Handover / notes','notes',t.notes||'');
         headers=['Casualty / group','Patients','Route / alternative','Hospital','Asset','Status','Estimate'];
         rows=state.transfers.map(function(x){return [x.patient,x.patients,x.origin+' → '+x.embark+' → '+x.disembark+' / '+x.alternative,x.hospital,x.asset,x.status,estimate(x)];});
       } else if(activeTab==='assets') {
-        h='<h3>Response assets</h3><p>Shared with the Unit Roster and scenario commitments. SAR / medical aircraft require confirmed tasking; they are never assumed available.</p>';
+        h='<h3>Response assets</h3><p>Shared with the Unit Roster and scenario commitments. Medical transport requires confirmation. MNDF locations are listed separately under Public services.</p>';
         var r=roster()[editIndex]||{};
-        fields=input('Asset name','name',r.name||'')+select('Resource class','key',types.map(function(x){return x.key;}),r.key)+select('Capability','capability',['Rescue boat','Sea ambulance','Resort speedboat','Dhoni','Coast Guard vessel','Military SAR helicopter','Military medical evacuation helicopter','Air medical transport','RFF vehicle','Ambulance','Fire truck','Bus','Medical team','Police / AVSEC unit'],r.capability)+input('Owner / tasking authority','owner',r.owner||'')+input('Base / location','location',r.location||airport.island)+select('Availability','status',['unavailable','available','deployed'],r.status)+select('Capability confirmed','confirmed',['No','Yes'],r.confirmed?'Yes':'No')+input('Stretcher capacity','stretchers',r.stretchers||0,'number')+input('Medical escort / equipment','escort',r.escort||'')+input('Mobilisation minutes','mobilisation',r.mobilisation||0,'number')+input('One-way travel minutes','travel',r.travel||0,'number')+input('Return and reload minutes','turnaround',r.turnaround||0,'number')+input('Sea state / daylight / lighting / rescue constraints','constraints',r.constraints||'')+input('Notes','notes',r.notes||'');
+        fields=input('Asset name','name',r.name||'')+select('Resource class','key',types.map(function(x){return x.key;}),r.key)+select('Capability','capability',['Rescue boat','Sea ambulance','Resort speedboat','Dhoni','Air medical transport','RFF vehicle','Ambulance','Fire truck','Bus','Medical team','Police / AVSEC unit'],r.capability)+input('Owner / tasking authority','owner',r.owner||'')+input('Base / location','location',r.location||airport.island)+select('Availability','status',['unavailable','available','deployed'],r.status)+select('Capability confirmed','confirmed',['No','Yes'],r.confirmed?'Yes':'No')+input('Stretcher capacity','stretchers',r.stretchers||0,'number')+input('Medical escort / equipment','escort',r.escort||'')+input('Mobilisation minutes','mobilisation',r.mobilisation||0,'number')+input('One-way travel minutes','travel',r.travel||0,'number')+input('Return and reload minutes','turnaround',r.turnaround||0,'number')+input('Sea state / daylight / lighting / rescue constraints','constraints',r.constraints||'')+input('Notes','notes',r.notes||'');
         headers=['Asset','Capability','Owner / base','Status','Stretchers / escort','Constraints'];rows=roster().map(function(x){return [x.name,x.capability,x.owner+' / '+x.location,x.status+(x.confirmed?' · confirmed':' · unconfirmed'),x.stretchers+' / '+(x.escort||''),x.constraints];});
       } else if(activeTab==='hospitals') {
         h='<h3>Receiving hospitals</h3><p>Slots are facilitator-entered exercise capacity, not published clinical capacity. Record acceptance for this exercise and update it as conditions change.</p>';
@@ -106,7 +129,7 @@ var TTX_MV = (function () {
         h='<h3>Exercise settings</h3><p>All exercise clocks and reports use MVT (UTC+5). UTC timestamps are retained in stored records. New sessions preserve the previous exercise.</p><form id="mvSettings" class="mv-grid">'+input('Exercise name','name',session.name)+input('Exercise date','date',state.settings.date||'','date')+input('Facilitator daylight cut-off (MVT)','sunset',state.settings.sunset||'','time')+input('Approved evacuation plan / assembly arrangements','evacuation',state.settings.evacuation||'')+'<button>Save settings</button></form><button type="button" id="mvNew">Start new exercise session</button><h3>Dhivehi labels</h3><p>Enter locally reviewed Thaana labels. Saved labels appear beside the matching checklist items and zone / alert labels. English remains available.</p><form id="mvLabels" class="mv-grid">'+['Local Standby','Full Emergency','Aircraft Accident','All Clear','Hot Zone','Warm Zone','Cold Zone'].concat(TTX_DATA.checklistItems).map(function(k,i){return input(k,'label'+i,labels[k]||'');}).join('')+input('Reviewed by','reviewer',labels.reviewer||'')+'<button>Save reviewed labels</button></form>';
       }
       body.innerHTML=h+(fields?table(headers.concat(['Actions']),rows.map(function(r,i){return r.concat(['']);})).replace(/<td><\/td><\/tr>/g,function(){return '<td></td></tr>';})+'<div id="mvEditList">'+rows.map(function(_,i){return '<button type="button" data-edit="'+i+'">Edit '+(i+1)+'</button>';}).join('')+'</div><form id="mvForm" class="mv-grid">'+fields+'<button type="submit">'+(editIndex<0?'Add':'Save')+'</button>'+(editIndex>=0?'<button type="button" id="mvCancel">Cancel edit</button>':'')+'</form>':'');
-      body.querySelectorAll('[data-edit]').forEach(function(b){b.onclick=function(){editIndex=Number(b.dataset.edit);render();};});
+      body.querySelectorAll('[data-edit]').forEach(function(b){b.onclick=function(){editIndex=Number(b.dataset.edit);if(activeTab==='agencies'&&/MNDF/i.test(state.agencies[editIndex].name)){message('MNDF reference: nearest post responds. Locations are listed under services.');editIndex=-1;return;}render();};});
       var cancel=body.querySelector('#mvCancel');if(cancel)cancel.onclick=function(){editIndex=-1;render();};
       var form=body.querySelector('#mvForm');if(form)form.onsubmit=function(e){e.preventDefault();saveForm(new FormData(form));};
       var settings=body.querySelector('#mvSettings');if(settings)settings.onsubmit=function(e){e.preventDefault();var d=Object.fromEntries(new FormData(settings));session.name=d.name;sessions=sessions.map(function(x){return x.id===session.id?session:x;});write('ttx-mv-sessions',sessions);write('ttx-mv-session',session);state.settings=d;persist();render();};
@@ -129,9 +152,12 @@ var TTX_MV = (function () {
   }
   function saveForm(fd) {
     var obj=Object.fromEntries(fd), target;
-    if(activeTab==='assets') {target=roster();obj.id=editIndex>=0?target[editIndex].id:crypto.randomUUID();if(!obj.name.trim()){message('Enter an asset name.');return;}obj.type=types.find(function(x){return x.key===obj.key;}).type;obj.confirmed=obj.confirmed==='Yes';if(!obj.confirmed)obj.status='unavailable';['stretchers','mobilisation','travel','turnaround'].forEach(function(k){obj[k]=Number(obj[k]);});if(/helicopter/i.test(obj.capability)&&obj.key==='boats'){message('Select the air resource class for military SAR / medical aircraft.');return;}}
+    if(/MNDF|military|defence|Coast Guard|EOD/i.test(JSON.stringify(obj))){message('Keep MNDF entries to the public locations listed under services.');return;}
+    if(activeTab==='assets') {target=roster();obj.id=editIndex>=0?target[editIndex].id:crypto.randomUUID();if(!obj.name.trim()){message('Enter an asset name.');return;}obj.type=types.find(function(x){return x.key===obj.key;}).type;obj.confirmed=obj.confirmed==='Yes';if(!obj.confirmed)obj.status='unavailable';['stretchers','mobilisation','travel','turnaround'].forEach(function(k){obj[k]=Number(obj[k]);});if(/helicopter/i.test(obj.capability)&&obj.key==='boats'){message('Select the air resource class for medical aircraft.');return;}}
     else if(activeTab==='hospitals'){target=state.hospitals;obj.accepted=obj.accepted==='Yes';obj.capacity=Number(obj.capacity);obj.confirmedAt=obj.accepted?stamp(new Date()):'';}
-    else if(activeTab==='transport') {
+    else if(activeTab==='services'){
+        h='<h3>Public service locations</h3><p>Nearest MNDF post responds. Only island locations are listed; this is not an exhaustive MNDF directory.</p>'+table(['Island','Atoll / area','Public location'],TTX_PUBLIC_SERVICES.mndfLocations.map(function(m){return [m.island,m.atoll,m.label];}))+'<h3>Sea ambulance bases</h3><p>One sea ambulance is based at each atoll capital, with additional bases at Hoarafushi (Haa Alifu) and Makunudhoo (Haa Dhaalu), as supplied by the site owner. This directory is not a live availability roster; confirm service availability with the health service.</p>'+table(['Atoll','Island','Base'],TTX_PUBLIC_SERVICES.seaAmbulances.map(function(b){return [b.atoll,b.island,b.kind];}))+'<h3>Public MNDF location references</h3><ul>'+TTX_PUBLIC_SERVICES.mndfLocations.map(function(m){return '<li>'+esc(m.island)+' — '+(m.url?'<a href="'+esc(m.url)+'" target="_blank" rel="noopener noreferrer">'+esc(m.source)+'</a>':esc(m.source))+'</li>';}).join('')+'</ul>';
+      } else if(activeTab==='transport') {
       target=state.transfers;obj.patients=Number(obj.patients);var hospital=state.hospitals.find(function(h){return h.name===obj.hospital;}), asset=roster().find(function(r){return r.id===obj.asset;});
       if(!obj.patient.trim()||obj.patients<1){message('Enter a casualty tag / group and at least one patient.');return;}
       var prior=target[editIndex];

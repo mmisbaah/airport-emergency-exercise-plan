@@ -1082,7 +1082,8 @@
         row('Largest aircraft (planning)', escHtml([ap.fleet.widebody, ap.fleet.jet, ap.fleet.regional].filter(Boolean)[0] || '—') +
           (function () { var c = TTX_SITE.rffForAircraft([ap.fleet.widebody, ap.fleet.jet, ap.fleet.regional].filter(Boolean)[0]); return c ? ' — needs RFF Cat ' + c : ''; })()) +
         row('Seaplane water aerodrome', ap.features.seaplane ? 'Yes' : 'No');
-      if (ap.mndf) html += row('MNDF presence', escHtml(ap.mndf.presence)) + row('Initial MNDF response', escHtml(ap.mndf.initial)) + row('MNDF reinforcement', escHtml(ap.mndf.support + ' · ' + ap.mndf.supportEta));
+      if (ap.mndf) html += row('MNDF', escHtml(ap.mndf.response)) + row('MNDF locations (area reference)', escHtml(ap.mndf.locations.join(', ') || 'See public service directory'));
+      html += row('Sea ambulance bases', escHtml((ap.seaAmbulanceLocations || []).map(function(b){return b.island + ' (' + b.atoll + ')';}).join('; ') || 'One at each atoll capital; see public service directory')) + '<p class="ap-note">Base locations do not indicate current availability. Coordinate sea ambulance requests with the health service.</p>';
       if (wind.live && liveWind) {
         var best = TTX_SITE.suggestEnd(liveWind.from, liveWind.speed, ctx);
         html += row('Live wind', escHtml(('00' + Math.round(liveWind.from)).slice(-3) + '° / ' + Math.round(liveWind.speed) + ' km/h') +

@@ -15,240 +15,864 @@
    own Airport Emergency Plan before an exercise.
    ===================================================== */
 
+var TTX_PUBLIC_SERVICES = {
+  "seaAmbulances": [
+    {
+      "atollCode": "HA",
+      "atoll": "Haa Alifu",
+      "island": "Dhidhdhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "HDh",
+      "atoll": "Haa Dhaalu",
+      "island": "Kulhudhuffushi",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "Sh",
+      "atoll": "Shaviyani",
+      "island": "Funadhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "N",
+      "atoll": "Noonu",
+      "island": "Manadhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "R",
+      "atoll": "Raa",
+      "island": "Ungoofaaru",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "B",
+      "atoll": "Baa",
+      "island": "Eydhafushi",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "Lh",
+      "atoll": "Lhaviyani",
+      "island": "Naifaru",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "K",
+      "atoll": "Kaafu",
+      "island": "Thulusdhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "AA",
+      "atoll": "Alifu Alifu",
+      "island": "Rasdhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "ADh",
+      "atoll": "Alifu Dhaalu",
+      "island": "Mahibadhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "V",
+      "atoll": "Vaavu",
+      "island": "Felidhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "M",
+      "atoll": "Meemu",
+      "island": "Muli",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "F",
+      "atoll": "Faafu",
+      "island": "Nilandhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "Dh",
+      "atoll": "Dhaalu",
+      "island": "Kudahuvadhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "Th",
+      "atoll": "Thaa",
+      "island": "Veymandoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "L",
+      "atoll": "Laamu",
+      "island": "Fonadhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "GA",
+      "atoll": "Gaafu Alifu",
+      "island": "Vilingili",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "GDh",
+      "atoll": "Gaafu Dhaalu",
+      "island": "Thinadhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "Gn",
+      "atoll": "Gnaviyani",
+      "island": "Fuvahmulah",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "S",
+      "atoll": "Seenu / Addu",
+      "island": "Hithadhoo",
+      "kind": "Atoll capital",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "HA",
+      "atoll": "Haa Alifu",
+      "island": "Hoarafushi",
+      "kind": "Additional location",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    },
+    {
+      "atollCode": "HDh",
+      "atoll": "Haa Dhaalu",
+      "island": "Makunudhoo",
+      "kind": "Additional location",
+      "quantity": 1,
+      "source": "Site owner service-location information, 22 October 2026"
+    }
+  ],
+  "mndfLocations": [
+    {
+      "island": "Hanimaadhoo",
+      "atoll": "Haa Dhaalu",
+      "label": "MNDF post",
+      "source": "Site owner; public support-staff notice",
+      "url": "https://furusathu.com/notice/405481"
+    },
+    {
+      "island": "Kulhudhuffushi",
+      "atoll": "Haa Dhaalu",
+      "label": "MNDF post",
+      "source": "Site owner location information",
+      "url": ""
+    },
+    {
+      "island": "Maafaru",
+      "atoll": "Noonu",
+      "label": "MNDF location",
+      "source": "President's Office",
+      "url": "https://presidency.gov.mv/Press/Article/30468"
+    },
+    {
+      "island": "Kadhdhoo",
+      "atoll": "Laamu",
+      "label": "MNDF facility",
+      "source": "President's Office",
+      "url": "https://presidency.gov.mv/Press/Article/35413"
+    },
+    {
+      "island": "Maafilaafushi",
+      "atoll": "Lhaviyani",
+      "label": "MNDF facility",
+      "source": "President's Office",
+      "url": "https://presidency.gov.mv/Press/Article/35144"
+    },
+    {
+      "island": "Gan",
+      "atoll": "Addu",
+      "label": "MNDF facility",
+      "source": "President's Office",
+      "url": "https://presidency.gov.mv/Press/Article/35592"
+    },
+    {
+      "island": "Vilimalé",
+      "atoll": "Malé area",
+      "label": "MNDF facility",
+      "source": "President's Office",
+      "url": "https://presidency.gov.mv/Press/Article/37084"
+    }
+  ]
+};
+
 var TTX_AIRPORTS = [
   {
-    id: 'VRMM', icao: 'VRMM', iata: 'MLE',
-    name: 'Velana International Airport', short: 'Velana',
-    island: 'Hulhulé', atoll: 'Kaafu (Malé) Atoll',
-    operator: 'Maldives Airports Company Limited (MACL)',
-    type: 'International · water aerodrome',
-    lat: 4.1918, lon: 73.5291,
-    runways: [
-      { id: '18/36', ends: ['18', '36'], hdg: 180, length: 3400, width: 60, surface: 'Asphalt' }
+    "id": "VRMM",
+    "icao": "VRMM",
+    "iata": "MLE",
+    "name": "Velana International Airport",
+    "short": "Velana",
+    "island": "Hulhulé",
+    "atoll": "Kaafu (Malé) Atoll",
+    "operator": "Maldives Airports Company Limited (MACL)",
+    "type": "International · water aerodrome",
+    "lat": 4.1918,
+    "lon": 73.5291,
+    "runways": [
+      {
+        "id": "18/36",
+        "ends": [
+          "18",
+          "36"
+        ],
+        "hdg": 180,
+        "length": 3400,
+        "width": 60,
+        "surface": "Asphalt"
+      }
     ],
-    apronSide: 'right',           /* terminal on the west side (Malé side) */
-    features: { seaplane: true, seaTransfer: false, roadHospital: true },
-    rff: 'Category 9 — MACL Airport Fire & Rescue (new station designed to Cat 9/10, two marine rescue vessels)',
-    fleet: { regional: 'ATR 72-600', jet: 'Airbus A320-200', widebody: 'Boeing 777-300ER', seaplane: 'DHC-6 Twin Otter (floats)' },
-    links: [
-      { bearing: 0, kind: 'road', label: 'Causeway → Hulhumalé' },
-      { bearing: 235, kind: 'road', label: 'Sinamalé Bridge → Malé' }
+    "apronSide": "right",
+    "features": {
+      "seaplane": true,
+      "seaTransfer": false,
+      "roadHospital": true
+    },
+    "rff": "Category 9 — MACL Airport Fire & Rescue (new station designed to Cat 9/10, two marine rescue vessels)",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": "Airbus A320-200",
+      "widebody": "Boeing 777-300ER",
+      "seaplane": "DHC-6 Twin Otter (floats)"
+    },
+    "links": [
+      {
+        "bearing": 0,
+        "kind": "road",
+        "label": "Causeway → Hulhumalé"
+      },
+      {
+        "bearing": 235,
+        "kind": "road",
+        "label": "Sinamalé Bridge → Malé"
+      }
     ],
-    hospitals: [
-      { name: 'IGMH (Indira Gandhi Memorial Hospital), Malé', role: 'Primary trauma / tertiary', how: 'road via Sinamalé Bridge', eta: '≈20–30 min' },
-      { name: 'Hulhumalé Hospital', role: 'Secondary / overflow', how: 'road via Hulhumalé causeway', eta: '≈10–15 min' },
-      { name: 'ADK Hospital, Malé', role: 'Private overflow', how: 'road via Sinamalé Bridge', eta: '≈25–35 min' }
+    "hospitals": [
+      {
+        "name": "IGMH (Indira Gandhi Memorial Hospital), Malé",
+        "role": "Primary trauma / tertiary",
+        "how": "road via Sinamalé Bridge",
+        "eta": "≈20–30 min"
+      },
+      {
+        "name": "Hulhumalé Hospital",
+        "role": "Secondary / overflow",
+        "how": "road via Hulhumalé causeway",
+        "eta": "≈10–15 min"
+      },
+      {
+        "name": "ADK Hospital, Malé",
+        "role": "Private overflow",
+        "how": "road via Sinamalé Bridge",
+        "eta": "≈25–35 min"
+      }
     ],
-    agencies: [
-      'MACL Airport Fire & Rescue (RFF + marine rescue boats)',
-      'MNDF Fire & Rescue Service (Malé / Hulhumalé)',
-      'MNDF Coast Guard — Malé',
-      'Maldives Police Service (MPS) + airport AVSEC',
-      'Ministry of Health / HPA, IGMH',
-      'NDMA (National Disaster Management Authority)',
-      'Maldives Meteorological Service (Hulhulé)',
-      'Maldives Immigration · Customs'
+    "agencies": [
+      "MACL Airport Fire & Rescue (RFF + marine rescue boats)",
+      "Maldives Police Service (MPS) + airport AVSEC",
+      "Ministry of Health / HPA, IGMH",
+      "NDMA (National Disaster Management Authority)",
+      "Maldives Meteorological Service (Hulhulé)",
+      "Maldives Immigration · Customs",
+      "MNDF — nearest post responds"
     ],
-    local: { arff: 6, ambulances: 4, fireTrucks: 4, buses: 10, boats: 4 },
-    mutualAid: 'Malé / Hulhumalé services by road (≈15–30 min); MNDF Coast Guard by sea (≈15–30 min)',
-    eod: 'MNDF EOD team from Malé by road (≈30–45 min)',
-    recovery: 'MACL disabled-aircraft recovery equipment on airport',
-    utility: 'MACL power plant / STELCO',
-    referral: 'already at the national referral centre (IGMH, Malé)',
-    notes: 'Seaplane terminal and floating docks on the eastern lagoon; the runway is bounded by sea at both ends, so undershoot and overrun accidents are water rescues.'
+    "local": {
+      "arff": 6,
+      "ambulances": 4,
+      "fireTrucks": 4,
+      "buses": 10,
+      "boats": 4
+    },
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
+    "recovery": "MACL disabled-aircraft recovery equipment on airport",
+    "utility": "MACL power plant / STELCO",
+    "referral": "already at the national referral centre (IGMH, Malé)",
+    "notes": "Seaplane terminal and floating docks on the eastern lagoon; the runway is bounded by sea at both ends, so undershoot and overrun accidents are water rescues.",
+    "mndf": {
+      "locations": [
+        "Vilimalé"
+      ],
+      "response": "Nearest MNDF post responds."
+    },
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "K",
+        "atoll": "Kaafu",
+        "island": "Thulusdhoo",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
-    id: 'VRMG', icao: 'VRMG', iata: 'GAN',
-    name: 'Gan International Airport', short: 'Gan',
-    island: 'Gan', atoll: 'Addu City (Seenu)',
-    operator: 'Addu International Airport Pvt Ltd',
-    type: 'International',
-    lat: -0.6934, lon: 73.1556,
-    runways: [
-      { id: '10/28', ends: ['10', '28'], hdg: 100, length: 2650, width: 45, surface: 'Concrete / asphalt' }
+    "id": "VRMG",
+    "icao": "VRMG",
+    "iata": "GAN",
+    "name": "Gan International Airport",
+    "short": "Gan",
+    "island": "Gan",
+    "atoll": "Addu City (Seenu)",
+    "operator": "Addu International Airport Pvt Ltd",
+    "type": "International",
+    "lat": -0.6934,
+    "lon": 73.1556,
+    "runways": [
+      {
+        "id": "10/28",
+        "ends": [
+          "10",
+          "28"
+        ],
+        "hdg": 100,
+        "length": 2650,
+        "width": 45,
+        "surface": "Concrete / asphalt"
+      }
     ],
-    apronSide: 'left',
-    features: { seaplane: false, seaTransfer: false, roadHospital: true },
-    rff: 'Check certified RFF category in the MCAA AIP',
-    fleet: { regional: 'ATR 72-600', jet: 'Airbus A320-200', widebody: null, seaplane: null },
-    links: [
-      { bearing: 300, kind: 'road', label: 'Link road → Feydhoo · Maradhoo · Hithadhoo' }
+    "apronSide": "left",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": false,
+      "roadHospital": true
+    },
+    "rff": "Check certified RFF category in the MCAA AIP",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": "Airbus A320-200",
+      "widebody": null,
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 300,
+        "kind": "road",
+        "label": "Link road → Feydhoo · Maradhoo · Hithadhoo"
+      }
     ],
-    hospitals: [
-      { name: 'Addu Equatorial Hospital, Hithadhoo', role: 'Primary', how: 'road via the Addu link road', eta: '≈20–30 min' },
-      { name: 'IGMH, Malé', role: 'Tertiary referral', how: 'air (domestic flight / air ambulance) + road', eta: '≈1.5–2 h' }
+    "hospitals": [
+      {
+        "name": "Addu Equatorial Hospital, Hithadhoo",
+        "role": "Primary",
+        "how": "road via the Addu link road",
+        "eta": "≈20–30 min"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral",
+        "how": "air (domestic flight / air ambulance) + road",
+        "eta": "≈1.5–2 h"
+      }
     ],
-    agencies: [
-      'Airport RFF (Addu International Airport)',
-      'MNDF Southern Area — Fire & Rescue, Coast Guard (Addu)',
-      'Maldives Police Service — Addu',
-      'Addu City Council',
-      'Ministry of Health / HPA',
-      'NDMA'
+    "agencies": [
+      "Airport RFF (Addu International Airport)",
+      "Maldives Police Service — Addu",
+      "Addu City Council",
+      "Ministry of Health / HPA",
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
-    local: { arff: 3, ambulances: 2, fireTrucks: 1, buses: 4, boats: 2 },
-    mutualAid: 'Addu City services by road (≈20–30 min); Malé by air (≈1.5 h) or sea (≈24 h+)',
-    eod: 'MNDF EOD support — Southern Area or flown from Malé (≈2–3 h)',
-    recovery: 'heavy recovery kit flown or shipped from Velana (1–3 days)',
-    utility: 'FENAKA (Addu)',
-    referral: 'air transfer to Velana then road to IGMH (≈1.5–2 h)',
-    notes: 'Former RAF Gan airfield on the southern tip of Addu Atoll; the link road connects Gan to Feydhoo, Maradhoo and Hithadhoo.'
+    "local": {
+      "arff": 3,
+      "ambulances": 2,
+      "fireTrucks": 1,
+      "buses": 4,
+      "boats": 2
+    },
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
+    "recovery": "heavy recovery kit flown or shipped from Velana (1–3 days)",
+    "utility": "FENAKA (Addu)",
+    "referral": "air transfer to Velana then road to IGMH (≈1.5–2 h)",
+    "notes": "Former RAF Gan airfield on the southern tip of Addu Atoll; the link road connects Gan to Feydhoo, Maradhoo and Hithadhoo.",
+    "mndf": {
+      "locations": [
+        "Gan"
+      ],
+      "response": "Nearest MNDF post responds."
+    },
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "S",
+        "atoll": "Seenu / Addu",
+        "island": "Hithadhoo",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
-    id: 'VRMH', icao: 'VRMH', iata: 'HAQ',
-    name: 'Hanimaadhoo International Airport', short: 'Hanimaadhoo',
-    island: 'Hanimaadhoo', atoll: 'Haa Dhaalu Atoll',
-    operator: 'State airport operator (verify: MACL / RACL)',
-    type: 'International (upgraded runway)',
-    lat: 6.7442, lon: 73.1705,
-    runways: [
-      { id: '03/21', ends: ['03', '21'], hdg: 30, length: 2465, width: 45, surface: 'Asphalt' }
+    "id": "VRMH",
+    "icao": "VRMH",
+    "iata": "HAQ",
+    "name": "Hanimaadhoo International Airport",
+    "short": "Hanimaadhoo",
+    "island": "Hanimaadhoo",
+    "atoll": "Haa Dhaalu Atoll",
+    "operator": "State airport operator (verify: MACL / RACL)",
+    "type": "International (upgraded runway)",
+    "lat": 6.7442,
+    "lon": 73.1705,
+    "runways": [
+      {
+        "id": "03/21",
+        "ends": [
+          "03",
+          "21"
+        ],
+        "hdg": 30,
+        "length": 2465,
+        "width": 45,
+        "surface": "Asphalt"
+      }
     ],
-    apronSide: 'right',
-    features: { seaplane: false, seaTransfer: true, roadHospital: false },
-    rff: 'Check certified RFF category in the MCAA AIP',
-    fleet: { regional: 'ATR 72-600', jet: 'Airbus A320-200', widebody: null, seaplane: null },
-    links: [
-      { bearing: 185, kind: 'sea', label: 'Sea route → Kulhudhuffushi (≈45–60 min)' }
+    "apronSide": "right",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": true,
+      "roadHospital": false
+    },
+    "rff": "Check certified RFF category in the MCAA AIP",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": "Airbus A320-200",
+      "widebody": null,
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 185,
+        "kind": "sea",
+        "label": "Sea route → Kulhudhuffushi (≈45–60 min)"
+      }
     ],
-    hospitals: [
-      { name: 'Hanimaadhoo island health centre', role: 'First aid / stabilisation', how: 'road on island', eta: '≈5–10 min' },
-      { name: 'Kulhudhuffushi Regional Hospital', role: 'Primary', how: 'sea ambulance / speedboat', eta: '≈45–60 min' },
-      { name: 'IGMH, Malé', role: 'Tertiary referral', how: 'air ambulance / domestic flight + road', eta: '≈1.5–2 h' }
+    "hospitals": [
+      {
+        "name": "Hanimaadhoo island health centre",
+        "role": "First aid / stabilisation",
+        "how": "road on island",
+        "eta": "≈5–10 min"
+      },
+      {
+        "name": "Kulhudhuffushi Regional Hospital",
+        "role": "Primary",
+        "how": "sea ambulance / speedboat",
+        "eta": "≈45–60 min"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral",
+        "how": "air ambulance / domestic flight + road",
+        "eta": "≈1.5–2 h"
+      }
     ],
-    agencies: [
-      'Airport RFF (Hanimaadhoo)',
-      'MNDF Northern Area Command — initial response from MNDF Hanimaadhoo post',
-      'MNDF Kulhudhuffushi post — reinforcement by sea, approximately 35–40 minutes to the site',
-      'Maldives Police Service — Haa Dhaalu',
-      'Hanimaadhoo Island Council · HDh Atoll Council',
-      'Ministry of Health / HPA',
-      'NDMA'
+    "agencies": [
+      "Airport RFF (Hanimaadhoo)",
+      "Maldives Police Service — Haa Dhaalu",
+      "Hanimaadhoo Island Council · HDh Atoll Council",
+      "Ministry of Health / HPA",
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
-    local: { arff: 2, ambulances: 1, fireTrucks: 0, buses: 2, boats: 1 },
-    mutualAid: 'Initial MNDF response: MNDF Hanimaadhoo post (Northern Area Command). MNDF Kulhudhuffushi post provides reinforcement by sea, approximately 35–40 minutes to the site; confirm mobilisation and sea conditions. Hospital transfer estimates are separate.',
-    eod: 'MNDF EOD support flown from Malé (≈2–3 h)',
-    recovery: 'heavy recovery kit shipped or flown from Velana (1–3 days)',
-    utility: 'FENAKA (Hanimaadhoo)',
-    referral: 'air ambulance or domestic flight to Velana then road to IGMH (≈1.5–2 h)',
-    mndf: { presence: 'Established MNDF post', initial: 'MNDF Hanimaadhoo post — Northern Area Command initial response', support: 'MNDF Kulhudhuffushi post', supportEta: 'Approximately 35–40 minutes to the site by sea', source: 'Site owner operational correction, 22 October 2026' },
-    notes: 'MNDF responds initially from Hanimaadhoo post. Kulhudhuffushi post reinforces in approximately 35–40 minutes. Personnel numbers and specialist capabilities require confirmation. Serious casualties need a confirmed receiving hospital and sea or air transport.'
+    "local": {
+      "arff": 2,
+      "ambulances": 1,
+      "fireTrucks": 0,
+      "buses": 2,
+      "boats": 1
+    },
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
+    "recovery": "heavy recovery kit shipped or flown from Velana (1–3 days)",
+    "utility": "FENAKA (Hanimaadhoo)",
+    "referral": "air ambulance or domestic flight to Velana then road to IGMH (≈1.5–2 h)",
+    "mndf": {
+      "locations": [
+        "Hanimaadhoo",
+        "Kulhudhuffushi"
+      ],
+      "response": "Nearest MNDF post responds."
+    },
+    "notes": "Serious casualties need a confirmed receiving hospital and sea or air transport.",
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "HDh",
+        "atoll": "Haa Dhaalu",
+        "island": "Kulhudhuffushi",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      },
+      {
+        "atollCode": "HDh",
+        "atoll": "Haa Dhaalu",
+        "island": "Makunudhoo",
+        "kind": "Additional location",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
-    id: 'VRMK', icao: 'VRMK', iata: 'KDO',
-    name: 'Kadhdhoo Airport', short: 'Kadhdhoo',
-    island: 'Kadhdhoo', atoll: 'Laamu Atoll',
-    operator: 'Regional Airports (verify operator)',
-    type: 'Domestic',
-    lat: 1.8592, lon: 73.5219,
-    runways: [
-      { id: '03/21', ends: ['03', '21'], hdg: 30, length: 1220, width: 30, surface: 'Bitumen' }
+    "id": "VRMK",
+    "icao": "VRMK",
+    "iata": "KDO",
+    "name": "Kadhdhoo Airport",
+    "short": "Kadhdhoo",
+    "island": "Kadhdhoo",
+    "atoll": "Laamu Atoll",
+    "operator": "Regional Airports (verify operator)",
+    "type": "Domestic",
+    "lat": 1.8592,
+    "lon": 73.5219,
+    "runways": [
+      {
+        "id": "03/21",
+        "ends": [
+          "03",
+          "21"
+        ],
+        "hdg": 30,
+        "length": 1220,
+        "width": 30,
+        "surface": "Bitumen"
+      }
     ],
-    apronSide: 'right',
-    features: { seaplane: false, seaTransfer: false, roadHospital: true },
-    rff: 'Check certified RFF category in the MCAA AIP',
-    fleet: { regional: 'ATR 72-600', jet: null, widebody: null, seaplane: null },
-    links: [
-      { bearing: 25, kind: 'road', label: 'Link road → Fonadhoo' },
-      { bearing: 205, kind: 'road', label: 'Link road → Gan (Laamu)' }
+    "apronSide": "right",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": false,
+      "roadHospital": true
+    },
+    "rff": "Check certified RFF category in the MCAA AIP",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": null,
+      "widebody": null,
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 25,
+        "kind": "road",
+        "label": "Link road → Fonadhoo"
+      },
+      {
+        "bearing": 205,
+        "kind": "road",
+        "label": "Link road → Gan (Laamu)"
+      }
     ],
-    hospitals: [
-      { name: 'Gan Regional Hospital, Laamu', role: 'Primary', how: 'road via the Laamu link road', eta: '≈30–45 min' },
-      { name: 'IGMH, Malé', role: 'Tertiary referral', how: 'air (domestic flight / air ambulance) + road', eta: '≈1.5–2 h' }
+    "hospitals": [
+      {
+        "name": "Gan Regional Hospital, Laamu",
+        "role": "Primary",
+        "how": "road via the Laamu link road",
+        "eta": "≈30–45 min"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral",
+        "how": "air (domestic flight / air ambulance) + road",
+        "eta": "≈1.5–2 h"
+      }
     ],
-    agencies: [
-      'Airport RFF (Kadhdhoo)',
-      'MNDF Coast Guard / Fire & Rescue (regional)',
-      'Maldives Police Service — Laamu',
-      'Laamu Atoll Council · Island Councils',
-      'Ministry of Health / HPA',
-      'NDMA'
+    "agencies": [
+      "Airport RFF (Kadhdhoo)",
+      "Maldives Police Service — Laamu",
+      "Laamu Atoll Council · Island Councils",
+      "Ministry of Health / HPA",
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
-    local: { arff: 1, ambulances: 1, fireTrucks: 0, buses: 1, boats: 1 },
-    mutualAid: 'Laamu islands by link road (≈30–45 min); Malé by air (≈1 h)',
-    eod: 'MNDF EOD support flown from Malé (≈2 h)',
-    recovery: 'recovery kit flown or shipped from Velana (1–3 days)',
-    utility: 'FENAKA (Laamu)',
-    referral: 'domestic flight or air ambulance to Velana then road to IGMH (≈1.5–2 h)',
-    notes: 'Short 1,220 m runway — turboprop only. The link road ties Kadhdhoo to Fonadhoo and Gan, so ambulances can come by road.'
+    "local": {
+      "arff": 1,
+      "ambulances": 1,
+      "fireTrucks": 0,
+      "buses": 1,
+      "boats": 1
+    },
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
+    "recovery": "recovery kit flown or shipped from Velana (1–3 days)",
+    "utility": "FENAKA (Laamu)",
+    "referral": "domestic flight or air ambulance to Velana then road to IGMH (≈1.5–2 h)",
+    "notes": "Short 1,220 m runway — turboprop only. The link road ties Kadhdhoo to Fonadhoo and Gan, so ambulances can come by road.",
+    "mndf": {
+      "locations": [
+        "Kadhdhoo"
+      ],
+      "response": "Nearest MNDF post responds."
+    },
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "L",
+        "atoll": "Laamu",
+        "island": "Fonadhoo",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
-    id: 'VRMD', icao: 'VRMD', iata: 'DRV',
-    name: 'Dharavandhoo Airport', short: 'Dharavandhoo',
-    island: 'Dharavandhoo', atoll: 'Baa Atoll',
-    operator: 'Regional Airports (verify operator)',
-    type: 'Domestic · resort gateway',
-    lat: 5.1561, lon: 73.1302,
-    runways: [
-      { id: '12/30', ends: ['12', '30'], hdg: 120, length: 1189, width: 30, surface: 'Asphalt' }
+    "id": "VRMD",
+    "icao": "VRMD",
+    "iata": "DRV",
+    "name": "Dharavandhoo Airport",
+    "short": "Dharavandhoo",
+    "island": "Dharavandhoo",
+    "atoll": "Baa Atoll",
+    "operator": "Regional Airports (verify operator)",
+    "type": "Domestic · resort gateway",
+    "lat": 5.1561,
+    "lon": 73.1302,
+    "runways": [
+      {
+        "id": "12/30",
+        "ends": [
+          "12",
+          "30"
+        ],
+        "hdg": 120,
+        "length": 1189,
+        "width": 30,
+        "surface": "Asphalt"
+      }
     ],
-    apronSide: 'left',
-    features: { seaplane: false, seaTransfer: true, roadHospital: false },
-    rff: 'Check certified RFF category in the MCAA AIP',
-    fleet: { regional: 'Dash 8-300', jet: null, widebody: null, seaplane: null },
-    links: [
-      { bearing: 250, kind: 'sea', label: 'Sea route → Eydhafushi (≈30–45 min)' }
+    "apronSide": "left",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": true,
+      "roadHospital": false
+    },
+    "rff": "Check certified RFF category in the MCAA AIP",
+    "fleet": {
+      "regional": "Dash 8-300",
+      "jet": null,
+      "widebody": null,
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 250,
+        "kind": "sea",
+        "label": "Sea route → Eydhafushi (≈30–45 min)"
+      }
     ],
-    hospitals: [
-      { name: 'Dharavandhoo island health centre', role: 'First aid / stabilisation', how: 'road on island', eta: '≈5 min' },
-      { name: 'B. Eydhafushi Atoll Regional Hospital', role: 'Primary', how: 'sea ambulance / speedboat', eta: '≈30–45 min' },
-      { name: 'IGMH, Malé', role: 'Tertiary referral', how: 'seaplane / air ambulance + road', eta: '≈1–1.5 h' }
+    "hospitals": [
+      {
+        "name": "Dharavandhoo island health centre",
+        "role": "First aid / stabilisation",
+        "how": "road on island",
+        "eta": "≈5 min"
+      },
+      {
+        "name": "B. Eydhafushi Atoll Regional Hospital",
+        "role": "Primary",
+        "how": "sea ambulance / speedboat",
+        "eta": "≈30–45 min"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral",
+        "how": "seaplane / air ambulance + road",
+        "eta": "≈1–1.5 h"
+      }
     ],
-    agencies: [
-      'Airport RFF (Dharavandhoo)',
-      'MNDF Coast Guard (regional squadron)',
-      'Maldives Police Service — Baa',
-      'Baa Atoll Council · Island Council',
-      'Resort operators (boats, medical staff, guest manifests)',
-      'Ministry of Health / HPA',
-      'NDMA'
+    "agencies": [
+      "Airport RFF (Dharavandhoo)",
+      "Maldives Police Service — Baa",
+      "Baa Atoll Council · Island Council",
+      "Resort operators (boats, medical staff, guest manifests)",
+      "Ministry of Health / HPA",
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
-    local: { arff: 1, ambulances: 1, fireTrucks: 0, buses: 1, boats: 2 },
-    mutualAid: 'Eydhafushi and resort boats by sea (≈30–45 min); Malé by air (≈35 min flight)',
-    eod: 'MNDF EOD support flown from Malé (≈1.5–2 h)',
-    recovery: 'recovery kit flown or shipped from Velana (1–3 days)',
-    utility: 'FENAKA (Baa)',
-    referral: 'seaplane or air ambulance to Velana then road to IGMH (≈1–1.5 h)',
-    notes: 'Gateway to Baa Atoll resorts (UNESCO biosphere reserve) — passengers are mostly tourists and the nearest hospital is a boat ride away.'
+    "local": {
+      "arff": 1,
+      "ambulances": 1,
+      "fireTrucks": 0,
+      "buses": 1,
+      "boats": 2
+    },
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
+    "recovery": "recovery kit flown or shipped from Velana (1–3 days)",
+    "utility": "FENAKA (Baa)",
+    "referral": "seaplane or air ambulance to Velana then road to IGMH (≈1–1.5 h)",
+    "notes": "Gateway to Baa Atoll resorts (UNESCO biosphere reserve) — passengers are mostly tourists and the nearest hospital is a boat ride away.",
+    "mndf": {
+      "locations": [
+        "Maafilaafushi"
+      ],
+      "response": "Nearest MNDF post responds."
+    },
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "B",
+        "atoll": "Baa",
+        "island": "Eydhafushi",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
-    id: 'VRMV', icao: 'VRMV', iata: 'VAM',
-    name: 'Villa International Airport Maamigili', short: 'Maamigili',
-    island: 'Maamigili', atoll: 'Alif Dhaal Atoll',
-    operator: 'Villa group (private)',
-    type: 'Domestic / international (private)',
-    lat: 3.4706, lon: 72.8358,
-    runways: [
-      { id: '09/27', ends: ['09', '27'], hdg: 90, length: 1800, width: 30, surface: 'Asphalt' }
+    "id": "VRMV",
+    "icao": "VRMV",
+    "iata": "VAM",
+    "name": "Villa International Airport Maamigili",
+    "short": "Maamigili",
+    "island": "Maamigili",
+    "atoll": "Alif Dhaal Atoll",
+    "operator": "Villa group (private)",
+    "type": "Domestic / international (private)",
+    "lat": 3.4706,
+    "lon": 72.8358,
+    "runways": [
+      {
+        "id": "09/27",
+        "ends": [
+          "09",
+          "27"
+        ],
+        "hdg": 90,
+        "length": 1800,
+        "width": 30,
+        "surface": "Asphalt"
+      }
     ],
-    apronSide: 'left',
-    features: { seaplane: false, seaTransfer: true, roadHospital: false },
-    rff: 'Check certified RFF category in the MCAA AIP',
-    fleet: { regional: 'ATR 72-600', jet: null, widebody: null, seaplane: null },
-    links: [
-      { bearing: 25, kind: 'sea', label: 'Sea route → Mahibadhoo (≈45–60 min)' }
+    "apronSide": "left",
+    "features": {
+      "seaplane": false,
+      "seaTransfer": true,
+      "roadHospital": false
+    },
+    "rff": "Check certified RFF category in the MCAA AIP",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": null,
+      "widebody": null,
+      "seaplane": null
+    },
+    "links": [
+      {
+        "bearing": 25,
+        "kind": "sea",
+        "label": "Sea route → Mahibadhoo (≈45–60 min)"
+      }
     ],
-    hospitals: [
-      { name: 'Maamigili island health centre', role: 'First aid / stabilisation', how: 'road on island', eta: '≈5–10 min' },
-      { name: 'ADh. Mahibadhoo Atoll Hospital', role: 'Primary', how: 'sea ambulance / speedboat', eta: '≈45–60 min' },
-      { name: 'IGMH, Malé', role: 'Tertiary referral', how: 'air ambulance / seaplane + road', eta: '≈1–1.5 h' }
+    "hospitals": [
+      {
+        "name": "Maamigili island health centre",
+        "role": "First aid / stabilisation",
+        "how": "road on island",
+        "eta": "≈5–10 min"
+      },
+      {
+        "name": "ADh. Mahibadhoo Atoll Hospital",
+        "role": "Primary",
+        "how": "sea ambulance / speedboat",
+        "eta": "≈45–60 min"
+      },
+      {
+        "name": "IGMH, Malé",
+        "role": "Tertiary referral",
+        "how": "air ambulance / seaplane + road",
+        "eta": "≈1–1.5 h"
+      }
     ],
-    agencies: [
-      'Airport RFF (Maamigili)',
-      'MNDF Coast Guard (regional squadron)',
-      'Maldives Police Service — Alif Dhaal',
-      'ADh Atoll Council · Island Council',
-      'Resort operators (boats, guest manifests)',
-      'Ministry of Health / HPA',
-      'NDMA'
+    "agencies": [
+      "Airport RFF (Maamigili)",
+      "Maldives Police Service — Alif Dhaal",
+      "ADh Atoll Council · Island Council",
+      "Resort operators (boats, guest manifests)",
+      "Ministry of Health / HPA",
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
-    local: { arff: 2, ambulances: 1, fireTrucks: 0, buses: 2, boats: 2 },
-    mutualAid: 'Mahibadhoo and resort boats by sea (≈45–60 min); Malé by air (≈25 min flight)',
-    eod: 'MNDF EOD support flown from Malé (≈1.5–2 h)',
-    recovery: 'recovery kit flown or shipped from Velana (1–3 days)',
-    utility: 'Villa / FENAKA',
-    referral: 'air ambulance or seaplane to Velana then road to IGMH (≈1–1.5 h)',
-    notes: 'South Ari resort gateway — whale-shark season brings extra tourist traffic and day-boats in the lagoon.'
+    "local": {
+      "arff": 2,
+      "ambulances": 1,
+      "fireTrucks": 0,
+      "buses": 2,
+      "boats": 2
+    },
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
+    "recovery": "recovery kit flown or shipped from Velana (1–3 days)",
+    "utility": "Villa / FENAKA",
+    "referral": "air ambulance or seaplane to Velana then road to IGMH (≈1–1.5 h)",
+    "notes": "South Ari resort gateway — whale-shark season brings extra tourist traffic and day-boats in the lagoon.",
+    "mndf": {
+      "locations": [],
+      "response": "Nearest MNDF post responds."
+    },
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "ADh",
+        "atoll": "Alifu Dhaalu",
+        "island": "Mahibadhoo",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
     "id": "VRBK",
@@ -311,13 +935,13 @@ var TTX_AIRPORTS = [
     ],
     "agencies": [
       "Airport RFF (Kulhudhuffushi)",
-      "MNDF Kulhudhuffushi post",
       "Maldives Police Service / airport AVSEC",
       "Kulhudhuffushi Island / City Council · Haa Dhaalu Atoll Council",
       "Local health service and receiving hospital",
       "Resort / vessel operators — confirmed support only",
       "Ministry of Health / HPA",
-      "NDMA"
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
     "local": {
       "arff": 0,
@@ -327,17 +951,17 @@ var TTX_AIRPORTS = [
       "boats": 0
     },
     "localConfirmed": false,
-    "mutualAid": "MNDF Kulhudhuffushi post. MNDF Hanimaadhoo post; confirm tasking and mobilisation. Other island / resort assistance requires confirmation.",
-    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
     "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "presence": "Established MNDF post",
-      "initial": "MNDF Kulhudhuffushi post",
-      "support": "MNDF Hanimaadhoo post; confirm tasking and mobilisation",
-      "supportEta": "Confirm deployment-specific estimate",
-      "source": "Site owner operational information, 22 October 2026"
+      "locations": [
+        "Kulhudhuffushi",
+        "Hanimaadhoo"
+      ],
+      "response": "Nearest MNDF post responds."
     },
     "sources": [
       {
@@ -349,7 +973,25 @@ var TTX_AIRPORTS = [
         "url": "https://www.macl.aero/air-navigation-services/aip"
       }
     ],
-    "notes": "MNDF Kulhudhuffushi post has an established personnel presence and supports Hanimaadhoo. The owner-provided 35–40 minute estimate applies to deployment from Kulhudhuffushi to a Hanimaadhoo incident, not a generic hospital-transfer time. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+    "notes": "Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review.",
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "HDh",
+        "atoll": "Haa Dhaalu",
+        "island": "Kulhudhuffushi",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      },
+      {
+        "atollCode": "HDh",
+        "atoll": "Haa Dhaalu",
+        "island": "Makunudhoo",
+        "kind": "Additional location",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
     "id": "VRDA",
@@ -418,13 +1060,13 @@ var TTX_AIRPORTS = [
     ],
     "agencies": [
       "Airport RFF (Maafaru)",
-      "MNDF Maafaru post",
       "Maldives Police Service / airport AVSEC",
       "Maafaru Island / City Council · Noonu Atoll Council",
       "Local health service and receiving hospital",
       "Resort / vessel operators — confirmed support only",
       "Ministry of Health / HPA",
-      "NDMA"
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
     "local": {
       "arff": 0,
@@ -434,17 +1076,16 @@ var TTX_AIRPORTS = [
       "boats": 0
     },
     "localConfirmed": false,
-    "mutualAid": "MNDF Maafaru post. Additional MNDF support through command; confirm origin, tasking and transport. Other island / resort assistance requires confirmation.",
-    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
     "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "presence": "Established MNDF post",
-      "initial": "MNDF Maafaru post",
-      "support": "Additional MNDF support through command; confirm origin, tasking and transport",
-      "supportEta": "Confirm deployment-specific estimate",
-      "source": "Site owner operational information, 22 October 2026"
+      "locations": [
+        "Maafaru"
+      ],
+      "response": "Nearest MNDF post responds."
     },
     "sources": [
       {
@@ -456,7 +1097,17 @@ var TTX_AIRPORTS = [
         "url": "https://www.macl.aero/library/files/AIRAC%20AIP%20AMDT%201-26.pdf"
       }
     ],
-    "notes": "Initial MNDF response is from the Maafaru post. Widebody exercise aircraft are planning examples, not an operational clearance. AIP Amendment 1/26 lists a 120 m displaced threshold on RWY 06 (LDA 2730 m); physical runway length is 2850 m. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+    "notes": "Widebody exercise aircraft are planning examples, not an operational clearance. AIP Amendment 1/26 lists a 120 m displaced threshold on RWY 06 (LDA 2730 m); physical runway length is 2850 m. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review.",
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "N",
+        "atoll": "Noonu",
+        "island": "Manadhoo",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
     "id": "VREI",
@@ -525,13 +1176,13 @@ var TTX_AIRPORTS = [
     ],
     "agencies": [
       "Airport RFF (Ifuru)",
-      "Limited local MNDF personnel — confirm available strength and role",
       "Maldives Police Service / airport AVSEC",
       "Ifuru Island / City Council · Raa Atoll Council",
       "Local health service and receiving hospital",
       "Resort / vessel operators — confirmed support only",
       "Ministry of Health / HPA",
-      "NDMA"
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
     "local": {
       "arff": 0,
@@ -541,17 +1192,16 @@ var TTX_AIRPORTS = [
       "boats": 0
     },
     "localConfirmed": false,
-    "mutualAid": "Limited local MNDF personnel — confirm available strength and role. Request additional MNDF personnel and capabilities through command; confirm support origin, availability and transport. Other island / resort assistance requires confirmation.",
-    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
     "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "presence": "Limited local MNDF personnel",
-      "initial": "Limited local MNDF personnel — confirm available strength and role",
-      "support": "Additional MNDF support through command; origin and ETA to be confirmed",
-      "supportEta": "Confirm deployment-specific estimate",
-      "source": "Site owner operational information, 22 October 2026"
+      "locations": [
+        "Maafilaafushi"
+      ],
+      "response": "Nearest MNDF post responds."
     },
     "sources": [
       {
@@ -563,7 +1213,17 @@ var TTX_AIRPORTS = [
         "url": "https://www.macl.aero/air-navigation-services/aip"
       }
     ],
-    "notes": "Limited local MNDF personnel; additional response requires confirmed tasking and inter-island transport. Confirm local first-aid arrangements and receiving-hospital acceptance. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+    "notes": "Confirm local first-aid arrangements and receiving-hospital acceptance. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review.",
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "R",
+        "atoll": "Raa",
+        "island": "Ungoofaaru",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
     "id": "VRAH",
@@ -632,13 +1292,13 @@ var TTX_AIRPORTS = [
     ],
     "agencies": [
       "Airport RFF (Hoarafushi)",
-      "Limited local MNDF personnel — confirm available strength and role",
       "Maldives Police Service / airport AVSEC",
       "Hoarafushi Island / City Council · Haa Alifu Atoll Council",
       "Local health service and receiving hospital",
       "Resort / vessel operators — confirmed support only",
       "Ministry of Health / HPA",
-      "NDMA"
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
     "local": {
       "arff": 0,
@@ -648,17 +1308,17 @@ var TTX_AIRPORTS = [
       "boats": 0
     },
     "localConfirmed": false,
-    "mutualAid": "Limited local MNDF personnel — confirm available strength and role. Request additional MNDF personnel and capabilities through command; confirm support origin, availability and transport. Other island / resort assistance requires confirmation.",
-    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
     "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "presence": "Limited local MNDF personnel",
-      "initial": "Limited local MNDF personnel — confirm available strength and role",
-      "support": "Additional MNDF support through command; origin and ETA to be confirmed",
-      "supportEta": "Confirm deployment-specific estimate",
-      "source": "Site owner operational information, 22 October 2026"
+      "locations": [
+        "Hanimaadhoo",
+        "Kulhudhuffushi"
+      ],
+      "response": "Nearest MNDF post responds."
     },
     "sources": [
       {
@@ -670,7 +1330,25 @@ var TTX_AIRPORTS = [
         "url": "https://www.macl.aero/air-navigation-services/aip"
       }
     ],
-    "notes": "Limited local MNDF personnel; coordinate reinforcement through MNDF command. Confirm access between the reclaimed airport area, island health facility and casualty transfer jetty. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+    "notes": "Confirm access between the reclaimed airport area, island health facility and casualty transfer jetty. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review.",
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "HA",
+        "atoll": "Haa Alifu",
+        "island": "Dhidhdhoo",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      },
+      {
+        "atollCode": "HA",
+        "atoll": "Haa Alifu",
+        "island": "Hoarafushi",
+        "kind": "Additional location",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
     "id": "VRCF",
@@ -733,13 +1411,13 @@ var TTX_AIRPORTS = [
     ],
     "agencies": [
       "Airport RFF (Funadhoo)",
-      "Limited local MNDF personnel — confirm available strength and role",
       "Maldives Police Service / airport AVSEC",
       "Funadhoo Island / City Council · Shaviyani Atoll Council",
       "Local health service and receiving hospital",
       "Resort / vessel operators — confirmed support only",
       "Ministry of Health / HPA",
-      "NDMA"
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
     "local": {
       "arff": 0,
@@ -749,17 +1427,16 @@ var TTX_AIRPORTS = [
       "boats": 0
     },
     "localConfirmed": false,
-    "mutualAid": "Limited local MNDF personnel — confirm available strength and role. Request additional MNDF personnel and capabilities through command; confirm support origin, availability and transport. Other island / resort assistance requires confirmation.",
-    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
     "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "presence": "Limited local MNDF personnel",
-      "initial": "Limited local MNDF personnel — confirm available strength and role",
-      "support": "Additional MNDF support through command; origin and ETA to be confirmed",
-      "supportEta": "Confirm deployment-specific estimate",
-      "source": "Site owner operational information, 22 October 2026"
+      "locations": [
+        "Maafaru"
+      ],
+      "response": "Nearest MNDF post responds."
     },
     "sources": [
       {
@@ -771,7 +1448,17 @@ var TTX_AIRPORTS = [
         "url": "https://www.macl.aero/library/files/AIRAC%20AIP%20AMDT%201-26.pdf"
       }
     ],
-    "notes": "Funadhoo in Shaviyani, not Fonadhoo in Laamu. AIP Amendment 1/26 lists runway 01/19. Limited local MNDF personnel; request additional support through command. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+    "notes": "Funadhoo in Shaviyani, not Fonadhoo in Laamu. AIP Amendment 1/26 lists runway 01/19. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review.",
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "Sh",
+        "atoll": "Shaviyani",
+        "island": "Funadhoo",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
     "id": "VRGD",
@@ -840,13 +1527,13 @@ var TTX_AIRPORTS = [
     ],
     "agencies": [
       "Airport RFF (Madivaru)",
-      "Limited local MNDF personnel — confirm available strength and role",
       "Maldives Police Service / airport AVSEC",
       "Madivaru Island / City Council · Lhaviyani Atoll Council",
       "Local health service and receiving hospital",
       "Resort / vessel operators — confirmed support only",
       "Ministry of Health / HPA",
-      "NDMA"
+      "NDMA",
+      "MNDF — nearest post responds"
     ],
     "local": {
       "arff": 0,
@@ -856,17 +1543,16 @@ var TTX_AIRPORTS = [
       "boats": 0
     },
     "localConfirmed": false,
-    "mutualAid": "Limited local MNDF personnel — confirm available strength and role. Request additional MNDF personnel and capabilities through command; confirm support origin, availability and transport. Other island / resort assistance requires confirmation.",
-    "eod": "Specialist MNDF EOD support requires separate tasking; local personnel presence does not establish EOD capability",
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
     "recovery": "Confirm airport recovery capability; heavy equipment may require sea or air mobilisation",
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "presence": "Limited local MNDF personnel",
-      "initial": "Limited local MNDF personnel — confirm available strength and role",
-      "support": "Additional MNDF support through command; origin and ETA to be confirmed",
-      "supportEta": "Confirm deployment-specific estimate",
-      "source": "Site owner operational information, 22 October 2026"
+      "locations": [
+        "Maafilaafushi"
+      ],
+      "response": "Nearest MNDF post responds."
     },
     "sources": [
       {
@@ -878,41 +1564,142 @@ var TTX_AIRPORTS = [
         "url": "https://www.macl.aero/air-navigation-services/aip"
       }
     ],
-    "notes": "Limited local MNDF personnel. Casualty movement requires a confirmed jetty handover and receiving hospital; resort boats are not automatically medical transport. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review."
+    "notes": "Casualty movement requires a confirmed jetty handover and receiving hospital; resort boats are not automatically medical transport. Equipment inventory is not supplied: zero planning counts mean unconfirmed inventory, not absence of equipment. Runway dimensions and layout remain planning references pending current AIP / AEP review.",
+    "seaAmbulanceLocations": [
+      {
+        "atollCode": "Lh",
+        "atoll": "Lhaviyani",
+        "island": "Naifaru",
+        "kind": "Atoll capital",
+        "quantity": 1,
+        "source": "Site owner service-location information, 22 October 2026"
+      }
+    ]
   },
   {
-    id: 'GENERIC', icao: '—', iata: '—',
-    name: 'Generic island airport (template)', short: 'Generic',
-    island: 'Airport island', atoll: '—',
-    operator: 'Airport operator',
-    type: 'Template — adjust to your airport',
-    lat: null, lon: null,
-    runways: [
-      { id: '18/36', ends: ['18', '36'], hdg: 180, length: 2500, width: 45, surface: 'Asphalt' },
-      { id: '09/27', ends: ['09', '27'], hdg: 90, length: 2500, width: 45, surface: 'Asphalt' },
-      { id: '03/21', ends: ['03', '21'], hdg: 30, length: 2500, width: 45, surface: 'Asphalt' },
-      { id: '12/30', ends: ['12', '30'], hdg: 120, length: 2500, width: 45, surface: 'Asphalt' }
+    "id": "GENERIC",
+    "icao": "—",
+    "iata": "—",
+    "name": "Generic island airport (template)",
+    "short": "Generic",
+    "island": "Airport island",
+    "atoll": "—",
+    "operator": "Airport operator",
+    "type": "Template — adjust to your airport",
+    "lat": null,
+    "lon": null,
+    "runways": [
+      {
+        "id": "18/36",
+        "ends": [
+          "18",
+          "36"
+        ],
+        "hdg": 180,
+        "length": 2500,
+        "width": 45,
+        "surface": "Asphalt"
+      },
+      {
+        "id": "09/27",
+        "ends": [
+          "09",
+          "27"
+        ],
+        "hdg": 90,
+        "length": 2500,
+        "width": 45,
+        "surface": "Asphalt"
+      },
+      {
+        "id": "03/21",
+        "ends": [
+          "03",
+          "21"
+        ],
+        "hdg": 30,
+        "length": 2500,
+        "width": 45,
+        "surface": "Asphalt"
+      },
+      {
+        "id": "12/30",
+        "ends": [
+          "12",
+          "30"
+        ],
+        "hdg": 120,
+        "length": 2500,
+        "width": 45,
+        "surface": "Asphalt"
+      }
     ],
-    apronSide: 'right',
-    features: { seaplane: true, seaTransfer: true, roadHospital: false },
-    rff: 'Set to your certified RFF category',
-    fleet: { regional: 'ATR 72-600', jet: 'Airbus A320-200', widebody: 'Airbus A330-200', seaplane: 'DHC-6 Twin Otter (floats)' },
-    links: [
-      { bearing: 225, kind: 'road', label: 'Access road / causeway' },
-      { bearing: 140, kind: 'sea', label: 'Sea route → receiving hospital' }
+    "apronSide": "right",
+    "features": {
+      "seaplane": true,
+      "seaTransfer": true,
+      "roadHospital": false
+    },
+    "rff": "Set to your certified RFF category",
+    "fleet": {
+      "regional": "ATR 72-600",
+      "jet": "Airbus A320-200",
+      "widebody": "Airbus A330-200",
+      "seaplane": "DHC-6 Twin Otter (floats)"
+    },
+    "links": [
+      {
+        "bearing": 225,
+        "kind": "road",
+        "label": "Access road / causeway"
+      },
+      {
+        "bearing": 140,
+        "kind": "sea",
+        "label": "Sea route → receiving hospital"
+      }
     ],
-    hospitals: [
-      { name: 'Receiving hospital (neighbouring island)', role: 'Primary', how: 'sea ambulance', eta: '≈45 min' },
-      { name: 'National referral hospital', role: 'Tertiary referral', how: 'air ambulance', eta: '≈1.5 h' }
+    "hospitals": [
+      {
+        "name": "Receiving hospital (neighbouring island)",
+        "role": "Primary",
+        "how": "sea ambulance",
+        "eta": "≈45 min"
+      },
+      {
+        "name": "National referral hospital",
+        "role": "Tertiary referral",
+        "how": "air ambulance",
+        "eta": "≈1.5 h"
+      }
     ],
-    agencies: ['Airport RFF', 'Fire & rescue service', 'Coast guard', 'Police', 'Health authority', 'Disaster management authority'],
-    local: { arff: 3, ambulances: 2, fireTrucks: 1, buses: 3, boats: 2 },
-    mutualAid: 'Neighbouring islands by sea (≈1 h); capital by air (≈1.5 h)',
-    eod: 'Military EOD team flown in (≈2–3 h)',
-    recovery: 'recovery equipment from the main airport (1–3 days)',
-    utility: 'Island power utility',
-    referral: 'air ambulance to the national referral hospital (≈1.5 h)',
-    notes: 'Template profile — pick the runway orientation that matches your airport, then rename locations in ✏️ Customize Map.'
+    "agencies": [
+      "Airport RFF",
+      "Fire & rescue service",
+      "Coast guard",
+      "Police",
+      "Health authority",
+      "Disaster management authority",
+      "MNDF — nearest post responds"
+    ],
+    "local": {
+      "arff": 3,
+      "ambulances": 2,
+      "fireTrucks": 1,
+      "buses": 3,
+      "boats": 2
+    },
+    "mutualAid": "Nearest MNDF post responds. Other agencies coordinate under the airport emergency plan.",
+    "eod": "Specialist assistance coordinated through the relevant authorities.",
+    "recovery": "recovery equipment from the main airport (1–3 days)",
+    "utility": "Island power utility",
+    "referral": "air ambulance to the national referral hospital (≈1.5 h)",
+    "notes": "Template profile — pick the runway orientation that matches your airport, then rename locations in ✏️ Customize Map.",
+    "mndf": {
+      "locations": [],
+      "response": "Nearest MNDF post responds."
+    },
+    "seaAmbulanceLocations": []
   }
 ];
 

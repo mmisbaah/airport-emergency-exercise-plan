@@ -495,7 +495,7 @@ var TTX_DATA = {
       injects: [
         '11:00 — Pilot of {AIRCRAFT} reports possible hijacker onboard, squawks 7500',
         '11:02 — Aircraft cleared for priority landing {RWY}, isolated parking assigned',
-        '11:05 — MPS and MNDF notified, tactical team mobilised',
+        '11:05 — MPS and MNDF notified through the airport emergency plan',
         '11:10 — Aircraft on the remote stand, engines running',
         '11:15 — Negotiation team establishes contact',
         '11:20 — Coast Guard boats seal the lagoon side of the airport',
@@ -789,7 +789,7 @@ var TTX_DATA = {
     { term: 'Mutual Aid', def: 'A formal agreement for agencies to send personnel and equipment to assist each other during emergencies.' },
     { term: 'NDMA', def: 'National Disaster Management Authority — national coordination for disasters such as tsunami and flooding.' },
     { term: 'RFF Category', def: 'ICAO Annex 14 level of rescue and firefighting protection, set by the length and fuselage width of the largest aircraft using the aerodrome (1–10).' },
-    { term: 'Sea ambulance', def: 'A boat fitted for patient transfer — the main way casualties reach hospital from islands without one.' },
+    { term: 'Sea ambulance', def: 'Medical patient-transfer vessel. Bases: every atoll capital, plus Haa Alifu Hoarafushi and Haa Dhaalu Makunudhoo. Confirm current availability with the health service.' },
     { term: 'Size-up', def: 'The initial assessment of the scene: what happened, what is burning, who is involved, what is needed.' },
     { term: 'SOB', def: 'Souls on Board — the total number of passengers and crew, used to plan triage and transport capacity.' },
     { term: 'Staging', def: 'A designated area where incoming resources report, are assigned and await tasking.' },

@@ -17,7 +17,12 @@ export function unitTests(){
  assert(!/media helicopter/i.test(readFileSync(new URL('js/data.js',root),'utf8')));
  const added=['VRBK','VRDA','VREI','VRAH','VRCF','VRGD'];
  for(const id of added){const ap=c.TTX_AIRPORTS.find(a=>a.id===id);assert(ap,'Missing airport '+id);assert.equal(ap.features.seaplane,false);assert(ap.sources.length);for(const end of ap.runways[0].ends){const ctx=c.TTX_SITE.context({airport:id,runway:ap.runways[0].id,end});assert(c.TTX_SITE.mapSvg(ctx,{}).svg.includes(id));for(const scenario of c.TTX_DATA.scenarios){if(c.TTX_SITE.isApplicable(scenario,ctx)){const resolved=c.TTX_SITE.resolveScenario(scenario,ctx);assert.equal(resolved.airportId,id);assert(!resolved.injects.some(t=>/\{[A-Z_]+\}/.test(t)));}}}}
- const haq=c.TTX_AIRPORTS.find(a=>a.id==='VRMH');assert.match(haq.mndf.initial,/Hanimaadhoo post/);assert.match(haq.mndf.support,/Kulhudhuffushi post/);assert.match(haq.mndf.supportEta,/35–40/);assert(!haq.agencies.some(a=>a==='MNDF Northern Area — Coast Guard, Fire & Rescue (Kulhudhuffushi)'));
+ for(const ap of c.TTX_AIRPORTS){assert.equal(ap.mndf.response,'Nearest MNDF post responds.');assert(!('supportEta' in ap.mndf));assert(!/MNDF[^.]*[0-9]+\s*(min|hour)/i.test(JSON.stringify(ap)));}
+ assert.equal(c.TTX_PUBLIC_SERVICES.seaAmbulances.filter(b=>b.kind==='Atoll capital').length,20);
+ assert(c.TTX_PUBLIC_SERVICES.seaAmbulances.some(b=>b.island==='Hoarafushi'&&b.atollCode==='HA'));
+ assert(c.TTX_PUBLIC_SERVICES.seaAmbulances.some(b=>b.island==='Makunudhoo'&&b.atollCode==='HDh'));
+ assert(c.TTX_AIRPORTS.find(a=>a.id==='VRMH').mndf.locations.includes('Hanimaadhoo'));
+ assert(c.TTX_PUBLIC_SERVICES.mndfLocations.some(m=>m.island==='Kadhdhoo'));
  assert.equal(c.TTX_AIRPORTS.find(a=>a.id==='VRCF').runways[0].id,'01/19');
  console.log('Maldives unit checks passed: MVT date rollover, airport rosters, capability, transfer cycles, commitments, media references.');
 }
@@ -28,14 +33,14 @@ export async function browserTests({behavior,newAppPage,assert}){
   for(const id of ['VRBK','VRDA','VREI','VRAH','VRCF','VRGD']){
    await Promise.all([p.waitForEvent('load'),p.selectOption('#airportSelect',id)]);await p.waitForSelector('#islandResponseBtn');
    const info=await p.evaluate(()=>({ap:TTX_SITE.context().airport,map:document.getElementById('mapBase').textContent,profile:document.getElementById('airportProfile').textContent}));
-   assert(info.map.includes(id),'map missing '+id);assert(info.profile.includes(info.ap.mndf.initial),'MNDF origin missing '+id);assert(info.profile.includes('Equipment inventory not yet confirmed'),'unknown inventory presented as equipment absence');
+   assert(info.map.includes(id),'map missing '+id);assert(info.profile.includes(info.ap.mndf.response),'MNDF origin missing '+id);assert(info.profile.includes('Equipment inventory not yet confirmed'),'unknown inventory presented as equipment absence');
    await p.selectOption('#scenarioSelect','atr72-crash');assert((await p.textContent('#scenarioPanel')).includes(info.ap.short),'scenario did not adapt '+id);
-   await p.click('#islandResponseBtn');await p.click('[data-tab="agencies"]');assert((await p.textContent('#mvBody')).includes(info.ap.mndf.initial),'agency list missing local response '+id);await p.click('#mvClose');
+   await p.click('#islandResponseBtn');await p.click('[data-tab="agencies"]');assert((await p.textContent('#mvBody')).includes('nearest post responds'),'agency list missing generic response '+id);await p.click('#mvClose');
   }
-  await p.evaluate(()=>{localStorage.setItem('ttx-airport',JSON.stringify({airport:'VRMH',runway:'03/21',end:'03'}));localStorage.setItem('ttx-mv-ops:VRMH:initial',JSON.stringify({transfers:[],hospitals:[],facts:[],landmarks:[],settings:{},agencies:[{name:'MNDF Northern Area — Coast Guard, Fire & Rescue (Kulhudhuffushi)',role:'Existing exercise assignment',status:'Acknowledged',eta:'',primary:'Existing channel',fallback:'',initiator:''}]}));});
+  await p.evaluate(()=>{localStorage.setItem('ttx-mv-session-data:VRMH:old',JSON.stringify({'ttx-resource-tracker':JSON.stringify([{id:'military',name:'MNDF unit',type:'Military',owner:'MNDF',mobilisation:35}])}));localStorage.setItem('ttx-airport',JSON.stringify({airport:'VRMH',runway:'03/21',end:'03'}));localStorage.setItem('ttx-mv-ops:VRMH:initial',JSON.stringify({transfers:[],hospitals:[],facts:[],landmarks:[],settings:{},agencies:[{name:'MNDF Northern Area — Coast Guard, Fire & Rescue (Kulhudhuffushi)',role:'Existing exercise assignment',status:'Acknowledged',eta:'',primary:'Existing channel',fallback:'',initiator:''}]}));});
   await p.reload({waitUntil:'load'});await p.waitForSelector('#islandResponseBtn');await p.click('#islandResponseBtn');await p.click('[data-tab="agencies"]');
-  const text=await p.textContent('#mvBody');assert(text.includes('Hanimaadhoo post'),'existing agency did not migrate');assert(text.includes('35–40 minutes'),'support estimate missing');assert(text.includes('Existing exercise assignment')&&text.includes('Existing channel'),'migration lost exercise data');assert(!text.includes('Fire & Rescue (Kulhudhuffushi)'),'obsolete agency remains');
-  assert(p.errors.length===0,p.errors.join('; '));await ctx.close();
+  const text=await p.textContent('#mvBody');assert(text.includes('nearest post responds'),'generic military response missing');assert(!text.includes('35–40')&&!text.includes('Existing exercise assignment')&&!text.includes('Existing channel'),'military response details remain');await p.click('[data-tab="services"]');const directory=await p.textContent('#mvBody');for(const location of ['Hanimaadhoo','Kulhudhuffushi','Maafaru','Maafilaafushi','Kadhdhoo','Gan','Vilimalé','Hoarafushi','Makunudhoo'])assert(directory.includes(location),'missing public location '+location);assert(!directory.includes('35–40'),'response timing shown in public directory');
+  assert(!(await p.evaluate(()=>localStorage.getItem('ttx-mv-session-data:VRMH:old'))).includes('mobilisation'),'archived military timing survived');assert(p.errors.length===0,p.errors.join('; '));await ctx.close();
  });
  await behavior('island response: capacities, stages, assets, exports and sessions',async()=>{
   const {ctx,p}=await newAppPage();
