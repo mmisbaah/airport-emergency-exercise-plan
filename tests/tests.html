@@ -33,7 +33,6 @@
 
   <script src="../js/data.js?v=20261021.51"></script>
   <script src="../js/airports.js?v=20261021.51"></script>
-<script src="../js/airport-layouts.js?v=20261022.maps1"></script>
   <script>
     var results = { pass: 0, fail: 0, total: 0 };
 
@@ -249,17 +248,13 @@
         });
       }));
 
-      html += formatResult(test('Runway ends are reciprocal and bearings are plausible', function () {
+      html += formatResult(test('Runway designators match their headings', function () {
         TTX_AIRPORTS.forEach(function (ap) {
           ap.runways.forEach(function (rw) {
             assertEqual(rw.ends.length, 2, 'Runway needs two ends: ' + ap.id + ' ' + rw.id);
             var a = parseInt(rw.ends[0], 10), b = parseInt(rw.ends[1], 10);
             assertEqual(Math.abs(a - b), 18, 'Ends not reciprocal: ' + ap.id + ' ' + rw.id);
-            // Designators round magnetic bearings; the north-up map uses
-            // true bearings. They need not equal the designator times ten.
-            var difference = Math.abs(((rw.hdg - a * 10 + 540) % 360) - 180);
-            assert(Number.isFinite(rw.hdg) && rw.hdg >= 0 && rw.hdg <= 360 && difference <= 10,
-              'Implausible true bearing for designator: ' + ap.id + ' ' + rw.id);
+            assertEqual(rw.hdg, a * 10, 'Heading must equal first end x10: ' + ap.id + ' ' + rw.id);
             assert(rw.length > 500 && rw.width > 0, 'Bad runway size: ' + ap.id);
           });
         });

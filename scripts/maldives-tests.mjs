@@ -6,7 +6,7 @@ const root=new URL('../',import.meta.url);
 export function unitTests(){
  const storage=new Map(),document={addEventListener(){}};
  const c=vm.createContext({console,Intl,Date,crypto:globalThis.crypto,document,localStorage:{getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)},window:{},setTimeout});
- for(const f of ['js/data.js','js/airports.js','js/airport-layouts.js','js/maldives.js'])vm.runInContext(readFileSync(new URL(f,root),'utf8'),c);
+ for(const f of ['js/data.js','js/airports.js','js/maldives.js'])vm.runInContext(readFileSync(new URL(f,root),'utf8'),c);
  assert.equal(c.TTX_MV.time(new Date('2026-10-21T20:30:00Z')),'01:30 MVT');
  assert.equal(c.TTX_MV.date(new Date('2026-10-21T20:30:00Z')),'22/10/2026');
  for(const ap of c.TTX_AIRPORTS){const units=c.TTX_MV.defaults(ap);assert.equal(units.filter(r=>r.key==='boats').length,ap.local.boats);assert(units.every(r=>r.status==='unavailable'&&!r.confirmed));}
@@ -24,30 +24,9 @@ export function unitTests(){
  assert(c.TTX_AIRPORTS.every(a=>!('locations' in a.mndf)));
  assert(!('mndfLocations' in c.TTX_PUBLIC_SERVICES));
  assert.equal(c.TTX_AIRPORTS.find(a=>a.id==='VRCF').runways[0].id,'01/19');
- for(const ap of c.TTX_AIRPORTS.filter(a=>a.id!=='GENERIC')){
-  const layout=c.TTX_AIRPORT_LAYOUTS[ap.id];assert(layout&&layout.sourceUrl&&layout.chartDate);
-  const a=c.TTX_SITE.mapSvg(c.TTX_SITE.context({airport:ap.id,end:ap.runways[0].ends[0]}),{}),b=c.TTX_SITE.mapSvg(c.TTX_SITE.context({airport:ap.id,end:ap.runways[0].ends[1]}),{});
-  assert.equal(JSON.stringify(a.twr),JSON.stringify(b.twr),'Fixed tower moved on runway switch '+ap.id);assert.equal(JSON.stringify(a.arff),JSON.stringify(b.arff),'Fixed ARFF moved on runway switch '+ap.id);
-  assert.equal(a.twr===null,layout.facilities.twr.status==='unverified');assert.equal(a.arff===null,layout.facilities.arff.status==='unverified');
-  const ctx=c.TTX_SITE.context({airport:ap.id});const terminal=c.TTX_SITE.chartPoint(layout.facilities.terminal,ctx);const incident=c.TTX_SITE.incidentSite('terminal',ctx);assert(Math.abs(terminal.x-incident.x)<0.2&&Math.abs(terminal.y-incident.y)<0.2);
- }
- assert.equal(c.TTX_AIRPORTS.find(a=>a.id==='VRAH').runways[0].id,'15/33');
- assert.equal(c.TTX_AIRPORTS.find(a=>a.id==='VRMG').runways[0].length,2960);
  console.log('Maldives unit checks passed: MVT date rollover, airport rosters, capability, transfer cycles, commitments, media references.');
 }
 export async function browserTests({behavior,newAppPage,assert}){
- await behavior('charted fixed facilities, evidence and omitted unverified markers',async()=>{
-  const {ctx,p}=await newAppPage();await p.waitForSelector('#islandResponseBtn');
-  for(const id of ['VRMM','VRMG','VRMH','VRMK','VRMD','VRMV','VRBK','VRDA','VREI','VRAH','VRCF','VRGD']){
-   if(id!=='VRMM'){await Promise.all([p.waitForEvent('load'),p.selectOption('#airportSelect',id)]);await p.waitForSelector('#islandResponseBtn');}
-   const info=await p.evaluate(()=>{const layout=TTX_SITE.airportLayout(TTX_SITE.context());return {layout,first:[document.getElementById('mapTwr').getAttribute('transform'),document.getElementById('mapArff').getAttribute('transform')],hidden:[document.getElementById('mapTwr').style.display==='none',document.getElementById('mapArff').style.display==='none'],ends:Array.from(document.querySelectorAll('#runwaySelect option')).map(o=>o.value)};});
-   assert(info.layout&&info.hidden[0]===(info.layout.facilities.twr.status==='unverified')&&info.hidden[1]===(info.layout.facilities.arff.status==='unverified'),'unverified facility plotted at '+id);
-   assert((await p.textContent('#mapFacilityEvidence')).includes(info.layout.chartDate),'chart date absent '+id);
-   await p.selectOption('#runwaySelect',info.ends[1]);const second=await p.evaluate(()=>[document.getElementById('mapTwr').getAttribute('transform'),document.getElementById('mapArff').getAttribute('transform')]);assert(JSON.stringify(second)===JSON.stringify(info.first),'fixed facilities moved on active-end switch '+id);
-   if(id==='VRAH')assert(info.ends.join(',')==='15/33|15,15/33|33','Hoarafushi runway remains wrong');
-  }
-  assert(p.errors.length===0,p.errors.join('; '));await ctx.close();
- });
  await behavior('six northern airport profiles and existing Hanimaadhoo agency migration',async()=>{
   const {ctx,p}=await newAppPage();
   await p.waitForSelector('#islandResponseBtn');

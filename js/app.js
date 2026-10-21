@@ -628,10 +628,9 @@
           }
         }
       });
-      positions.__facilityRevision = 'aip-review-20261022';
       SITE_MARKS.forEach(function (m) {
         var el = document.getElementById(m.id);
-        if (!el || el.style.display === 'none') return;
+        if (!el) return;
         var match = (el.getAttribute('transform') || '').match(/translate\(([^,]+),([^)]+)\)/);
         if (match) positions[m.key] = { x: parseFloat(match[1]), y: parseFloat(match[2]) };
       });
@@ -669,7 +668,7 @@
       SITE_MARKS.forEach(function (m) {
         var el = document.getElementById(m.id);
         if (!el) return;
-        var p = saved.__facilityRevision === 'aip-review-20261022' ? saved[m.key] : null;
+        var p = saved[m.key];
         el.setAttribute('transform', 'translate(' +
           (p ? p.x : m.defX) + ',' + (p ? p.y : m.defY) + ')');
       });
@@ -1027,39 +1026,11 @@
       CRASH_ZONE_STORAGE_KEY = 'ttx-crash-zone-positions:' + siteSuffix() + ':' + (sc ? sc.id : 'none');
 
       var m = TTX_SITE.mapSvg(ctx, { windFrom: wind.from, windLive: wind.live });
-      var oldArt = base.closest('svg').querySelector('#chartFacilityArt');
-      if (oldArt) oldArt.remove();
       base.innerHTML = m.svg;
-      var art = base.querySelector('#chartFacilityArt');
-      if (art) base.closest('svg').appendChild(art);
-      var evidenceEl = document.getElementById('mapFacilityEvidence');
-      if (evidenceEl) {
-        if (m.evidence) {
-          var e = m.evidence;
-          evidenceEl.innerHTML = '<div><strong>Fixed facilities: source-reviewed, approximate chart positions.</strong> ' +
-            'Chart date: ' + escHtml(e.chartDate) + '. ' +
-            '<a href="' + escHtml(e.sourceUrl) + '#page=' + e.chartPage + '" target="_blank" rel="noopener noreferrer">Official aerodrome chart</a>' +
-            '<ul>' + ['terminal','twr','arff'].map(function(k){var f=e.facilities[k];return '<li>'+escHtml(f.label)+': '+escHtml(f.status === 'unverified' ? 'location not verified in reviewed sources — not plotted' : f.status+' (approximate)')+(f.sourceUrl?' · <a href="'+escHtml(f.sourceUrl)+'" target="_blank" rel="noopener noreferrer">Footprint cross-check</a>':'')+'</li>';}).join('') +
-            '</ul><span>These are not surveyed coordinates. Numbered response pins, transfer points and local drag overrides are exercise proposals; verify them against the approved AEP. Unverified facilities are omitted, not absent.</span></div>';
-        } else evidenceEl.innerHTML = '<div><strong>Illustrative template.</strong> Fixed facilities and response pins have no verified geographic positions.</div>';
-      }
-
 
       SITE_MARKS.forEach(function (mk) {
         var p = mk.key === 'twr' ? m.twr : m.arff;
-        mk.defX = p ? p.x : 0; mk.defY = p ? p.y : 0;
-        var el = document.getElementById(mk.id);
-        if (el) {
-          el.style.display = p ? '' : 'none';
-          var side = ctx.airport.apronSide === 'left' ? -1 : 1;
-          var labelOffset = m.evidence && p ? TTX_SITE.chartLabel(m.evidence.facilities[mk.key],ctx,mk.key) : {dx:75,dy:mk.key==='twr'?-35:0};
-          var dx = Math.round(labelOffset.dx), dy = Math.round(labelOffset.dy);
-          var label = mk.key === 'twr' ? 'ATC / AFIS' : 'ARFF';
-          el.innerHTML = '<title>' + label + (m.evidence ? ' — approximate chart-derived position; local drag overrides are exercise annotations' : ' — illustrative template position') + '</title>' +
-            '<circle r="5" fill="' + (mk.key === 'twr' ? '#60a5fa' : '#ef4444') + '" stroke="#e2e8f0"/>' +
-            '<path d="M 0 0 L '+dx+' '+dy+'" stroke="'+(mk.key === 'twr' ? '#60a5fa' : '#ef4444')+'" fill="none"/>' +
-            '<text x="'+dx+'" y="'+(dy-6)+'" fill="#e2e8f0" font-size="10" text-anchor="middle" paint-order="stroke" stroke="#0a1626" stroke-width="3">'+label+'</text>';
-        }
+        mk.defX = p.x; mk.defY = p.y;
       });
 
       /* incident site + zone rings (group is drawn around 507,270) */
@@ -1081,7 +1052,6 @@
       loadMapConfig();
       buildMapUI();
       applySiteMarkerPositions();
-      SITE_MARKS.forEach(function(m){var el=document.getElementById(m.id);if(el)base.closest('svg').appendChild(el);});
 
       var d = TTX_SITE.describe(ctx, wind.from, wind.live);
       var nameEl = document.getElementById('mapAirportName');
