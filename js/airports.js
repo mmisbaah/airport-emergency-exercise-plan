@@ -193,57 +193,6 @@ var TTX_PUBLIC_SERVICES = {
       "quantity": 1,
       "source": "Site owner service-location information, 22 October 2026"
     }
-  ],
-  "mndfLocations": [
-    {
-      "island": "Hanimaadhoo",
-      "atoll": "Haa Dhaalu",
-      "label": "MNDF post",
-      "source": "Site owner; public support-staff notice",
-      "url": "https://furusathu.com/notice/405481"
-    },
-    {
-      "island": "Kulhudhuffushi",
-      "atoll": "Haa Dhaalu",
-      "label": "MNDF post",
-      "source": "Site owner location information",
-      "url": ""
-    },
-    {
-      "island": "Maafaru",
-      "atoll": "Noonu",
-      "label": "MNDF location",
-      "source": "President's Office",
-      "url": "https://presidency.gov.mv/Press/Article/30468"
-    },
-    {
-      "island": "Kadhdhoo",
-      "atoll": "Laamu",
-      "label": "MNDF facility",
-      "source": "President's Office",
-      "url": "https://presidency.gov.mv/Press/Article/35413"
-    },
-    {
-      "island": "Maafilaafushi",
-      "atoll": "Lhaviyani",
-      "label": "MNDF facility",
-      "source": "President's Office",
-      "url": "https://presidency.gov.mv/Press/Article/35144"
-    },
-    {
-      "island": "Gan",
-      "atoll": "Addu",
-      "label": "MNDF facility",
-      "source": "President's Office",
-      "url": "https://presidency.gov.mv/Press/Article/35592"
-    },
-    {
-      "island": "Vilimalé",
-      "atoll": "Malé area",
-      "label": "MNDF facility",
-      "source": "President's Office",
-      "url": "https://presidency.gov.mv/Press/Article/37084"
-    }
   ]
 };
 
@@ -341,9 +290,6 @@ var TTX_AIRPORTS = [
     "referral": "already at the national referral centre (IGMH, Malé)",
     "notes": "Seaplane terminal and floating docks on the eastern lagoon; the runway is bounded by sea at both ends, so undershoot and overrun accidents are water rescues.",
     "mndf": {
-      "locations": [
-        "Vilimalé"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "seaAmbulanceLocations": [
@@ -438,9 +384,6 @@ var TTX_AIRPORTS = [
     "referral": "air transfer to Velana then road to IGMH (≈1.5–2 h)",
     "notes": "Former RAF Gan airfield on the southern tip of Addu Atoll; the link road connects Gan to Feydhoo, Maradhoo and Hithadhoo.",
     "mndf": {
-      "locations": [
-        "Gan"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "seaAmbulanceLocations": [
@@ -540,10 +483,6 @@ var TTX_AIRPORTS = [
     "utility": "FENAKA (Hanimaadhoo)",
     "referral": "air ambulance or domestic flight to Velana then road to IGMH (≈1.5–2 h)",
     "mndf": {
-      "locations": [
-        "Hanimaadhoo",
-        "Kulhudhuffushi"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "notes": "Serious casualties need a confirmed receiving hospital and sea or air transport.",
@@ -652,9 +591,6 @@ var TTX_AIRPORTS = [
     "referral": "domestic flight or air ambulance to Velana then road to IGMH (≈1.5–2 h)",
     "notes": "Short 1,220 m runway — turboprop only. The link road ties Kadhdhoo to Fonadhoo and Gan, so ambulances can come by road.",
     "mndf": {
-      "locations": [
-        "Kadhdhoo"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "seaAmbulanceLocations": [
@@ -756,9 +692,6 @@ var TTX_AIRPORTS = [
     "referral": "seaplane or air ambulance to Velana then road to IGMH (≈1–1.5 h)",
     "notes": "Gateway to Baa Atoll resorts (UNESCO biosphere reserve) — passengers are mostly tourists and the nearest hospital is a boat ride away.",
     "mndf": {
-      "locations": [
-        "Maafilaafushi"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "seaAmbulanceLocations": [
@@ -860,7 +793,6 @@ var TTX_AIRPORTS = [
     "referral": "air ambulance or seaplane to Velana then road to IGMH (≈1–1.5 h)",
     "notes": "South Ari resort gateway — whale-shark season brings extra tourist traffic and day-boats in the lagoon.",
     "mndf": {
-      "locations": [],
       "response": "Nearest MNDF post responds."
     },
     "seaAmbulanceLocations": [
@@ -957,10 +889,6 @@ var TTX_AIRPORTS = [
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "locations": [
-        "Kulhudhuffushi",
-        "Hanimaadhoo"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "sources": [
@@ -1082,9 +1010,6 @@ var TTX_AIRPORTS = [
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "locations": [
-        "Maafaru"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "sources": [
@@ -1198,9 +1123,6 @@ var TTX_AIRPORTS = [
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "locations": [
-        "Maafilaafushi"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "sources": [
@@ -1314,10 +1236,6 @@ var TTX_AIRPORTS = [
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "locations": [
-        "Hanimaadhoo",
-        "Kulhudhuffushi"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "sources": [
@@ -1433,9 +1351,6 @@ var TTX_AIRPORTS = [
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "locations": [
-        "Maafaru"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "sources": [
@@ -1549,9 +1464,6 @@ var TTX_AIRPORTS = [
     "utility": "Confirm airport utility provider and island service contacts",
     "referral": "Receiving-hospital acceptance and appropriate sea / air medical transport must be confirmed",
     "mndf": {
-      "locations": [
-        "Maafilaafushi"
-      ],
       "response": "Nearest MNDF post responds."
     },
     "sources": [
@@ -1696,7 +1608,6 @@ var TTX_AIRPORTS = [
     "referral": "air ambulance to the national referral hospital (≈1.5 h)",
     "notes": "Template profile — pick the runway orientation that matches your airport, then rename locations in ✏️ Customize Map.",
     "mndf": {
-      "locations": [],
       "response": "Nearest MNDF post responds."
     },
     "seaAmbulanceLocations": []

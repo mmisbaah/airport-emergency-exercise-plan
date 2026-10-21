@@ -21,8 +21,8 @@ export function unitTests(){
  assert.equal(c.TTX_PUBLIC_SERVICES.seaAmbulances.filter(b=>b.kind==='Atoll capital').length,20);
  assert(c.TTX_PUBLIC_SERVICES.seaAmbulances.some(b=>b.island==='Hoarafushi'&&b.atollCode==='HA'));
  assert(c.TTX_PUBLIC_SERVICES.seaAmbulances.some(b=>b.island==='Makunudhoo'&&b.atollCode==='HDh'));
- assert(c.TTX_AIRPORTS.find(a=>a.id==='VRMH').mndf.locations.includes('Hanimaadhoo'));
- assert(c.TTX_PUBLIC_SERVICES.mndfLocations.some(m=>m.island==='Kadhdhoo'));
+ assert(c.TTX_AIRPORTS.every(a=>!('locations' in a.mndf)));
+ assert(!('mndfLocations' in c.TTX_PUBLIC_SERVICES));
  assert.equal(c.TTX_AIRPORTS.find(a=>a.id==='VRCF').runways[0].id,'01/19');
  console.log('Maldives unit checks passed: MVT date rollover, airport rosters, capability, transfer cycles, commitments, media references.');
 }
@@ -39,7 +39,7 @@ export async function browserTests({behavior,newAppPage,assert}){
   }
   await p.evaluate(()=>{localStorage.setItem('ttx-mv-session-data:VRMH:old',JSON.stringify({'ttx-resource-tracker':JSON.stringify([{id:'military',name:'MNDF unit',type:'Military',owner:'MNDF',mobilisation:35}])}));localStorage.setItem('ttx-airport',JSON.stringify({airport:'VRMH',runway:'03/21',end:'03'}));localStorage.setItem('ttx-mv-ops:VRMH:initial',JSON.stringify({transfers:[],hospitals:[],facts:[],landmarks:[],settings:{},agencies:[{name:'MNDF Northern Area — Coast Guard, Fire & Rescue (Kulhudhuffushi)',role:'Existing exercise assignment',status:'Acknowledged',eta:'',primary:'Existing channel',fallback:'',initiator:''}]}));});
   await p.reload({waitUntil:'load'});await p.waitForSelector('#islandResponseBtn');await p.click('#islandResponseBtn');await p.click('[data-tab="agencies"]');
-  const text=await p.textContent('#mvBody');assert(text.includes('nearest post responds'),'generic military response missing');assert(!text.includes('35–40')&&!text.includes('Existing exercise assignment')&&!text.includes('Existing channel'),'military response details remain');await p.click('[data-tab="services"]');const directory=await p.textContent('#mvBody');for(const location of ['Hanimaadhoo','Kulhudhuffushi','Maafaru','Maafilaafushi','Kadhdhoo','Gan','Vilimalé','Hoarafushi','Makunudhoo'])assert(directory.includes(location),'missing public location '+location);assert(!directory.includes('35–40'),'response timing shown in public directory');
+  const text=await p.textContent('#mvBody');assert(text.includes('nearest post responds'),'generic military response missing');assert(!text.includes('35–40')&&!text.includes('Existing exercise assignment')&&!text.includes('Existing channel'),'military response details remain');await p.click('[data-tab="services"]');const directory=await p.textContent('#mvBody');for(const location of ['Hoarafushi','Makunudhoo'])assert(directory.includes(location),'missing public location '+location);assert(!directory.includes('35–40'),'response timing shown in public directory');assert(!directory.includes('MNDF')&&!directory.includes('Maafilaafushi'),'military location directory remains');
   assert(!(await p.evaluate(()=>localStorage.getItem('ttx-mv-session-data:VRMH:old'))).includes('mobilisation'),'archived military timing survived');assert(p.errors.length===0,p.errors.join('; '));await ctx.close();
  });
  await behavior('island response: capacities, stages, assets, exports and sessions',async()=>{

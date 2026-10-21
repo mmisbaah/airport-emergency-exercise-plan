@@ -5,7 +5,7 @@
    VERSION must be bumped whenever index.html / css / js change so stale
    caches are dropped on deploy (keep it in step with the ?v= versions). */
 
-var VERSION = 'eop-20261022.mv4';
+var VERSION = 'eop-20261022.mv5';
 var SHELL_CACHE = 'eop-shell-' + VERSION;
 
 var SHELL = [

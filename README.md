@@ -42,7 +42,7 @@ MIT
 
 ## Maldives island response
 
-The Island Response panel shares its assets with the unit roster and scenario commitment counts. Airport planning assets start unconfirmed and unavailable; confirm capabilities and availability before committing them. Boats are not automatically medical transport. Rescue craft, sea ambulances, resort speedboats and dhonis can be recorded separately. MNDF entries are limited to island locations and the generic statement that the nearest post responds.
+The Island Response panel shares its assets with the unit roster and scenario commitment counts. Airport planning assets start unconfirmed and unavailable; confirm capabilities and availability before committing them. Boats are not automatically medical transport. Rescue craft, sea ambulances, resort speedboats and dhonis can be recorded separately. MNDF entries contain only the generic statement that the nearest post responds.
 
 Transfers record casualty tags or groups, receiving hospital acceptance and exercise capacity, both transfer points, alternatives, assigned assets and an ordered Requested → Accepted → Boarding → Departed → Arrived → Handed over history. Estimates use facilitator-entered mobilisation, capacity, outbound and return/reload timings. Include loading and handover in entered timings. A matching casualty tag is marked transported only on handover.
 
@@ -59,4 +59,4 @@ Run `node scripts/maldives-tests.mjs` for the operations unit checks and `node s
 
 The Public services tab lists sea ambulance bases at the 20 atoll capitals, plus Haa Alifu Hoarafushi and Haa Dhaalu Makunudhoo, using site-owner service-location information. Each airport profile shows the bases in its atoll. Base location is not live availability; the health service confirms availability.
 
-MNDF information is limited to named island locations and “Nearest MNDF post responds.” The directory includes publicly documented facilities at Maafilaafushi, Kadhdhoo, Gan and Vilimalé, with references, alongside Hanimaadhoo, Kulhudhuffushi and Maafaru. It does not infer the nearest operational unit or publish personnel strength, response times, movement arrangements or capabilities. Legacy saved military detail is removed from local exercise records and archived backups on upgrade; non-military records remain.
+MNDF information contains only “Nearest MNDF post responds.” No MNDF locations, source links, personnel strength, response times or movement details are published. Legacy saved military details are removed on upgrade.
