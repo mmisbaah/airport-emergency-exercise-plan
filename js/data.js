@@ -32,7 +32,7 @@ var TTX_DATA = {
     'Key locations activated — CCP, FAC, staging, morgue',
     'Marine response activated — Coast Guard / airport rescue boats for any water-side risk',
     'Casualty transport plan confirmed — road, sea ambulance or air MEDEVAC to the receiving hospital',
-    'Embassies, resort and tour operators contacted for manifests and next of kin',
+    'Embassies, resort and tour operators contacted through authorised liaison for passenger accounting and family support',
     'Hot Wash attended and AAR contributions submitted'
   ],
 
@@ -72,7 +72,7 @@ var TTX_DATA = {
       desc: 'Ambulance loading on the landside road. Direct route to the jetty or the hospital road.' },
     { id: 8, cat: 'casualty', x: 800, y: 460,
       name: 'Temporary Morgue',
-      desc: 'Remote part of the island, screened from the terminal, the public and the lagoon.' },
+      desc: 'AEP-designated screened location with controlled access, dignified handling and a confirmed onward transfer arrangement.' },
 
     { id: 9, cat: 'family', x: 205, y: 270,
       name: 'Family Assistance Center (FAC)',
@@ -135,7 +135,7 @@ var TTX_DATA = {
         '09:06 — Fuel fire on the wreckage; survivors in the water and on the reef flat',
         '09:10 — Wind shifts 45 degrees, smoke drifts toward the terminal',
         '09:15 — Rescue boats needed — only part of the wreck is reachable from land',
-        '09:20 — Media drone hovering over the wreckage, close to the approach path — live footage already on social media',
+        '09:20 — A nearby boat is livestreaming the incident; unverified casualty figures spread online and reporters request confirmation',
         '09:30 — Receiving hospital ({HOSPITAL}) asks for casualty numbers — transfer {HOSP_ETA}'
       ]
     },
@@ -160,6 +160,8 @@ var TTX_DATA = {
         '08:40 — Fuel sheen on the water drifting toward the floating docks',
         '08:45 — Resort transfer passengers in the seaplane lounge demand information',
         '08:50 — Divers requested from the Coast Guard; casualties landed at the docks for triage',
+        '08:52 — Rescue boats bring survivors ashore faster than the medical boat can transfer patients; prioritise and track each handover',
+        '08:54 — A promised resort boat is unavailable; the replacement has no confirmed stretcher capability',
         '08:55 — News drone launched from a nearby boat over the lagoon — seaplane lanes still closed',
         '09:00 — Tour operator asks for the passenger manifest — several nationalities aboard'
       ]
@@ -207,8 +209,10 @@ var TTX_DATA = {
         '16:15 — Island health centre can take only a handful of stretcher cases',
         '16:20 — {HOSPITAL} alerted — every casualty must go {HOSP_ETA}',
         '16:30 — Sea state rising; one sea ambulance available, resorts offering speedboats',
+        '16:35 — Receiving hospital accepts only two Red casualties; confirm destination and onward transport for the remaining patients',
+        '16:40 — The primary jetty becomes unusable; identify an alternative handover point and recalculate the last patient arrival',
         '16:45 — Two Red casualties need surgery — referral to {TERTIARY}: {REFERRAL}',
-        '17:30 — Sunset in an hour: seaplane MEDEVAC is daylight-only, night transfers by sea',
+        '17:30 — Facilitator provides the exercise daylight cut-off; confirm aircraft operating constraints and an alternative medical transport route',
         '18:00 — Island Council opens the school as a holding area for uninjured passengers'
       ]
     },
@@ -422,12 +426,12 @@ var TTX_DATA = {
       resources: { arff: 1, ambulances: 2, fireTrucks: 1, buses: 6, boats: 2 },
       injects: [
         '06:10 — Strong earthquake reported in the Indian Ocean; tsunami warning for the Maldives',
-        '06:12 — NDMA and the Met Service give an estimated wave arrival time — under 2 hours',
+        '06:12 — Exercise control supplies a simulated official warning, issue time and expected impact; confirm receipt with MMS / NDMA',
         '06:15 — Inbound flights told to hold or divert; departures stopped',
         '06:20 — {AIRPORT} sits about 1–2 m above sea level — no high ground on {ISLAND}',
-        '06:25 — Move people to upper floors of the terminal or evacuate off the island?',
+        '06:25 — Apply the airport-approved evacuation plan: confirm designated assembly or refuge locations, access and assistance for vulnerable passengers',
         '06:35 — Fuel farm, ARFF vehicles and boats: move, secure or keep ready?',
-        '06:50 — Seaplanes and boats in the lagoon must clear the area',
+        '06:50 — Confirm action for vessels and aircraft under the approved warning response plan; do not assume offshore evacuation is safe',
         '07:30 — Water surges over the runway (as in 2004) — plan the recovery and reopening'
       ]
     },

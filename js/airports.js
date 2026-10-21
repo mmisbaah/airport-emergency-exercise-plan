@@ -480,7 +480,7 @@ var TTX_SITE = (function () {
         ambulances: scaleInt(r.ambulances, ratio, 1),
         fireTrucks: scaleInt(r.fireTrucks, Math.max(ratio, 0.5), 1),
         buses: scaleInt(r.buses, ratio, 1),
-        boats: scaleInt(r.boats || 0, Math.max(ratio, 0.5), 1)
+        boats: r.boats || 0 /* marine demand needs route / capacity review, not occupancy scaling */
       };
     }
     if (out.resources && out.resources.boats === undefined) out.resources.boats = 0;

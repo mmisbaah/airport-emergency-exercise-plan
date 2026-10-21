@@ -6,3 +6,6 @@ scripts
 package.json
 package-lock.json
 .gitignore
+
+
+*.b64

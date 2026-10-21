@@ -1595,7 +1595,7 @@
 
       var req = scenario.resources;
       var rows = SCENARIO_RES_TYPES.filter(function (t) { return (req[t.key] || 0) > 0; });
-      var state = loadScenarioResState()[scenario.id] || {};
+      var state = TTX_MV.counts();
 
       var html = '<h4 style="margin:16px 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Scenario Resources — committed vs required</h4>';
 
@@ -1626,7 +1626,7 @@
       html += '<button type="button" class="reset-btn" onclick="window.__resetScenarioRes()">Reset counts</button>';
       html += '<button type="button" class="reset-btn" onclick="document.getElementById(\'resourceBtn\').click()">🚒 Unit roster →</button>';
       html += '</div>';
-      html += '<p class="res-track-hint">Counts are saved per scenario on this device. The 🚒 <b>Unit roster</b> manages individual units (location, notes, police &amp; medical).</p>';
+      html += '<p class="res-track-hint">Counts reflect deployed units in this exercise session. Marine counts do not establish medical transport capacity. The 🚒 <b>Unit roster</b> manages individual units (location, notes, police &amp; medical).</p>';
 
       mount.innerHTML = html;
     };
@@ -1637,14 +1637,11 @@
       var delta = parseInt(parts[1], 10) || 0;
       var sc = activeResScenario();
       if (!sc || !key) return;
-      var all = loadScenarioResState();
-      var st = all[sc.id] || {};
-      var v = (st[key] || 0) + delta;
-      if (v < 0) v = 0;
-      if (v > 99) v = 99;
-      st[key] = v;
-      all[sc.id] = st;
-      saveScenarioResState(all);
+      var unit = resources.find(function (r) { return r.key === key && r.confirmed && (delta > 0 ? r.status === 'available' : r.status === 'deployed'); });
+      if (!unit) { alert('No matching confirmed available unit. Confirm availability in Island Response → Assets.'); return; }
+      if (delta > 0 && !unit.confirmed) { alert('Confirm this asset capability in Island Response first.'); return; }
+      unit.status = delta > 0 ? 'deployed' : 'available';
+      saveResources();
       renderScenarioResTracker(sc);
       flashSaved('resources');
     };
@@ -1653,10 +1650,8 @@
       var sc = activeResScenario();
       if (!sc) return;
       if (!confirm('Reset committed resource counts for this scenario?')) return;
-      var all = loadScenarioResState();
-      delete all[sc.id];
-      saveScenarioResState(all);
-      renderScenarioResTracker(sc);
+      resources.forEach(function (r) { if (r.status === 'deployed') r.status = 'available'; });
+      saveResources(); renderScenarioResTracker(sc);
       flashSaved('resources');
     };
 
@@ -1829,7 +1824,7 @@
     var timelineExportBtn = document.getElementById('timelineExportBtn');
 
     var handleAdd = function () {
-      var time = timelineTime.value.trim() || new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+      var time = timelineTime.value.trim() || TTX_MV.time(new Date());
       var text = timelineText.value.trim();
       if (!text) { timelineText.focus(); return; }
       addTimelineEvent(time, text, timelineCategory.value);
@@ -1882,7 +1877,7 @@
         var report = 'AIRPORT EMERGENCY EXERCISE — TIMELINE\n';
         report += '==========================================\n';
         if (scenarioName) report += 'Scenario: ' + scenarioName + '\n';
-        report += 'Generated: ' + new Date().toLocaleString() + '\n\n';
+        report += 'Generated: ' + TTX_MV.stamp(new Date()) + '\n\n';
         timelineEvents.forEach(function (evt) {
           report += '[' + evt.time + '] [' + evt.category.toUpperCase() + '] ' + evt.text + '\n';
         });
@@ -2035,7 +2030,7 @@
       if (clockState.autoLog) {
         var now = new Date();
         var wallDate = clockState.startWall ? new Date(clockState.startWall + clockElapsed()) : now;
-        var wall = wallDate.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+        var wall = TTX_MV.time(wallDate);
         var tplus = clockState.startWall ? fmtTplus(clockElapsed()) : null;
         addTimelineEvent(wall, item.text, 'inject', tplus);
       }
@@ -2169,7 +2164,7 @@
 
       var wallEl = document.getElementById('clockWall');
       wallEl.textContent = clockState.startWall
-        ? 'Wall time ' + new Date(clockState.startWall + elapsed).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        ? 'Wall time ' + TTX_MV.time(new Date(clockState.startWall + elapsed))
         : 'Wall time —';
 
       var statusEl = document.getElementById('clockStatus');
@@ -2316,7 +2311,7 @@
       var L = [];
       L.push('# After Action Report — ' + aarScenarioLine(d));
       L.push('');
-      L.push('- **Generated:** ' + d.generatedAt.toLocaleString());
+      L.push('- **Generated:** ' + TTX_MV.stamp(d.generatedAt));
       if (d.scenario) {
         L.push('- **Scenario type:** ' + (d.scenario.category || 'aircraft'));
         if (d.scenario.soulsOnBoard != null) {
@@ -2324,7 +2319,7 @@
         }
       }
       if (d.clock && d.clock.startWall) {
-        L.push('- **Exercise started:** ' + new Date(d.clock.startWall).toLocaleTimeString() +
+        L.push('- **Exercise started:** ' + TTX_MV.time(new Date(d.clock.startWall)) +
           ' (clock ' + (d.clock.running ? 'running' : 'stopped') + ')');
       }
       L.push('');
@@ -2388,6 +2383,7 @@
       L.push('');
       L.push('---');
       L.push('_Generated by the Airport Emergency Exercise Plan dashboard._');
+      L.push('\n## Island response\n' + TTX_MV.report().replace(/<[^>]*>/g, ' '));
       return L.join('\n') + '\n';
     };
 
@@ -2402,13 +2398,13 @@
       h += '<div class="aar-sec"><h3>Overview</h3>' +
         '<div class="aar-grid">' +
         '<div><span>Scenario</span><b>' + esc(aarScenarioLine(d)) + '</b></div>' +
-        '<div><span>Generated</span><b>' + esc(d.generatedAt.toLocaleString()) + '</b></div>' +
+        '<div><span>Generated</span><b>' + esc(TTX_MV.stamp(d.generatedAt)) + '</b></div>' +
         (d.scenario ? '<div><span>Type</span><b>' + esc(d.scenario.category || 'aircraft') + '</b></div>' : '') +
         (d.scenario && d.scenario.soulsOnBoard != null
           ? '<div><span>Souls on board</span><b>' + esc(d.scenario.soulsOnBoard) + ' (fuel ' + esc(d.scenario.fuelLoad) + ')</b></div>'
           : '') +
         (d.clock && d.clock.startWall
-          ? '<div><span>Exercise started</span><b>' + esc(new Date(d.clock.startWall).toLocaleTimeString()) + '</b></div>'
+          ? '<div><span>Exercise started</span><b>' + esc(TTX_MV.time(new Date(d.clock.startWall))) + '</b></div>'
           : '') +
         '</div></div>';
 
@@ -2482,7 +2478,7 @@
       d.notes = notesEl ? (notesEl.value || '').trim() : '';
       currentAarMd = aarToMarkdown(d);
       var content = document.getElementById('aarContent');
-      if (content) content.innerHTML = aarToHtml(d);
+      if (content) content.innerHTML = aarToHtml(d) + TTX_MV.report();
     };
 
     (function () {
@@ -2862,7 +2858,7 @@
 
         // Set print date
         var printDate = document.getElementById('printDate');
-        if (printDate) printDate.textContent = new Date().toLocaleString();
+        if (printDate) printDate.textContent = TTX_MV.stamp(new Date());
 
         // Temporarily show all sections for printing
         var views = document.querySelectorAll('.view');
@@ -2899,8 +2895,8 @@
       }
 
       var now = new Date();
-      var dateStr = now.toLocaleDateString();
-      var timeStr = now.toTimeString().slice(0, 5);
+      var dateStr = TTX_MV.date(now);
+      var timeStr = TTX_MV.time(now);
       var incName = scenario ? scenario.name : 'Airport Emergency Exercise';
 
       var esc = function (s) {
@@ -3034,14 +3030,15 @@
         field('1. Incident Name', esc(incName)) +
         field('2. Operational Period', esc(dateStr) + ' — ongoing') +
         '</div>';
-      html += table(['Group / Unit', 'Assignment', 'Resources', 'Communications'], [
+      html += table(['Group / Unit', 'Assignment', 'Resources', 'Communications'], TTX_MV.agencies().map(function (a) { return [esc(a.name), esc(a.role), esc(a.status + ' / ' + a.eta), esc(a.primary + ' / ' + a.fallback)]; }).concat([
         ['Command', 'Establish ICP, unified command, overall control', 'ICP, command staff', 'Command channel'],
         ['ARFF', 'Extinguish fire, rescue trapped occupants', 'ARFF × ' + esc(scenario ? scenario.resources.arff : 2), 'Fire ground channel'],
         ['EMS / Triage', 'Triage, treatment, transport', 'Ambulances × ' + esc(scenario ? scenario.resources.ambulances : 3), 'EMS channel'],
         ['Security / Perimeter', 'Establish cordon, control access', 'Police / security unit', 'Security channel'],
         ['Logistics', 'Staging, resupply, communications', 'Staging area, comms unit', 'Logistics channel'],
+        ['Marine / Coast Guard', 'Water rescue and casualty handover; confirm tasking', 'See Island Response assets', 'Confirmed marine channel'],
         ['Family Assistance', 'Support for families and survivors', 'FAC team', 'FAC channel']
-      ]);
+      ]));
       html += sign();
       html += end;
 
@@ -3108,7 +3105,7 @@
       html += sign();
       html += end;
 
-      return html;
+      return html + TTX_MV.report();
     };
 
     if (icsBtn) {
@@ -3181,18 +3178,7 @@
     var resourceExportBtn = document.getElementById('resourceExportBtn');
     var resourceResetBtn = document.getElementById('resourceResetBtn');
 
-    var defaultResources = [
-      { id: 'arff1', name: 'ARFF Vehicle 1', type: 'ARFF', status: 'available', location: '', notes: '' },
-      { id: 'arff2', name: 'ARFF Vehicle 2', type: 'ARFF', status: 'available', location: '', notes: '' },
-      { id: 'amb1', name: 'Ambulance 1', type: 'EMS', status: 'available', location: '', notes: '' },
-      { id: 'amb2', name: 'Ambulance 2', type: 'EMS', status: 'available', location: '', notes: '' },
-      { id: 'amb3', name: 'Ambulance 3', type: 'EMS', status: 'available', location: '', notes: '' },
-      { id: 'ft1', name: 'Fire Truck 1', type: 'Fire', status: 'available', location: '', notes: '' },
-      { id: 'ft2', name: 'Fire Truck 2', type: 'Fire', status: 'available', location: '', notes: '' },
-      { id: 'bus1', name: 'Bus 1', type: 'Transport', status: 'available', location: '', notes: '' },
-      { id: 'police1', name: 'Police Unit 1', type: 'Security', status: 'available', location: '', notes: '' },
-      { id: 'medic1', name: 'Medical Team 1', type: 'Medical', status: 'available', location: '', notes: '' }
-    ];
+    var defaultResources = TTX_MV.defaults(TTX_SITE.context(siteSel).airport);
 
     var resources = [];
 
@@ -3202,7 +3188,7 @@
         if (raw) {
           var saved = JSON.parse(raw);
           if (Array.isArray(saved) && saved.length > 0) {
-            resources = saved;
+            resources = saved.map(function(r){ if (!r.key) r.key=({ARFF:'arff',EMS:'ambulances',Fire:'fireTrucks',Transport:'buses',Marine:'boats',Medical:'medical',Security:'security',Air:'air'})[r.type]||'medical'; return r; });
             return;
           }
         }
@@ -3212,6 +3198,7 @@
 
     var saveResources = function () {
       try { localStorage.setItem(RESOURCE_STORAGE_KEY, JSON.stringify(resources)); } catch (e) {}
+      if (typeof activeResScenario === 'function' && activeResScenario()) renderScenarioResTracker(activeResScenario());
       flashSaved('resources');
     };
 
@@ -3279,6 +3266,7 @@
 
     window.__setResourceStatus = function (idx, status) {
       if (resources[idx]) {
+        if (status !== 'unavailable' && !resources[idx].confirmed) { alert('Confirm availability and capability in Island Response → Assets first.'); return; }
         resources[idx].status = status;
         saveResources();
         renderResources();
@@ -3307,7 +3295,7 @@
     if (resourceExportBtn) {
       resourceExportBtn.addEventListener('click', function () {
         var report = 'RESOURCE STATUS REPORT\n';
-        report += 'Generated: ' + new Date().toLocaleString() + '\n';
+        report += 'Generated: ' + TTX_MV.stamp(new Date()) + '\n';
         report += '==========================================\n\n';
         resources.forEach(function (res) {
           report += res.name + ' (' + res.type + ')\n';
@@ -3327,7 +3315,7 @@
 
     if (resourceResetBtn) {
       resourceResetBtn.addEventListener('click', function () {
-        if (confirm('Reset all resources to available?')) {
+        if (confirm('Reset the roster to unconfirmed airport planning defaults?')) {
           pushSnapshot('Before resource reset');
           resources = JSON.parse(JSON.stringify(defaultResources));
           saveResources();
@@ -3337,6 +3325,8 @@
     }
 
     loadResources();
+    saveResources();
+    document.addEventListener('mv-roster-change', function () { loadResources(); renderResources(); var sc = activeResScenario(); if (sc) renderScenarioResTracker(sc); });
 
     /* ================= CASUALTY TRACKER ================= */
     var CASUALTY_STORAGE_KEY = 'ttx-casualty-tracker';
@@ -3363,6 +3353,7 @@
       } catch (e) {}
     };
 
+    document.addEventListener('mv-casualty-change', function () { loadCasualties(); if (typeof renderCasualties === 'function') renderCasualties(); });
     var saveCasualties = function () {
       try { localStorage.setItem(CASUALTY_STORAGE_KEY, JSON.stringify(casualties)); } catch (e) {}
       flashSaved('casualties');
@@ -3496,7 +3487,7 @@
     if (casualtyExportBtn) {
       casualtyExportBtn.addEventListener('click', function () {
         var report = 'CASUALTY REPORT\n';
-        report += 'Generated: ' + new Date().toLocaleString() + '\n';
+        report += 'Generated: ' + TTX_MV.stamp(new Date()) + '\n';
         report += '==========================================\n\n';
         casualties.forEach(function (cas) {
           report += 'Tag #' + (cas.tag || '—') + '\n';
@@ -3837,7 +3828,7 @@
         // Build comprehensive exercise package
         var now = new Date();
         var dateStr = now.toISOString().slice(0, 10);
-        var timeStr = now.toTimeString().slice(0, 5);
+        var timeStr = TTX_MV.time(now);
 
         var report = '';
         report += '=================================================================\n';
@@ -4000,6 +3991,7 @@
         doc.write('pre{white-space:pre-wrap;font-family:monospace;font-size:11px;}');
         doc.write('</style></head><body>');
         doc.write('<pre>' + report.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</pre>');
+        doc.write(TTX_MV.report());
         doc.write('</body></html>');
         doc.close();
 
@@ -4043,7 +4035,7 @@
 
     /* Full backup key set — everything the dashboard persists */
     var BACKUP_KEYS = [
-      'ttx-theme', 'ttx-font-scale',
+      'ttx-mv-session', 'ttx-mv-labels', 'ttx-theme', 'ttx-font-scale',
       'ttx-checklist-state', 'ttx-pin-positions', 'ttx-crash-zone-positions',
       'ttx-custom-scenarios', 'ttx-casualty-tracker', 'ttx-resource-tracker',
       'ttx-scenario-resources',
@@ -4064,7 +4056,7 @@
         /* per-airport map layouts, pin and crash-site positions */
         for (var bi = 0; bi < localStorage.length; bi++) {
           var bk = localStorage.key(bi);
-          if (bk && /^ttx-(pin-positions|map-config|crash-zone-positions):/.test(bk)) data.data[bk] = localStorage.getItem(bk);
+          if (bk && /^ttx-(mv-|pin-positions:|map-config:|crash-zone-positions:)/.test(bk)) data.data[bk] = localStorage.getItem(bk);
         }
       } else {
         data = {
@@ -4286,7 +4278,7 @@
       // Show newest first
       entries.slice().reverse().forEach(function (entry) {
         var date = new Date(entry.timestamp);
-        var dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        var dateStr = TTX_MV.date(date) + ' ' + TTX_MV.time(date);
         var actionColor = entry.action === 'created' ? 'var(--green)' : entry.action === 'updated' ? 'var(--blue)' : entry.action === 'deleted' ? 'var(--red)' : 'var(--muted)';
 
         html += '<div style="padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;">';
@@ -4331,7 +4323,7 @@
         html += '<div style="padding:12px;background:var(--panel2);border:1px solid var(--line-soft);border-radius:8px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">';
         html += '<div style="min-width:0;">';
         html += '<div style="font-size:13px;font-weight:600;color:var(--text);">' + escHtml(pt.label) + '</div>';
-        html += '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + date.toLocaleDateString() + ' ' + date.toLocaleTimeString() + (counts.length ? ' · ' + counts.join(' · ') : '') + '</div>';
+        html += '<div style="font-size:12px;color:var(--muted);margin-top:2px;">' + TTX_MV.date(date) + ' ' + TTX_MV.time(date) + (counts.length ? ' · ' + counts.join(' · ') : '') + '</div>';
         html += '</div>';
         html += '<button class="reset-btn" style="padding:5px 14px;font-size:12px;" onclick="window.__restorePoint(' + pt.id + ')">↩ Restore</button>';
         html += '</div>';

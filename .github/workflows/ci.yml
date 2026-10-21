@@ -17,6 +17,8 @@ jobs:
 
       - name: Syntax check
         run: |
+          node --check js/maldives.js
+          node --check js/airports.js
           node --check js/app.js
           node --check js/data.js
           node --check sw.js
@@ -28,6 +30,9 @@ jobs:
           npm init -y
           npm i -D playwright
           npx playwright install --with-deps chromium
+
+      - name: Maldives operations tests
+        run: node scripts/maldives-tests.mjs
 
       - name: Run test suite + app smoke test
         run: node scripts/ci-tests.mjs

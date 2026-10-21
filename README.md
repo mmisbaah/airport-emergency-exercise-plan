@@ -37,3 +37,19 @@ Edit `js/data.js` to customize:
 ## License
 
 MIT
+
+
+
+## Maldives island response
+
+The Island Response panel shares its assets with the unit roster and scenario commitment counts. Airport planning assets start unconfirmed and unavailable; confirm capabilities and availability before committing them. Boats are not automatically medical transport. Rescue craft, sea ambulances, resort speedboats, dhonis, Coast Guard assets and tasking-dependent military SAR / medical helicopters can be recorded separately.
+
+Transfers record casualty tags or groups, receiving hospital acceptance and exercise capacity, both transfer points, alternatives, assigned assets and an ordered Requested → Accepted → Boarding → Departed → Arrived → Handed over history. Estimates use facilitator-entered mobilisation, capacity, outbound and return/reload timings. Include loading and handover in entered timings. A matching casualty tag is marked transported only on handover.
+
+Exercise settings, rosters and records are isolated by airport and exercise session. Settings can start or resume a session. Full Data backups include island response records and archived sessions. ICS forms, AAR and PDF packages include the island response appendix. Times display in MVT (UTC+5), with UTC audit timestamps retained.
+
+Local facts include source/revision, verifier, date and assumption/confirmed status. Hospital route details are editable; receiving slots are exercise inputs. Map landmarks can be named and positioned by SVG coordinates; the map remains a schematic. Dhivehi labels support Thaana/RTL and are enabled only with an entered local reviewer; no unreviewed translation is shipped.
+
+Verify runway/RFF details against the current AIP and approved AEP. Agency tasking, communications, evacuation arrangements, asset suitability and medical acceptance are entered by the facilitator, not inferred from equipment counts.
+
+Run `node scripts/maldives-tests.mjs` for the operations unit checks and `node scripts/ci-tests.mjs` for browser regression tests (Playwright required).

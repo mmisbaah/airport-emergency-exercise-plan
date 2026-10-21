@@ -5,11 +5,13 @@
    console/page errors).
 
    Usage:  node scripts/ci-tests.mjs   (requires: npm i playwright) */
+import {browserTests} from './maldives-tests.mjs';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { chromium } from 'playwright';
+import { createRequire } from 'node:module';
+const { chromium } = createRequire(import.meta.url)(process.env.PLAYWRIGHT_MODULE || 'playwright');
 
 const ROOT = normalize(fileURLToPath(new URL('..', import.meta.url)));
 
@@ -48,7 +50,7 @@ console.log(`Serving ${ROOT} at ${base}`);
 
 let failed = false;
 
-const browser = await chromium.launch();
+const browser = await chromium.launch(process.env.CHROMIUM_EXECUTABLE ? { executablePath: process.env.CHROMIUM_EXECUTABLE } : {});
 
 /* The app calls Open-Meteo for weather and sea state — answer those with
    fixtures so tests never depend on an outside service. */
@@ -209,6 +211,7 @@ try {
     assert(!panel.raw, 'unescaped <img src=x markup present in panel HTML');
     assert(panel.rows > 0, 'scenario resources tracker rows missing');
 
+    await p.evaluate(() => { const units=JSON.parse(localStorage.getItem('ttx-resource-tracker')); units[0].status='available'; units[0].confirmed=true; localStorage.setItem('ttx-resource-tracker',JSON.stringify(units)); document.dispatchEvent(new Event('mv-roster-change')); });
     const t1 = await p.textContent('#scenarioResTracker');
     await p.evaluate(() => {
       const plus = Array.prototype.find.call(
@@ -271,7 +274,8 @@ try {
     await p.waitForFunction(() => /favours\s*RWY 18/.test(document.getElementById('airportProfile').textContent), null, { timeout: 8000 });
 
     // switch to Dharavandhoo RWY 30 → map, runway list and scenario injects follow
-    await p.selectOption('#airportSelect', 'VRMD');
+    await Promise.all([p.waitForEvent('load'), p.selectOption('#airportSelect', 'VRMD')]);
+    await p.waitForSelector('#islandResponseBtn');
     await p.selectOption('#runwaySelect', '12/30|30');
     const drv = await p.evaluate(() => ({
       map: document.getElementById('mapBase').textContent,
@@ -298,7 +302,8 @@ try {
     // seaplane scenario is not offered at Dharavandhoo, but is at Velana
     const hasSea = async () => p.evaluate(() => !!document.querySelector('#scenarioSelect option[value="seaplane-capsize"]'));
     assert(!(await hasSea()), 'seaplane scenario should be hidden at Dharavandhoo');
-    await p.selectOption('#airportSelect', 'VRMM');
+    await Promise.all([p.waitForEvent('load'), p.selectOption('#airportSelect', 'VRMM')]);
+    await p.waitForSelector('#islandResponseBtn');
     assert(await hasSea(), 'seaplane scenario should be offered at Velana');
 
     // reload keeps the airport
@@ -351,6 +356,7 @@ try {
     assert(p.errors.length === 0, p.errors.join('; '));
     await ctx.close();
   });
+  await browserTests({behavior,newAppPage,assert});
 } catch (err) {
   failed = true;
   console.error('Runner error:', err);
