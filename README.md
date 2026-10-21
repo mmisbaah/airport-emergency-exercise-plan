@@ -60,3 +60,10 @@ Run `node scripts/maldives-tests.mjs` for the operations unit checks and `node s
 The Public services tab lists sea ambulance bases at the 20 atoll capitals, plus Haa Alifu Hoarafushi and Haa Dhaalu Makunudhoo, using site-owner service-location information. Each airport profile shows the bases in its atoll. Base location is not live availability; the health service confirms availability.
 
 MNDF information contains only “Nearest MNDF post responds.” No MNDF locations, source links, personnel strength, response times or movement details are published. Legacy saved military details are removed on upgrade.
+
+
+## Source-reviewed airport layouts
+
+`js/airport-layouts.js` records approximate civilian terminal, ATC/AFIS and ARFF positions digitised from the official airport aerodrome charts. Each airport displays the chart date, source link and per-facility verification status. Kulhudhuffushi and Hoarafushi terminal footprints are also cross-checked against public OSM records. Unknown ATC or ARFF positions are omitted rather than guessed. The Generic profile is illustrative.
+
+Fixed facility positions stay fixed when the active runway end changes. Old unversioned station drags no longer override the reviewed defaults; numbered exercise pin positions remain preserved. New local station drags are exercise annotations, not verified source positions. Terminal incidents follow the charted terminal; numbered response sites still require an approved AEP. Invented cargo, fuel, parallel taxiway and jetty artwork is omitted from real-airport layouts.

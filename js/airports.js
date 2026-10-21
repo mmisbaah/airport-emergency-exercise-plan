@@ -216,10 +216,11 @@ var TTX_AIRPORTS = [
           "18",
           "36"
         ],
-        "hdg": 180,
+        "hdg": 179.95,
         "length": 3400,
         "width": 60,
-        "surface": "Asphalt"
+        "surface": "Asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
     "apronSide": "right",
@@ -322,10 +323,11 @@ var TTX_AIRPORTS = [
           "10",
           "28"
         ],
-        "hdg": 100,
-        "length": 2650,
+        "hdg": 99,
+        "length": 2960,
         "width": 45,
-        "surface": "Concrete / asphalt"
+        "surface": "Concrete / asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
     "apronSide": "left",
@@ -416,13 +418,14 @@ var TTX_AIRPORTS = [
           "03",
           "21"
         ],
-        "hdg": 30,
+        "hdg": 32.27,
         "length": 2465,
         "width": 45,
-        "surface": "Asphalt"
+        "surface": "Asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
-    "apronSide": "right",
+    "apronSide": "left",
     "features": {
       "seaplane": false,
       "seaTransfer": true,
@@ -524,13 +527,14 @@ var TTX_AIRPORTS = [
           "03",
           "21"
         ],
-        "hdg": 30,
+        "hdg": 25,
         "length": 1220,
         "width": 30,
-        "surface": "Bitumen"
+        "surface": "Bitumen",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
-    "apronSide": "right",
+    "apronSide": "left",
     "features": {
       "seaplane": false,
       "seaTransfer": false,
@@ -623,10 +627,11 @@ var TTX_AIRPORTS = [
           "12",
           "30"
         ],
-        "hdg": 120,
-        "length": 1189,
+        "hdg": 114.35,
+        "length": 1200,
         "width": 30,
-        "surface": "Asphalt"
+        "surface": "Asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
     "apronSide": "left",
@@ -724,10 +729,11 @@ var TTX_AIRPORTS = [
           "09",
           "27"
         ],
-        "hdg": 90,
+        "hdg": 86,
         "length": 1800,
         "width": 30,
-        "surface": "Asphalt"
+        "surface": "Asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
     "apronSide": "left",
@@ -825,10 +831,11 @@ var TTX_AIRPORTS = [
           "12",
           "30"
         ],
-        "hdg": 120,
+        "hdg": 114.89,
         "length": 1220,
         "width": 30,
-        "surface": "Asphalt"
+        "surface": "Asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
     "apronSide": "right",
@@ -940,13 +947,14 @@ var TTX_AIRPORTS = [
           "06",
           "24"
         ],
-        "hdg": 60,
+        "hdg": 55.85,
         "length": 2850,
         "width": 45,
-        "surface": "Asphalt"
+        "surface": "Asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
-    "apronSide": "right",
+    "apronSide": "left",
     "features": {
       "seaplane": false,
       "seaTransfer": true,
@@ -1053,10 +1061,11 @@ var TTX_AIRPORTS = [
           "18",
           "36"
         ],
-        "hdg": 180,
+        "hdg": 176,
         "length": 1200,
         "width": 30,
-        "surface": "Asphalt"
+        "surface": "Asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
     "apronSide": "right",
@@ -1161,18 +1170,19 @@ var TTX_AIRPORTS = [
     "lon": 72.8963888888889,
     "runways": [
       {
-        "id": "06/24",
+        "id": "15/33",
         "ends": [
-          "06",
-          "24"
+          "15",
+          "33"
         ],
-        "hdg": 60,
+        "hdg": 149.2,
         "length": 1200,
         "width": 30,
-        "surface": "Asphalt"
+        "surface": "Asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
-    "apronSide": "right",
+    "apronSide": "left",
     "features": {
       "seaplane": false,
       "seaTransfer": true,
@@ -1287,10 +1297,11 @@ var TTX_AIRPORTS = [
           "01",
           "19"
         ],
-        "hdg": 10,
+        "hdg": 10.34,
         "length": 1200,
         "width": 30,
-        "surface": "Asphalt"
+        "surface": "Asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
     "apronSide": "right",
@@ -1394,10 +1405,11 @@ var TTX_AIRPORTS = [
           "18",
           "36"
         ],
-        "hdg": 180,
+        "hdg": 181.4,
         "length": 1200,
         "width": 30,
-        "surface": "Asphalt"
+        "surface": "Asphalt",
+        "headingReference": "TRUE bearing — official AIP AD 2.12"
       }
     ],
     "apronSide": "right",
@@ -1955,7 +1967,8 @@ var TTX_SITE = (function () {
   var incidentSite = function (site, ctx) {
     ctx = ctx || context();
     var g = geometry(ctx);
-    var c = siteCanon(site, g);
+    var layout = airportLayout(ctx);
+    var c = site === 'terminal' && layout ? chartCanon(layout.facilities.terminal, ctx) : site === 'apron' && layout ? chartCanon(layout.apron,ctx) : siteCanon(site, g);
     var p = g.F.P(c.x, c.t);
     return { x: r1(p.x), y: r1(p.y), label: c.label };
   };
@@ -2006,6 +2019,8 @@ var TTX_SITE = (function () {
       pos[9] = fixed(f(0.74), 146);
       pos[10] = fixed(f(-0.72), 128);
     }
+    var layout = airportLayout(ctx);
+    if (layout && site !== 'terminal') { var terminal=chartPoint(layout.facilities.terminal,ctx), apron=chartPoint(layout.apron,ctx);pos[2]={x:terminal.x+25,y:terminal.y+25};pos[9]={x:terminal.x-25,y:terminal.y+25};pos[10]={x:terminal.x,y:terminal.y+45};pos[11]={x:apron.x+25,y:apron.y+20}; }
     var waterOk = { 14: true, 15: true };
     var cx = C.x, cy = C.y;
     var ids = Object.keys(pos);
@@ -2043,12 +2058,30 @@ var TTX_SITE = (function () {
       }
       if (!moved) break;
     }
+    if (layout) {
+      var reserved=[];
+      ['terminal','twr','arff'].forEach(function(role){var f=layout.facilities[role];var p=chartPoint(f,ctx);if(!p)return;var label=chartLabel(f,ctx,role);reserved.push({x:p.x-22,y:p.y-22,w:44,h:44});reserved.push({x:p.x+label.dx-55,y:p.y+label.dy-20,w:110,h:40});});
+      for(var pass=0;pass<12;pass++) ids.forEach(function(id){var p=pos[id];reserved.forEach(function(r){if(p.x<r.x||p.x>r.x+r.w||p.y<r.y||p.y>r.y+r.h)return;var candidates=[{x:r.x-3,y:p.y},{x:r.x+r.w+3,y:p.y},{x:p.x,y:r.y-3},{x:p.x,y:r.y+r.h+3}].filter(function(c){return waterOk[id]||inPoly(c,g.island);});candidates.sort(function(a,b){return Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y);});if(candidates.length)p=candidates[0];});pos[id]=p;});
+    }
     ids.forEach(function (id) {
       settle(id);
       pos[id] = { x: Math.round(pos[id].x), y: Math.round(pos[id].y) };
     });
     return pos;
   };
+
+  var airportLayout = function (ctx) { return typeof TTX_AIRPORT_LAYOUTS !== 'undefined' ? TTX_AIRPORT_LAYOUTS[ctx.airport.id] : null; };
+  var chartPoint = function (point, ctx) {
+    if (!point || point.along === undefined) return null;
+    var F = frame(ctx), sign = ctx.airport.apronSide === 'left' ? -1 : 1;
+    return F.P(-HALF + point.along * L, point.right * L * sign);
+  };
+  var chartLabel = function (point,ctx,role) {
+    var h=ctx.runway.hdg*Math.PI/180, side=point.right<0?-1:1;
+    var along=role==='terminal'?45:role==='twr'?-45:0;
+    return {dx:Math.cos(h)*side*100+Math.sin(h)*along,dy:Math.sin(h)*side*100-Math.cos(h)*along};
+  };
+  var chartCanon = function (point, ctx) { return { x: -HALF + point.along * L, t: point.right * L * (ctx.airport.apronSide === 'left' ? -1 : 1) }; };
 
   /* Static map art for the selected airport + runway in use */
   var mapSvg = function (ctx, opts) {
@@ -2057,6 +2090,7 @@ var TTX_SITE = (function () {
     var g = geometry(ctx);
     var F = g.F, f = function (frac) { return frac * HALF; };
     var ap = ctx.airport, rw = ctx.runway;
+    var layout = airportLayout(ctx);
     var o = [];
     var lbl = 'font-size="9" fill="#7f9cc4" letter-spacing="1.4" font-weight="600" paint-order="stroke" stroke="#0a1626" stroke-width="3"';
     var small = 'font-size="7.5" fill="#6d88ad" letter-spacing="1" paint-order="stroke" stroke="#0a1626" stroke-width="3"';
@@ -2095,7 +2129,7 @@ var TTX_SITE = (function () {
     });
 
     /* seaplane water aerodrome on the far-side lagoon */
-    if (g.sea) {
+    if (g.sea && !layout) {
       o.push(rect(F, f(-0.75), f(0.75), -140, -104, 'fill="none" stroke="#22d3ee" stroke-width="1" stroke-dasharray="10 6" opacity=".7"'));
       o.push(text(F.P(0, -122), 'WATER AERODROME · SEAPLANE LANES', 'font-size="8.5" fill="#67e8f9" letter-spacing="1.4" font-weight="600" paint-order="stroke" stroke="#04101e" stroke-width="3"'));
       o.push(rect(F, f(0.05), f(0.35), -84, -70, 'fill="#164e63" stroke="#22d3ee" stroke-width="1"'));
@@ -2104,6 +2138,19 @@ var TTX_SITE = (function () {
       o.push(text(F.P(f(0.2), -88), 'SEAPLANE DOCKS', small));
     }
 
+    if (layout) {
+      o.push('<g id="chartFacilityArt">');
+      var apron = chartPoint(layout.apron, ctx);
+      o.push('<rect x="'+r1(apron.x-12)+'" y="'+r1(apron.y-8)+'" width="24" height="16" fill="#1e2e48" stroke="#64748b"/>');
+      o.push(text({x:apron.x,y:apron.y+21},'APRON AREA',small));
+      var terminal = chartPoint(layout.facilities.terminal, ctx);
+      var callout = chartLabel(layout.facilities.terminal,ctx,'terminal');
+      o.push('<rect x="'+r1(terminal.x-7)+'" y="'+r1(terminal.y-5)+'" width="14" height="10" fill="#a16207" stroke="#fde68a"/>');
+      o.push('<line x1="'+r1(terminal.x)+'" y1="'+r1(terminal.y)+'" x2="'+r1(terminal.x+callout.dx)+'" y2="'+r1(terminal.y+callout.dy)+'" stroke="#fde68a"/>');
+      o.push(text({x:terminal.x+callout.dx,y:terminal.y+callout.dy+12},'TERMINAL',lbl));
+      layout.extra.forEach(function (item) { var p=chartPoint(item,ctx);o.push('<circle cx="'+r1(p.x)+'" cy="'+r1(p.y)+'" r="4" fill="'+(item.kind==='arff'?'#ef4444':'#eab308')+'"/>');o.push(text({x:p.x,y:p.y+20},item.label,small)); });
+      o.push('</g>');
+    } else {
     /* landside road + jetty */
     o.push(line(F, f(-0.95), 160, f(0.95), 160, 'stroke="#22344f" stroke-width="5" stroke-linecap="round"'));
     o.push(line(F, f(-0.95), 160, f(0.95), 160, 'stroke="#3d5a86" stroke-width="1" stroke-dasharray="6 8"'));
@@ -2128,6 +2175,8 @@ var TTX_SITE = (function () {
     [-0.82, 0, 0.82].forEach(function (fr) {
       o.push(rect(F, f(fr) - 6, f(fr) + 6, 12, 31, 'fill="#1e2e48"'));
     });
+
+    }
 
     /* runway */
     var w = rw.width >= 45 ? 12 : 9;
@@ -2182,13 +2231,14 @@ var TTX_SITE = (function () {
       esc(('00' + Math.round(wf)).slice(-3)) + '°' + (opts.windLive ? ' (LIVE)' : '') + '</text>');
 
     /* TWR + ARFF default positions (the markers themselves are draggable elements in the page) */
-    var twr = F.P(f(0.27), 128);
-    var arff = F.P(f(-0.58), 72);
+    var twr = layout ? chartPoint(layout.facilities.twr,ctx) : F.P(f(0.27),128);
+    var arff = layout ? chartPoint(layout.facilities.arff,ctx) : F.P(f(-0.58),72);
 
     return {
       svg: o.join(''),
-      twr: { x: Math.round(twr.x), y: Math.round(twr.y) },
-      arff: { x: Math.round(arff.x), y: Math.round(arff.y) },
+      twr: twr ? { x: Math.round(twr.x), y: Math.round(twr.y) } : null,
+      arff: arff ? { x: Math.round(arff.x), y: Math.round(arff.y) } : null,
+      evidence: layout,
       windFrom: wf
     };
   };
@@ -2208,7 +2258,7 @@ var TTX_SITE = (function () {
         ', so the ICP, triage and CCP sit on the ' + compassWord(wf) +
         ' side of the incident and away from smoke. Casualty transport runs from the transportation area to ' +
         primaryHospital(ap).name + ' (' + primaryHospital(ap).eta + ' by ' + primaryHospital(ap).how + '). ' +
-        'The jetty doubles as the sea-ambulance transfer point. Drag any marker to match your AEP.'
+        'Numbered response sites and sea-transfer pins are exercise proposals, not verified facilities. Confirm access and positions against your approved AEP.'
     };
   };
 
@@ -2231,6 +2281,9 @@ var TTX_SITE = (function () {
     incidentSite: incidentSite,
     locationPositions: locationPositions,
     mapSvg: mapSvg,
+    airportLayout: airportLayout,
+    chartPoint: chartPoint,
+    chartLabel: chartLabel,
     describe: describe,
     fill: fill,
     tokensFor: tokensFor

@@ -19,6 +19,7 @@ jobs:
         run: |
           node --check js/maldives.js
           node --check js/airports.js
+          node --check js/airport-layouts.js
           node --check js/app.js
           node --check js/data.js
           node --check sw.js
