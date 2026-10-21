@@ -31,7 +31,8 @@
   <button id="runBtn" onclick="runAllTests()">Run All Tests</button>
   <div id="results"></div>
 
-  <script src="../js/data.js?v=20260929.5"></script>
+  <script src="../js/data.js?v=20261021.51"></script>
+  <script src="../js/airports.js?v=20261021.51"></script>
   <script>
     var results = { pass: 0, fail: 0, total: 0 };
 
@@ -179,7 +180,7 @@
           assert(ac.name, 'Aircraft missing name');
           assert(ac.pax > 0, 'Invalid pax count for: ' + ac.name);
           assert(ac.total > 0, 'Invalid total for: ' + ac.name);
-          assert(ac.wheels > 0, 'Invalid wheels for: ' + ac.name);
+          assert(ac.wheels >= 0, 'Invalid wheels for: ' + ac.name); // floatplanes have none
           assert(ac.specs.length > 0, 'No specs for: ' + ac.name);
         });
       }));
@@ -220,6 +221,125 @@
           assert(loc.name, 'Location missing name');
           assert(loc.desc, 'Location missing description: ' + loc.name);
         });
+      }));
+
+      html += '</div>';
+
+
+      // ==================== AIRPORT PROFILE TESTS ====================
+      html += '<h2>Airport &amp; Runway Tests</h2><div class="test-suite">';
+
+      /* every airport × runway end, without touching saved selection */
+      var everySite = function (fn) {
+        TTX_AIRPORTS.forEach(function (ap) {
+          ap.runways.forEach(function (rw) {
+            rw.ends.forEach(function (e) {
+              fn(TTX_SITE.context({ airport: ap.id, runway: rw.id, end: e }), ap, rw, e);
+            });
+          });
+        });
+      };
+
+      html += formatResult(test('Airport ids unique, Maldives airports present', function () {
+        var ids = TTX_AIRPORTS.map(function (a) { return a.id; });
+        assertEqual(ids.length, ids.filter(function (id, i) { return ids.indexOf(id) === i; }).length, 'Duplicate airport id');
+        ['VRMM', 'VRMG', 'VRMH', 'VRMK', 'VRMD', 'VRMV'].forEach(function (id) {
+          assert(TTX_SITE.byId(id), 'Missing airport ' + id);
+        });
+      }));
+
+      html += formatResult(test('Runway designators match their headings', function () {
+        TTX_AIRPORTS.forEach(function (ap) {
+          ap.runways.forEach(function (rw) {
+            assertEqual(rw.ends.length, 2, 'Runway needs two ends: ' + ap.id + ' ' + rw.id);
+            var a = parseInt(rw.ends[0], 10), b = parseInt(rw.ends[1], 10);
+            assertEqual(Math.abs(a - b), 18, 'Ends not reciprocal: ' + ap.id + ' ' + rw.id);
+            assertEqual(rw.hdg, a * 10, 'Heading must equal first end x10: ' + ap.id + ' ' + rw.id);
+            assert(rw.length > 500 && rw.width > 0, 'Bad runway size: ' + ap.id);
+          });
+        });
+      }));
+
+      html += formatResult(test('Airports have coordinates, hospitals and local resources', function () {
+        TTX_AIRPORTS.forEach(function (ap) {
+          if (ap.id !== 'GENERIC') {
+            assert(ap.lat > -2 && ap.lat < 8 && ap.lon > 72 && ap.lon < 74, 'Coordinates outside the Maldives: ' + ap.id);
+          }
+          assert(ap.hospitals.length > 0, 'No hospitals: ' + ap.id);
+          assert(TTX_SITE.primaryHospital(ap), 'No primary hospital: ' + ap.id);
+          ['arff', 'ambulances', 'fireTrucks', 'buses', 'boats'].forEach(function (k) {
+            assert(typeof ap.local[k] === 'number' && ap.local[k] >= 0, 'Bad local ' + k + ': ' + ap.id);
+          });
+          Object.keys(ap.fleet).forEach(function (role) {
+            var n = ap.fleet[role];
+            if (n) assert(TTX_SITE.rffForAircraft(n), 'Fleet aircraft not in aircraft data: ' + n + ' @ ' + ap.id);
+          });
+        });
+      }));
+
+      html += formatResult(test('RFF categories follow ICAO Annex 14 Table 9-1', function () {
+        assertEqual(TTX_SITE.rffForAircraft('DHC-6 Twin Otter (floats)'), 3, 'Twin Otter');
+        assertEqual(TTX_SITE.rffForAircraft('ATR 72-600'), 5, 'ATR 72');
+        assertEqual(TTX_SITE.rffForAircraft('Airbus A320-200'), 6, 'A320');
+        assertEqual(TTX_SITE.rffForAircraft('Boeing 737-800'), 7, '737-800');
+        assertEqual(TTX_SITE.rffForAircraft('Boeing 777-300ER'), 9, '777-300ER');
+        assertEqual(TTX_SITE.rffCategory(60, 7.5), 9, 'width bump');
+      }));
+
+      html += formatResult(test('Every scenario resolves at every airport + runway', function () {
+        everySite(function (ctx, ap, rw, e) {
+          var n = 0;
+          TTX_DATA.scenarios.forEach(function (sc) {
+            if (!TTX_SITE.isApplicable(sc, ctx)) return;
+            n++;
+            var r = TTX_SITE.resolveScenario(sc, ctx);
+            r.injects.forEach(function (t) {
+              assert(!/\{[A-Z_]+\}/.test(t), 'Unfilled token in ' + sc.id + ' @ ' + ap.id + ': ' + t);
+            });
+            var tot = r.casualties.red + r.casualties.yellow + r.casualties.green + r.casualties.deceased;
+            if (r.soulsOnBoard > 0) assert(tot <= r.soulsOnBoard, 'Casualties > SOB: ' + sc.id + ' @ ' + ap.id);
+            ['arff', 'ambulances', 'fireTrucks', 'buses', 'boats'].forEach(function (k) {
+              assert(r.resources[k] >= 0, 'Bad resource ' + k + ' in ' + sc.id);
+            });
+            if (sc.aircraftRole) assert(r.aircraft, 'No aircraft picked: ' + sc.id + ' @ ' + ap.id);
+          });
+          assert(n >= 12, 'Too few scenarios at ' + ap.id + ' RWY ' + e + ': ' + n);
+        });
+      }));
+
+      html += formatResult(test('Scenarios adapt: aircraft, runway and applicability', function () {
+        var crash = TTX_DATA.scenarios.filter(function (s) { return s.id === 'atr72-crash'; })[0];
+        var drv = TTX_SITE.resolveScenario(crash, TTX_SITE.context({ airport: 'VRMD', end: '30' }));
+        assertEqual(drv.aircraft, 'Dash 8-300', 'Dharavandhoo regional aircraft');
+        assertEqual(drv.soulsOnBoard, 54, 'SOB follows the aircraft');
+        assert(drv.injects.join(' ').indexOf('RWY 30') >= 0, 'Runway in use not in injects');
+        var sea = TTX_DATA.scenarios.filter(function (s) { return s.id === 'seaplane-capsize'; })[0];
+        assert(TTX_SITE.isApplicable(sea, TTX_SITE.context({ airport: 'VRMM' })), 'Seaplane scenario at Velana');
+        assert(!TTX_SITE.isApplicable(sea, TTX_SITE.context({ airport: 'VRMK' })), 'No seaplane scenario at Kadhdhoo');
+        var wb = TTX_DATA.scenarios.filter(function (s) { return s.id === 'widebody-emergency'; })[0];
+        assert(!TTX_SITE.isApplicable(wb, TTX_SITE.context({ airport: 'VRMD' })), 'No widebody at Dharavandhoo');
+      }));
+
+      html += formatResult(test('Island maps render for every runway (no NaN, pins on canvas)', function () {
+        everySite(function (ctx, ap, rw, e) {
+          var m = TTX_SITE.mapSvg(ctx, {});
+          assert(m.svg.length > 1000 && m.svg.indexOf('NaN') < 0, 'Bad map svg: ' + ap.id + ' ' + e);
+          assert(m.svg.indexOf('RWY ' + e + ' IN USE') >= 0, 'Active runway not labelled: ' + ap.id + ' ' + e);
+          ['runway', 'undershoot', 'overrun', 'water', 'terminal', 'apron', 'cargo', 'fuel', 'remote', 'perimeter'].forEach(function (site) {
+            var inc = TTX_SITE.incidentSite(site, ctx);
+            assert(inc.x > 0 && inc.x < 1000 && inc.y > 0 && inc.y < 720, 'Incident off canvas: ' + site + ' @ ' + ap.id + ' ' + e);
+            var pos = TTX_SITE.locationPositions(ctx, inc, ctx.hdg);
+            Object.keys(pos).forEach(function (id) {
+              assert(pos[id].x >= 0 && pos[id].x <= 1000 && pos[id].y >= 0 && pos[id].y <= 720, 'Pin ' + id + ' off canvas @ ' + ap.id);
+            });
+          });
+        });
+      }));
+
+      html += formatResult(test('Runway suggestion picks the headwind end', function () {
+        var ctx = TTX_SITE.context({ airport: 'VRMM', runway: '18/36', end: '36' });
+        assertEqual(TTX_SITE.suggestEnd(10, 20, ctx).end, '36', 'north wind → RWY 36');
+        assertEqual(TTX_SITE.suggestEnd(190, 20, ctx).end, '18', 'south wind → RWY 18');
       }));
 
       html += '</div>';

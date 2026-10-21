@@ -50,6 +50,19 @@ let failed = false;
 
 const browser = await chromium.launch();
 
+/* The app calls Open-Meteo for weather and sea state — answer those with
+   fixtures so tests never depend on an outside service. */
+const OPEN_METEO = /open-meteo\.com/;
+const mockWeather = (route) => {
+  const url = route.request().url();
+  const body = url.includes('marine-api')
+    ? { current: { wave_height: 1.2 } }
+    : url.includes('geocoding')
+      ? { results: [{ name: 'Hulhulé', latitude: 4.19, longitude: 73.53, country: 'Maldives' }] }
+      : { latitude: 4.19, longitude: 73.53, current: { temperature_2m: 30, relative_humidity_2m: 75, apparent_temperature: 34, weather_code: 2, wind_speed_10m: 18, wind_direction_10m: 200, pressure_msl: 1009 } };
+  return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(body) });
+};
+
 /* ---- 1. unit test suite -------------------------------------------- */
 try {
   const page = await browser.newPage();
@@ -78,6 +91,7 @@ try {
 
   /* ---- 2. app smoke test ------------------------------------------- */
   const app = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  await app.route(OPEN_METEO, mockWeather);
   const appErrors = [];
   app.on('pageerror', (err) => appErrors.push('pageerror: ' + String(err)));
   app.on('console', (msg) => { if (msg.type() === 'error') appErrors.push('console: ' + msg.text()); });
@@ -122,6 +136,7 @@ try {
   /* fresh context per test = clean localStorage */
   const newAppPage = async () => {
     const ctx = await browser.newContext({ acceptDownloads: true, viewport: { width: 1280, height: 900 } });
+    await ctx.route(OPEN_METEO, mockWeather);
     const p = await ctx.newPage();
     p.errors = [];
     p.on('pageerror', (e) => p.errors.push('pageerror: ' + String(e)));
@@ -245,8 +260,58 @@ try {
     await ctx.close();
   });
 
+  await behavior('airport + runway selection adapts map, scenarios and profile', async () => {
+    const { ctx, p } = await newAppPage();
+    // default: Velana, runway 18/36
+    assert((await p.inputValue('#airportSelect')) === 'VRMM', 'default airport should be Velana');
+    const velana = await p.evaluate(() => document.getElementById('mapBase').textContent);
+    assert(velana.includes('VRMM') && velana.includes('18/36'), 'Velana map title missing');
+
+    // live wind (mocked 200°) should suggest RWY 18 in the profile card
+    await p.waitForFunction(() => /favours\s*RWY 18/.test(document.getElementById('airportProfile').textContent), null, { timeout: 8000 });
+
+    // switch to Dharavandhoo RWY 30 → map, runway list and scenario injects follow
+    await p.selectOption('#airportSelect', 'VRMD');
+    await p.selectOption('#runwaySelect', '12/30|30');
+    const drv = await p.evaluate(() => ({
+      map: document.getElementById('mapBase').textContent,
+      runways: Array.from(document.querySelectorAll('#runwaySelect option')).map((o) => o.value),
+      profile: document.getElementById('airportProfile').textContent,
+      saved: JSON.parse(localStorage.getItem('ttx-airport'))
+    }));
+    assert(drv.map.includes('VRMD') && drv.map.includes('RWY 30 IN USE'), 'Dharavandhoo map not drawn');
+    assert(drv.runways.join() === '12/30|12,12/30|30', 'runway options wrong: ' + drv.runways.join());
+    assert(drv.profile.includes('Eydhafushi'), 'profile should list the Eydhafushi hospital');
+    assert(drv.saved.airport === 'VRMD' && drv.saved.end === '30', 'selection not persisted');
+
+    await p.selectOption('#scenarioSelect', 'atr72-crash');
+    await p.waitForSelector('#scenarioPanel .site-strip', { timeout: 5000 });
+    const panel = await p.textContent('#scenarioPanel');
+    assert(panel.includes('Dharavandhoo') && panel.includes('RWY 30'), 'scenario panel lacks airport context');
+    const injects = await p.evaluate(() => {
+      const sc = JSON.parse(JSON.stringify(window.__ttxActiveScenario ? window.__ttxActiveScenario() : null));
+      return sc;
+    });
+    assert(injects && injects.aircraft === 'Dash 8-300', 'aircraft should adapt to Dharavandhoo, got ' + (injects && injects.aircraft));
+    assert(injects.injects.some((t) => t.includes('RWY 30')), 'injects should name RWY 30');
+
+    // seaplane scenario is not offered at Dharavandhoo, but is at Velana
+    const hasSea = async () => p.evaluate(() => !!document.querySelector('#scenarioSelect option[value="seaplane-capsize"]'));
+    assert(!(await hasSea()), 'seaplane scenario should be hidden at Dharavandhoo');
+    await p.selectOption('#airportSelect', 'VRMM');
+    assert(await hasSea(), 'seaplane scenario should be offered at Velana');
+
+    // reload keeps the airport
+    await p.reload({ waitUntil: 'load' });
+    await p.waitForSelector('#checkGrid .check-item', { state: 'attached', timeout: 15000 });
+    assert((await p.inputValue('#airportSelect')) === 'VRMM', 'airport not restored after reload');
+    assert(p.errors.length === 0, p.errors.join('; '));
+    await ctx.close();
+  });
+
   await behavior('phone viewport: collapsible ☰ nav panel', async () => {
     const ctx = await browser.newContext({ viewport: { width: 375, height: 760 } });
+    await ctx.route(OPEN_METEO, mockWeather);
     const p = await ctx.newPage();
     p.errors = [];
     p.on('pageerror', (e) => p.errors.push('pageerror: ' + String(e)));

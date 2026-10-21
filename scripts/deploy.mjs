@@ -2,9 +2,10 @@
 /* Deploy to Cloudflare Pages.
 
    Every deploy bumps the service worker cache version (eop-YYYYMMDD.N where
-   N is the commit count) so stale shell caches are cleaned up and returning
-   visitors silently pick up the new version on their next reload. The bump
-   is committed first, so the deployed tree always matches the repo.
+   N is the commit count) and the matching ?v= strings on the css/js links in
+   index.html, so stale caches are cleaned up and returning visitors silently
+   pick up the new version on their next reload. The bump is committed
+   first, so the deployed tree always matches the repo.
 
    Usage:
      $env:CLOUDFLARE_API_TOKEN = '...'   # wrangler API token
@@ -37,7 +38,12 @@ if (!process.argv.includes('--no-bump')) {
   const next = `eop-${d}.${count}`;
   if (current !== next) {
     writeFileSync(swPath, sw.replace(/var VERSION = '[^']+';/, `var VERSION = '${next}';`));
-    run('git add sw.js');
+    // keep the ?v= cache-busting strings on css/js in step with the sw
+    const htmlPath = join(ROOT, 'index.html');
+    const html = readFileSync(htmlPath, 'utf8');
+    const v = next.replace(/^eop-/, '');
+    writeFileSync(htmlPath, html.replace(/((?:css|js)\/[\w.-]+\.(?:css|js))\?v=[\w.-]+/g, `$1?v=${v}`));
+    run('git add sw.js index.html');
     run(`git commit -m "chore: bump service worker cache to ${next}"`);
     console.log(`✓ sw cache version: ${current} → ${next}`);
   } else {

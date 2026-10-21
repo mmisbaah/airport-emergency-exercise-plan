@@ -6,24 +6,26 @@
 (function () {
   'use strict';
 
+  /* Shared HTML escaper — every user- or device-sourced string that lands
+     in innerHTML must pass through here (custom scenario names, timeline
+     text, notes, restored backup data …). Declared at function scope: in
+     strict mode a function declared inside the try block below would be
+     block-scoped and invisible to the compare / role-card code after it. */
+  function escHtml(s) {
+    if (s === null || s === undefined) return '';
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   try {
 
     /* ================= KEYBOARD SHORTCUTS ================= */
     var TAB_IDS = ['ttx-tab-emergencies', 'ttx-tab-aircraft', 'ttx-tab-zones', 'ttx-tab-phases', 'ttx-tab-locations', 'ttx-tab-teams', 'ttx-tab-checklist'];
     var TAB_NAMES = ['Emergency Types', 'Aircraft Specs', 'Incident Zones', 'IC Role', 'Key Locations', 'Team Labels', 'TTX Flow & Checklist'];
-
-    /* Shared HTML escaper — every user- or device-sourced string that lands
-       in innerHTML must pass through here (custom scenario names, timeline
-       text, notes, restored backup data …). */
-    function escHtml(s) {
-      if (s === null || s === undefined) return '';
-      return String(s)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
 
     /* ================= SAVE CHIP ================= */
     // Subtle "✓ saved" confirmation shown in the scenario row whenever
@@ -462,8 +464,9 @@
           var raw = localStorage.getItem(STORAGE_KEY);
           if (!raw) return;
           var state = JSON.parse(raw);
-          if (!Array.isArray(state) || state.length !== inputs.length) return;
-          inputs.forEach(function (i, idx) { i.checked = !!state[idx]; });
+          if (!Array.isArray(state)) return;
+          /* tolerate a checklist that grew since the state was saved */
+          inputs.forEach(function (i, idx) { i.checked = state[idx] === true; });
         } catch (e) {}
       };
 
@@ -497,10 +500,17 @@
     /* ================= MAP PINS & LEGEND ================= */
     var CATS = TTX_DATA.pinCategories;
     var LOCATIONS = TTX_DATA.locations;
-    var PIN_STORAGE_KEY = 'ttx-pin-positions';
+    /* Locations placed on the selected airport's island (see renderSiteMap) */
+    var siteLocations = TTX_DATA.locations;
+
+    /* Pin, marker and crash-site positions are remembered per airport +
+       runway in use; custom map layouts per airport. */
+    var siteSel = TTX_SITE.getSelection();
+    var siteSuffix = function () { return siteSel.airport + '-' + siteSel.end; };
+    var PIN_STORAGE_KEY = 'ttx-pin-positions:' + siteSuffix();
 
     /* ---------- Map customization (locations + zone radii) ---------- */
-    var MAP_CFG_KEY = 'ttx-map-config';
+    var MAP_CFG_KEY = 'ttx-map-config:' + siteSel.airport;
     var ZONE_DEFAULTS = {
       map:     { hot: 38,  warm: 110, cold: 185 },
       diagram: { hot: 92,  warm: 185, cold: 280 }
@@ -550,13 +560,23 @@
     };
 
     var applyMapConfig = function () {
-      LOCATIONS = Array.isArray(mapConfig.locations)
-        ? mapConfig.locations
-        : TTX_DATA.locations;
+      if (Array.isArray(mapConfig.locations)) {
+        /* keep custom names/categories, but let built-in pins follow the
+           airport layout (custom extra pins keep their own spot) */
+        var auto = {};
+        siteLocations.forEach(function (l) { auto[l.id] = l; });
+        LOCATIONS = mapConfig.locations.map(function (l) {
+          var a = auto[l.id];
+          return a ? { id: l.id, cat: l.cat, name: l.name, desc: l.desc, x: a.x, y: a.y } : l;
+        });
+      } else {
+        LOCATIONS = siteLocations;
+      }
       applyZoneRadii();
     };
 
     var loadMapConfig = function () {
+      mapConfig = { locations: null, zones: null };
       try {
         var raw = localStorage.getItem(MAP_CFG_KEY);
         if (raw) {
@@ -846,10 +866,6 @@
       if (el) el.addEventListener('pointerdown', onPinMouseDown);
     });
 
-    /* Load custom map config (if any), then render pins + legend + zones */
-    loadMapConfig();
-    buildMapUI();
-    applySiteMarkerPositions();
 
     function highlight(id, on) {
       var pin  = pinLayer.querySelector('.pin[data-id="' + id + '"]');
@@ -859,8 +875,9 @@
     }
 
     /* ================= DRAG CRASH SITE & ZONE RINGS ================= */
-    var CRASH_ZONE_STORAGE_KEY = 'ttx-crash-zone-positions';
-    var DEFAULT_CRASH_POS = { x: 507, y: 270 };
+    var CRASH_ZONE_STORAGE_KEY = 'ttx-crash-zone-positions:' + siteSuffix();
+    /* translate() of the crash group that puts it on the incident site */
+    var crashDefault = { x: 0, y: 0 };
 
     var saveCrashZonePositions = function () {
       var group = document.getElementById('crashZoneGroup');
@@ -887,7 +904,8 @@
     var resetCrashZonePositions = function () {
       try { localStorage.removeItem(CRASH_ZONE_STORAGE_KEY); } catch (e) {}
       var group = document.getElementById('crashZoneGroup');
-      if (group) group.setAttribute('transform', 'translate(0,0)');
+      if (group) group.setAttribute('transform', 'translate(' + crashDefault.x + ',' + crashDefault.y + ')');
+      if (typeof renderSiteMap === 'function') renderSiteMap();
     };
 
     var draggedCrashGroup = null;
@@ -947,12 +965,7 @@
     var crashZoneGroup = document.getElementById('crashZoneGroup');
 
     if (crashZoneGroup) {
-      /* Load saved positions */
-      var savedCrashZone = loadCrashZonePositions();
-      if (savedCrashZone.x !== undefined) {
-        crashZoneGroup.setAttribute('transform', 'translate(' + savedCrashZone.x + ',' + savedCrashZone.y + ')');
-      }
-
+      /* Saved / default position is applied by renderSiteMap() below */
       crashZoneGroup.addEventListener('pointerdown', onCrashZoneMouseDown);
       document.addEventListener('pointermove', onCrashZoneMouseMove);
       document.addEventListener('pointerup', onCrashZoneMouseUp);
@@ -968,6 +981,184 @@
         if (e.cancelable) e.preventDefault();
       }
     }, { passive: false });
+
+    /* ================= AIRPORT + RUNWAY SELECTION ================= */
+    /* The selected airport / runway in use drives the island map, the
+       scenario list (aircraft, people, injects) and the airport profile. */
+    var liveWind = null;   /* { from, speed, lat, lon } from the weather widget */
+
+    var siteForScenario = function (sc) {
+      if (!sc) return 'runway';
+      if (sc.site) return sc.site;
+      var byCat = { fire: 'terminal', hazmat: 'cargo', security: 'terminal', medical: 'apron',
+        weather: 'apron', infrastructure: 'terminal' };
+      return byCat[sc.category] || 'runway';
+    };
+
+    var currentScenarioRaw = function () {
+      var sel = document.getElementById('scenarioSelect');
+      var id = sel && sel.value;
+      if (!id) { try { id = localStorage.getItem('ttx-active-scenario'); } catch (e) {} }
+      if (!id) return null;
+      var pool = (typeof allScenarios !== 'undefined' && allScenarios) ? allScenarios : TTX_DATA.scenarios;
+      return pool.find(function (s) { return s.id === id; }) || null;
+    };
+
+    var windForSite = function (ctx) {
+      var ap = ctx.airport;
+      if (liveWind && ap.lat !== null &&
+          Math.abs(liveWind.lat - ap.lat) < 0.3 && Math.abs(liveWind.lon - ap.lon) < 0.3) {
+        return { from: liveWind.from, live: true };
+      }
+      return { from: ctx.hdg, live: false };
+    };
+
+    var renderSiteMap = function () {
+      var base = document.getElementById('mapBase');
+      if (!base) return;
+      var ctx = TTX_SITE.context(siteSel);
+      var sc = currentScenarioRaw();
+      var site = siteForScenario(sc);
+      var wind = windForSite(ctx);
+
+      PIN_STORAGE_KEY = 'ttx-pin-positions:' + siteSuffix();
+      MAP_CFG_KEY = 'ttx-map-config:' + siteSel.airport;
+      CRASH_ZONE_STORAGE_KEY = 'ttx-crash-zone-positions:' + siteSuffix() + ':' + (sc ? sc.id : 'none');
+
+      var m = TTX_SITE.mapSvg(ctx, { windFrom: wind.from, windLive: wind.live });
+      base.innerHTML = m.svg;
+
+      SITE_MARKS.forEach(function (mk) {
+        var p = mk.key === 'twr' ? m.twr : m.arff;
+        mk.defX = p.x; mk.defY = p.y;
+      });
+
+      /* incident site + zone rings (group is drawn around 507,270) */
+      var inc = TTX_SITE.incidentSite(site, ctx);
+      crashDefault = { x: Math.round(inc.x - 507), y: Math.round(inc.y - 270) };
+      var saved = loadCrashZonePositions();
+      var cz = saved.x !== undefined ? saved : crashDefault;
+      if (crashZoneGroup) crashZoneGroup.setAttribute('transform', 'translate(' + cz.x + ',' + cz.y + ')');
+      var lab = document.getElementById('crashSiteLabel');
+      if (lab) lab.textContent = (sc && sc.aircraft === null && inc.label === 'CRASH SITE') ? 'INCIDENT SITE' : inc.label;
+
+      /* key locations laid out around the incident on this island */
+      var pos = TTX_SITE.locationPositions(ctx, { x: 507 + cz.x, y: 270 + cz.y }, wind.from, site);
+      siteLocations = TTX_DATA.locations.map(function (l) {
+        var p = pos[l.id];
+        return p ? { id: l.id, cat: l.cat, name: l.name, desc: l.desc, x: p.x, y: p.y } : l;
+      });
+
+      loadMapConfig();
+      buildMapUI();
+      applySiteMarkerPositions();
+
+      var d = TTX_SITE.describe(ctx, wind.from, wind.live);
+      var nameEl = document.getElementById('mapAirportName');
+      if (nameEl) nameEl.textContent = ctx.airport.name;
+      var descEl = document.getElementById('mapLayoutDesc');
+      if (descEl) descEl.textContent = d.layout + ' Hover any numbered marker to highlight it.';
+      var noteEl = document.getElementById('mapPlacementNote');
+      if (noteEl) noteEl.innerHTML = '<strong>Placement logic:</strong> ' + escHtml(d.placement);
+      var svgEl = base.closest('svg');
+      if (svgEl) svgEl.setAttribute('aria-label', 'Schematic map of ' + ctx.airport.name + ', runway ' + ctx.runway.id + ', runway ' + ctx.end + ' in use');
+
+      renderAirportProfile(ctx, wind);
+    };
+
+    var renderAirportProfile = function (ctx, wind) {
+      var el = document.getElementById('airportProfile');
+      if (!el) return;
+      var ap = ctx.airport, rw = ctx.runway;
+      var row = function (k, v) { return '<div class="ap-row"><span>' + escHtml(k) + '</span><b>' + v + '</b></div>'; };
+      var html = '<div class="ap-head"><div><h3>' + escHtml(ap.name) + '</h3><p>' +
+        escHtml([ap.icao !== '—' ? ap.icao + ' / ' + ap.iata : null, ap.island, ap.atoll !== '—' ? ap.atoll : null, ap.type].filter(Boolean).join(' · ')) +
+        '</p></div><span class="ap-badge">RWY ' + escHtml(ctx.end) + ' in use</span></div>';
+      html += '<div class="ap-grid">';
+      html += '<div class="ap-col"><h4>Airfield</h4>' +
+        row('Runway', escHtml(rw.id + ' · ' + rw.length.toLocaleString('en-US') + ' × ' + rw.width + ' m · ' + rw.surface)) +
+        row('Operator', escHtml(ap.operator)) +
+        row('Rescue & firefighting', escHtml(ap.rff)) +
+        row('Largest aircraft (planning)', escHtml([ap.fleet.widebody, ap.fleet.jet, ap.fleet.regional].filter(Boolean)[0] || '—') +
+          (function () { var c = TTX_SITE.rffForAircraft([ap.fleet.widebody, ap.fleet.jet, ap.fleet.regional].filter(Boolean)[0]); return c ? ' — needs RFF Cat ' + c : ''; })()) +
+        row('Seaplane water aerodrome', ap.features.seaplane ? 'Yes' : 'No');
+      if (wind.live && liveWind) {
+        var best = TTX_SITE.suggestEnd(liveWind.from, liveWind.speed, ctx);
+        html += row('Live wind', escHtml(('00' + Math.round(liveWind.from)).slice(-3) + '° / ' + Math.round(liveWind.speed) + ' km/h') +
+          (best ? ' — favours <b>RWY ' + escHtml(best.end) + '</b>' + (best.end !== ctx.end ? ' <button type="button" class="reset-btn ap-use" data-end="' + escHtml(best.end) + '">Use it</button>' : '') : ''));
+      }
+      html += '</div>';
+      html += '<div class="ap-col"><h4>Hospitals &amp; transfer</h4><ul class="ap-list">' +
+        ap.hospitals.map(function (h) {
+          return '<li><b>' + escHtml(h.name) + '</b><span>' + escHtml(h.role + ' · ' + h.eta + ' by ' + h.how) + '</span></li>';
+        }).join('') + '</ul></div>';
+      html += '<div class="ap-col"><h4>Responders &amp; mutual aid</h4><ul class="ap-list">' +
+        ap.agencies.map(function (a) { return '<li>' + escHtml(a) + '</li>'; }).join('') +
+        '</ul><p class="ap-note"><b>Mutual aid:</b> ' + escHtml(ap.mutualAid) + '</p>' +
+        '<p class="ap-note"><b>On-island planning assumption:</b> ' +
+        escHtml(ap.local.arff + ' RFF · ' + ap.local.ambulances + ' ambulance' + (ap.local.ambulances === 1 ? '' : 's') + ' · ' +
+          ap.local.fireTrucks + ' fire truck' + (ap.local.fireTrucks === 1 ? '' : 's') + ' · ' + ap.local.buses + ' bus' + (ap.local.buses === 1 ? '' : 'es') + ' · ' +
+          ap.local.boats + ' boat' + (ap.local.boats === 1 ? '' : 's')) + '</p></div>';
+      html += '</div>';
+      html += '<p class="ap-foot">National numbers (check locally): Police 119 · Fire 118 · Ambulance 102 · Coast Guard 191. ' +
+        'Runway figures, hospitals and transfer times are planning values from public sources — verify against the MCAA AIP and your AEP.</p>';
+      el.innerHTML = html;
+      var useBtn = el.querySelector('.ap-use');
+      if (useBtn) useBtn.addEventListener('click', function () {
+        setSite({ airport: siteSel.airport, runway: siteSel.runway, end: useBtn.getAttribute('data-end') });
+      });
+    };
+
+    var airportSelect = document.getElementById('airportSelect');
+    var runwaySelect = document.getElementById('runwaySelect');
+
+    var fillRunwaySelect = function () {
+      if (!runwaySelect) return;
+      var ap = TTX_SITE.byId(siteSel.airport);
+      runwaySelect.innerHTML = '';
+      ap.runways.forEach(function (rw) {
+        rw.ends.forEach(function (e) {
+          var opt = document.createElement('option');
+          opt.value = rw.id + '|' + e;
+          opt.textContent = 'RWY ' + e + (ap.runways.length > 1 ? ' (' + rw.id + ')' : '') + ' · ' + rw.length.toLocaleString('en-US') + ' m';
+          runwaySelect.appendChild(opt);
+        });
+      });
+      runwaySelect.value = siteSel.runway + '|' + siteSel.end;
+    };
+
+    if (airportSelect) {
+      TTX_SITE.list.forEach(function (ap) {
+        var opt = document.createElement('option');
+        opt.value = ap.id;
+        opt.textContent = ap.short + (ap.icao !== '—' ? ' (' + ap.icao + ')' : ' — template');
+        airportSelect.appendChild(opt);
+      });
+      airportSelect.value = siteSel.airport;
+      fillRunwaySelect();
+    }
+
+    /* Change airport / runway → everything that depends on it */
+    var setSite = function (sel) {
+      var prevAirport = siteSel.airport;
+      siteSel = TTX_SITE.setSelection(sel);
+      if (airportSelect) airportSelect.value = siteSel.airport;
+      fillRunwaySelect();
+      if (typeof rebuildScenarios === 'function') rebuildScenarios(true);
+      renderSiteMap();
+      if (prevAirport !== siteSel.airport && typeof pointWeatherAtAirport === 'function') pointWeatherAtAirport();
+      flashSaved(TTX_SITE.byId(siteSel.airport).short + ' · RWY ' + siteSel.end);
+    };
+
+    if (airportSelect) airportSelect.addEventListener('change', function () {
+      setSite({ airport: airportSelect.value });
+    });
+    if (runwaySelect) runwaySelect.addEventListener('change', function () {
+      var parts = runwaySelect.value.split('|');
+      setSite({ airport: siteSel.airport, runway: parts[0], end: parts[1] });
+    });
+
+    renderSiteMap();
 
     /* ================= MAP CUSTOMIZATION MODAL ================= */
     (function () {
@@ -986,7 +1177,7 @@
       };
 
       var effectiveLocations = function () {
-        return Array.isArray(mapConfig.locations) ? mapConfig.locations : TTX_DATA.locations;
+        return Array.isArray(mapConfig.locations) ? LOCATIONS : siteLocations;
       };
 
       var catKeys = function () { return Object.keys(CATS); };
@@ -1230,13 +1421,6 @@
     var scenarioSelect = document.getElementById('scenarioSelect');
 
     if (scenarioSelect && TTX_DATA.scenarios) {
-      TTX_DATA.scenarios.forEach(function (sc) {
-        var opt = document.createElement('option');
-        opt.value = sc.id;
-        opt.textContent = sc.name;
-        scenarioSelect.appendChild(opt);
-      });
-
       scenarioSelect.addEventListener('change', function () {
         // Look up in allScenarios (built-in + custom) so custom scenarios
         // also get their panel, timeline and injects.
@@ -1247,6 +1431,7 @@
           if (scenarioSelect.value) localStorage.setItem('ttx-active-scenario', scenarioSelect.value);
           else localStorage.removeItem('ttx-active-scenario');
         } catch (e) {}
+        renderSiteMap();
         var timelineSection = document.getElementById('timelineSection');
         if (timelineSection) {
           if (scenario) {
@@ -1265,10 +1450,39 @@
         '<span class="stat-lbl">' + escHtml(label) + '</span></div>';
     };
 
-    /* Requirement card (planning numbers, not committed counts) */
-    var renderReq = function (value, label) {
-      return '<div class="req-card"><span class="req-num">' + escHtml(value) + '</span>' +
-        '<span class="req-lbl">' + escHtml(label) + '</span></div>';
+    /* Requirement card (planning numbers, not committed counts) —
+       with what the selected airport island has locally */
+    var renderReq = function (value, label, local) {
+      var gap = typeof local === 'number' ? Math.max((value || 0) - local, 0) : 0;
+      return '<div class="req-card' + (gap ? ' req-gap' : '') + '"><span class="req-num">' + escHtml(value) + '</span>' +
+        '<span class="req-lbl">' + escHtml(label) + '</span>' +
+        (typeof local === 'number' ? '<span class="req-local">' + escHtml(local) + ' on island' + (gap ? ' · ' + gap + ' short' : '') + '</span>' : '') +
+        '</div>';
+    };
+
+    /* Airport / runway context line under the scenario title */
+    var renderSiteStrip = function (scenario) {
+      var ctx = TTX_SITE.context(siteSel);
+      var ap = ctx.airport;
+      var h = TTX_SITE.primaryHospital(ap);
+      var bits = [
+        '📍 <b>' + escHtml(ap.short + (ap.icao !== '—' ? ' (' + ap.icao + ')' : '')) + '</b> · RWY ' + escHtml(ctx.end),
+        '🏥 ' + escHtml(h.name) + ' — ' + escHtml(h.eta + ' by ' + h.how)
+      ];
+      if (scenario.aircraft && scenario.rffCategory) bits.push('🚒 ' + escHtml(scenario.aircraft) + ' needs RFF Cat ' + scenario.rffCategory);
+      return '<p class="site-strip">' + bits.join('<span class="dotsep">·</span>') + '</p>';
+    };
+
+    /* Shortfall against the island's own resources → mutual aid needed */
+    var renderShortfall = function (scenario) {
+      var ctx = TTX_SITE.context(siteSel);
+      var sf = TTX_SITE.shortfall(scenario, ctx);
+      var names = { arff: 'RFF vehicles', ambulances: 'ambulances', fireTrucks: 'fire trucks', buses: 'buses', boats: 'boats' };
+      var gaps = Object.keys(sf).filter(function (k) { return sf[k].gap > 0; })
+        .map(function (k) { return sf[k].gap + ' ' + names[k]; });
+      if (!gaps.length) return '<div class="short-callout ok">✓ The island\'s own resources cover this scenario\'s planning numbers.</div>';
+      return '<div class="short-callout">⚠️ <b>Not on the island:</b> ' + escHtml(gaps.join(', ')) +
+        '. <b>Mutual aid:</b> ' + escHtml(ctx.airport.mutualAid) + '. Build the delay into your injects.</div>';
     };
 
     function updateScenarioPanel(scenario) {
@@ -1297,7 +1511,8 @@
       }
 
       panel.classList.remove('onboard-mode');
-      var html = '<h3 style="margin:0 0 16px;font-size:16px;color:var(--text);">' + escHtml(scenario.name) + '</h3>';
+      var html = '<h3 style="margin:0 0 6px;font-size:16px;color:var(--text);">' + escHtml(scenario.name) + '</h3>';
+      html += renderSiteStrip(scenario);
 
       /* Exercise clock + inject player (rendered by renderClockPanel) */
       html += '<div id="clockMount"></div>';
@@ -1318,11 +1533,14 @@
 
       html += '<h4 style="margin:0 0 10px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Resource Requirements</h4>';
       html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:4px;">';
-      html += renderReq(scenario.resources.arff, 'ARFF Vehicles');
-      html += renderReq(scenario.resources.ambulances, 'Ambulances');
-      html += renderReq(scenario.resources.fireTrucks, 'Fire Trucks');
-      html += renderReq(scenario.resources.buses, 'Buses');
+      var loc = TTX_SITE.context(siteSel).airport.local || {};
+      html += renderReq(scenario.resources.arff, 'ARFF Vehicles', loc.arff);
+      html += renderReq(scenario.resources.ambulances, 'Ambulances', loc.ambulances);
+      html += renderReq(scenario.resources.fireTrucks, 'Fire Trucks', loc.fireTrucks);
+      html += renderReq(scenario.resources.buses, 'Buses', loc.buses);
+      html += renderReq(scenario.resources.boats || 0, 'Boats / Sea Ambulances', loc.boats);
       html += '</div>';
+      html += renderShortfall(scenario);
 
       /* Interactive resource tracker mount (committed vs required) */
       html += '<div id="scenarioResTracker"></div>';
@@ -1345,7 +1563,8 @@
       { key: 'arff', label: 'ARFF Vehicles', icon: '🚒' },
       { key: 'ambulances', label: 'Ambulances', icon: '🚑' },
       { key: 'fireTrucks', label: 'Fire Trucks', icon: '🧯' },
-      { key: 'buses', label: 'Buses', icon: '🚌' }
+      { key: 'buses', label: 'Buses', icon: '🚌' },
+      { key: 'boats', label: 'Boats / Sea Ambulances', icon: '🚤' }
     ];
 
     var loadScenarioResState = function () {
@@ -1658,7 +1877,7 @@
         if (scenarioSelect && scenarioSelect.value) {
           var sc = (typeof allScenarios !== 'undefined' ? allScenarios : TTX_DATA.scenarios)
             .find(function (s) { return s.id === scenarioSelect.value; });
-          if (sc) scenarioName = sc.name;
+          if (sc) scenarioName = sc.name + (sc.siteLabel ? ' — ' + sc.siteLabel : '');
         }
         var report = 'AIRPORT EMERGENCY EXERCISE — TIMELINE\n';
         report += '==========================================\n';
@@ -1743,6 +1962,9 @@
       var pool = (typeof allScenarios !== 'undefined' ? allScenarios : TTX_DATA.scenarios);
       return pool.find(function (s) { return s.id === id; }) || null;
     };
+    /* read-only hook for the end-to-end tests: the scenario as resolved
+       for the selected airport + runway */
+    window.__ttxActiveScenario = function () { return getActiveScenarioObj(); };
 
     /* Injects are strings like "09:05 — Aircraft crashes …".
        Schedule offsets are computed relative to the first parseable time. */
@@ -2084,7 +2306,7 @@
 
     var aarScenarioLine = function (d) {
       if (!d.scenario) return 'Airport Emergency Exercise (no scenario selected)';
-      return d.scenario.name;
+      return d.scenario.name + (d.scenario.siteLabel ? ' — ' + d.scenario.siteLabel : '');
     };
 
     var aarToMarkdown = function (d) {
@@ -2330,23 +2552,79 @@
 
     /* ================= SCENARIO EDITOR ================= */
     var SCENARIO_STORAGE_KEY = 'ttx-custom-scenarios';
-    var allScenarios = TTX_DATA.scenarios.slice(); // copy
+    var allScenarios = [];
 
+    /* Built-ins are resolved for the selected airport + runway (aircraft,
+       people, resources, inject text) and filtered to those that make
+       sense there. Custom scenarios always show and replace a built-in
+       with the same id (an edited copy). */
+    var customRaw = [];
     var loadCustomScenarios = function () {
+      customRaw = [];
       try {
         var raw = localStorage.getItem(SCENARIO_STORAGE_KEY);
         if (raw) {
           var custom = JSON.parse(raw);
-          if (Array.isArray(custom)) {
-            // Remove old custom scenarios, then add fresh ones
-            allScenarios = TTX_DATA.scenarios.concat(custom);
-          }
+          if (Array.isArray(custom)) customRaw = custom.filter(function (c) { return c && c.id; });
         }
       } catch (e) {}
+      var ctx = TTX_SITE.context(siteSel);
+      var customIds = {};
+      customRaw.forEach(function (c) { customIds[c.id] = true; });
+      var built = TTX_DATA.scenarios
+        .filter(function (sc) { return !customIds[sc.id] && TTX_SITE.isApplicable(sc, ctx); })
+        .map(function (sc) { return TTX_SITE.resolveScenario(sc, ctx); });
+      var tk = TTX_SITE.tokensFor(ctx, null);
+      var custom = customRaw.map(function (c) {
+        var copy = JSON.parse(JSON.stringify(c));
+        copy.injects = (copy.injects || []).map(function (t) { return TTX_SITE.fill(t, tk); });
+        if (copy.resources && copy.resources.boats === undefined) copy.resources.boats = 0;
+        copy.rffCategory = copy.aircraft ? TTX_SITE.rffForAircraft(copy.aircraft) : null;
+        copy.siteLabel = ctx.airport.name + ' · RWY ' + ctx.end + ' in use';
+        copy._raw = c;
+        return copy;
+      });
+      allScenarios = built.concat(custom);
+    };
+
+    /* One place that fills the header dropdown (keeps the selection) */
+    var populateScenarioSelect = function () {
+      var sel = document.getElementById('scenarioSelect');
+      if (!sel) return;
+      var keep = sel.value;
+      sel.innerHTML = '<option value="">— Select a scenario —</option>';
+      allScenarios.forEach(function (sc) {
+        var opt = document.createElement('option');
+        opt.value = sc.id;
+        opt.textContent = sc.name + (sc.custom ? ' (custom)' : '');
+        sel.appendChild(opt);
+      });
+      if (keep && allScenarios.some(function (s) { return s.id === keep; })) sel.value = keep;
+    };
+
+    /* Airport / runway changed: re-resolve and refresh the open scenario */
+    var rebuildScenarios = function (refreshPanel) {
+      var sel = document.getElementById('scenarioSelect');
+      var before = sel ? sel.value : '';
+      loadCustomScenarios();
+      populateScenarioSelect();
+      updateDockInfo();
+      if (!refreshPanel || !sel) return;
+      if (before && sel.value !== before) {
+        /* not offered at this airport */
+        sel.value = '';
+        flashSaved('scenario not used at this airport');
+      }
+      sel.dispatchEvent(new Event('change'));
     };
 
     var saveCustomScenarios = function () {
-      var custom = allScenarios.filter(function (s) { return s.custom; });
+      var custom = allScenarios.filter(function (s) { return s.custom; }).map(function (s) {
+        if (s._raw) return s._raw;
+        var c = JSON.parse(JSON.stringify(s));
+        delete c.siteLabel; delete c.rffCategory; delete c._raw;
+        return c;
+      });
       try { localStorage.setItem(SCENARIO_STORAGE_KEY, JSON.stringify(custom)); } catch (e) {}
       updateDockInfo();
       flashSaved('scenario saved');
@@ -2367,13 +2645,7 @@
     // Populate scenario selector with all scenarios
     var scenarioSelect = document.getElementById('scenarioSelect');
     if (scenarioSelect) {
-      scenarioSelect.innerHTML = '<option value="">— Select a scenario —</option>';
-      allScenarios.forEach(function (sc) {
-        var opt = document.createElement('option');
-        opt.value = sc.id;
-        opt.textContent = sc.name + (sc.custom ? ' (custom)' : '');
-        scenarioSelect.appendChild(opt);
-      });
+      populateScenarioSelect();
 
       // Session resume: reopen the scenario that was active last time
       try {
@@ -2465,6 +2737,7 @@
           document.getElementById('editAmbulances').value = '';
           document.getElementById('editFireTrucks').value = '';
           document.getElementById('editBuses').value = '';
+          document.getElementById('editBoats').value = '';
           document.getElementById('editInjects').value = '';
         });
       }
@@ -2499,7 +2772,8 @@
       document.getElementById('editAmbulances').value = sc.resources.ambulances;
       document.getElementById('editFireTrucks').value = sc.resources.fireTrucks;
       document.getElementById('editBuses').value = sc.resources.buses;
-      document.getElementById('editInjects').value = sc.injects.join('\n');
+      document.getElementById('editBoats').value = sc.resources.boats || 0;
+      document.getElementById('editInjects').value = ((sc._raw && sc._raw.injects) || sc.injects).join('\n');
     };
 
     window.__deleteScenario = function (idx) {
@@ -2508,16 +2782,11 @@
       if (!confirm('Delete scenario "' + sc.name + '"?')) return;
       allScenarios.splice(idx, 1);
       saveCustomScenarios();
+      loadCustomScenarios();
       renderScenarioList();
       // Refresh selector
       if (scenarioSelect) {
-        scenarioSelect.innerHTML = '<option value="">— Select a scenario —</option>';
-        allScenarios.forEach(function (s) {
-          var opt = document.createElement('option');
-          opt.value = s.id;
-          opt.textContent = s.name + (s.custom ? ' (custom)' : '');
-          scenarioSelect.appendChild(opt);
-        });
+        populateScenarioSelect();
       }
     };
 
@@ -2548,7 +2817,8 @@
             arff: parseInt(document.getElementById('editArff').value) || 0,
             ambulances: parseInt(document.getElementById('editAmbulances').value) || 0,
             fireTrucks: parseInt(document.getElementById('editFireTrucks').value) || 0,
-            buses: parseInt(document.getElementById('editBuses').value) || 0
+            buses: parseInt(document.getElementById('editBuses').value) || 0,
+            boats: parseInt(document.getElementById('editBoats').value) || 0
           },
           injects: document.getElementById('editInjects').value.split('\n').filter(function (l) { return l.trim(); }),
           custom: true
@@ -2561,18 +2831,13 @@
         }
 
         saveCustomScenarios();
+        loadCustomScenarios();
         scenarioForm.style.display = 'none';
         renderScenarioList();
 
         // Refresh selector
         if (scenarioSelect) {
-          scenarioSelect.innerHTML = '<option value="">— Select a scenario —</option>';
-          allScenarios.forEach(function (s) {
-            var opt = document.createElement('option');
-            opt.value = s.id;
-            opt.textContent = s.name + (s.custom ? ' (custom)' : '');
-            scenarioSelect.appendChild(opt);
-          });
+          populateScenarioSelect();
         }
 
         // First custom scenario? Offer a backup (session-gated, 7-day cooldown)
@@ -2682,11 +2947,12 @@
         field('1. Incident Name', esc(incName)) +
         field('2. Date / Time Prepared', esc(dateStr + ' ' + timeStr)) +
         field('3. Incident Commander', '') +
-        field('4. Agency', 'Airport Emergency Management') +
+        field('4. Agency', esc(TTX_SITE.context(siteSel).airport.operator)) +
         field('5. Incident Type', esc(scenario ? (scenario.category || 'aircraft') : 'Exercise')) +
         field('6. Operational Period', esc(dateStr) + ' — ongoing') +
         '</div>';
       html += '<div class="ics-sub">7. Situation Summary</div><div class="ics-grid">' +
+        field('Location', esc(scenario && scenario.siteLabel ? scenario.siteLabel : TTX_SITE.context(siteSel).airport.name)) +
         field('Aircraft', esc(scenario ? (scenario.aircraft || 'N/A') : '—')) +
         field('Souls on Board', scenario ? esc(scenario.soulsOnBoard) : '—') +
         field('Fuel Load', scenario ? esc(scenario.fuelLoad) : '—') +
@@ -2712,6 +2978,7 @@
         field('Ambulances', scenario ? esc(scenario.resources.ambulances) : '—') +
         field('Fire Trucks', scenario ? esc(scenario.resources.fireTrucks) : '—') +
         field('Buses', scenario ? esc(scenario.resources.buses) : '—') +
+        field('Boats / Sea Ambulances', scenario ? esc(scenario.resources.boats || 0) : '—') +
         '</div>';
       html += sign();
       html += end;
@@ -2789,6 +3056,7 @@
         ['Fire / ARFF', 'CH ______', 'FIRE', 'Fire ground operations'],
         ['EMS / Medical', 'CH ______', 'EMS', 'Triage and transport'],
         ['Security / Perimeter', 'CH ______', 'SEC', 'Cordon control'],
+        ['Marine / Coast Guard', 'VHF CH ____', 'MARINE', 'Water rescue, sea ambulance transfers'],
         ['Logistics', 'CH ______', 'LOG', 'Staging and resupply'],
         ['Airport Operations', 'CH ______', 'AQD', 'Airfield status / redirects']
       ]);
@@ -2804,9 +3072,10 @@
       html += table(['Resource', 'Quantity', 'Base / Location', 'Notes'], [
         ['Ambulances', esc(scenario ? scenario.resources.ambulances : '—'), '', 'Transport to hospital'],
         ['Medical teams', String(countResType('Medical') || '—'), '', 'On-scene treatment'],
-        ['Hospital — primary', '1', '', 'Receiving hospital'],
-        ['Hospital — secondary', '1', '', 'Backup / overflow']
-      ]);
+        ['Boats / sea ambulances', esc(scenario ? (scenario.resources.boats || 0) : '—'), 'Jetty transfer point', 'Off-island transfers']
+      ].concat(TTX_SITE.context(siteSel).airport.hospitals.map(function (h) {
+        return ['Hospital — ' + esc(h.role), '1', esc(h.name), esc(h.eta + ' by ' + h.how)];
+      })));
       html += wide('Triage summary (tracker)',
         cas.length
           ? esc('Red ' + countCas('red') + ' · Yellow ' + countCas('yellow') + ' · Green ' + countCas('green') +
@@ -2820,7 +3089,7 @@
       html += '<div class="ics-grid">' +
         field('1. Incident Name', esc(incName)) +
         field('2. Date / Time', esc(dateStr + ' ' + timeStr)) +
-        field('3. Location', 'Airport Reference Layout — crash site') +
+        field('3. Location', esc(scenario && scenario.siteLabel ? scenario.siteLabel : TTX_SITE.context(siteSel).airport.name)) +
         field('4. Reported By', '') +
         '</div>';
       html += wide('5. Incident description',
@@ -3423,6 +3692,35 @@
     var weatherWidget = document.getElementById('weatherWidget');
     var WX_CACHE_KEY = 'ttx-wx-cache';
     var WX_PLACE_KEY = 'ttx-wx-place';
+    var WX_MARINE_KEY = 'ttx-wx-marine';
+
+    /* Point the weather widget at the selected airport */
+    var pointWeatherAtAirport = function () {
+      var ap = TTX_SITE.byId(siteSel.airport);
+      if (!ap || typeof ap.lat !== 'number') return;
+      try {
+        localStorage.setItem(WX_PLACE_KEY, JSON.stringify({ name: ap.short + ' (' + ap.icao + ')', lat: ap.lat, lon: ap.lon, airport: ap.id }));
+        localStorage.removeItem(WX_CACHE_KEY);
+      } catch (e) {}
+      loadWeatherWidget(true);
+    };
+
+    /* Sea state for boat / sea-ambulance transfers (Open-Meteo marine) */
+    var loadMarine = function (place) {
+      if (!place || typeof place.lat !== 'number') return;
+      var url = 'https://marine-api.open-meteo.com/v1/marine?latitude=' + place.lat + '&longitude=' + place.lon + '&current=wave_height';
+      fetch(url)
+        .then(function (res) { return res.json(); })
+        .then(function (d) {
+          if (!d || !d.current || typeof d.current.wave_height !== 'number') return;
+          try { localStorage.setItem(WX_MARINE_KEY, JSON.stringify({ t: Date.now(), wave: d.current.wave_height, lat: place.lat, lon: place.lon })); } catch (e) {}
+          try {
+            var cachedWx = JSON.parse(localStorage.getItem(WX_CACHE_KEY) || 'null');
+            if (cachedWx && cachedWx.data) renderWeatherWidget(cachedWx.data, true);
+          } catch (e) {}
+        })
+        .catch(function () {});
+    };
 
     var WX_CODES = {
       0: ['☀️', 'Clear'], 1: ['🌤️', 'Mainly clear'], 2: ['⛅', 'Partly cloudy'], 3: ['☁️', 'Overcast'],
@@ -3452,9 +3750,23 @@
       html += '<span class="wx-temp">' + Math.round(c.temperature_2m) + '°C</span>';
       html += '<span class="wx-meta">' + Math.round(c.wind_speed_10m) + ' km/h ' + windDirLabel(c.wind_direction_10m) + '</span>';
       html += '<span class="wx-meta">RH ' + Math.round(c.relative_humidity_2m) + '%</span>';
+      var marine = null;
+      try { marine = JSON.parse(localStorage.getItem(WX_MARINE_KEY) || 'null'); } catch (e) {}
+      if (marine && typeof marine.wave === 'number' && place && marine.lat === place.lat && marine.lon === place.lon) {
+        html += '<span class="wx-meta" title="Significant wave height — matters for boat transfers">🌊 ' + marine.wave.toFixed(1) + ' m</span>';
+      }
       if (place && place.name) html += '<span class="wx-cond">' + escHtml(place.name) + '</span>';
       html += '<span class="wx-fresh" title="Data from Open-Meteo">' + (cached ? 'cached' : 'live') + '</span>';
       weatherWidget.innerHTML = html;
+
+      /* Feed the wind to the map + runway suggestion when it is for the selected airport */
+      if (place && typeof place.lat === 'number' && typeof c.wind_direction_10m === 'number') {
+        var prev = liveWind;
+        liveWind = { from: c.wind_direction_10m, speed: c.wind_speed_10m || 0, lat: place.lat, lon: place.lon };
+        if (!prev || Math.abs(prev.from - liveWind.from) > 5 || prev.lat !== liveWind.lat || Math.round(prev.speed) !== Math.round(liveWind.speed)) {
+          renderSiteMap();
+        }
+      }
       weatherWidget.setAttribute('aria-label',
         'Current weather' + (place && place.name ? ' at ' + place.name : '') + ': ' + code[1] +
         ', ' + Math.round(c.temperature_2m) + ' degrees, wind ' + Math.round(c.wind_speed_10m) +
@@ -3487,6 +3799,7 @@
           if (!data || !data.current) return;
           try { localStorage.setItem(WX_CACHE_KEY, JSON.stringify({ t: Date.now(), data: data })); } catch (e) {}
           renderWeatherWidget(data, false);
+          loadMarine(place);
         })
         .catch(function () {
           // Offline or blocked — fall back to any cached copy
@@ -3503,7 +3816,11 @@
         loadWeatherWidget(true);
       });
     }
-    loadWeatherWidget(false);
+    /* First visit: show the weather for the selected airport */
+    try {
+      if (!localStorage.getItem(WX_PLACE_KEY)) pointWeatherAtAirport();
+      else loadWeatherWidget(false);
+    } catch (e) { loadWeatherWidget(false); }
 
     /* ================= EXPORT TO PDF ================= */
     var exportPdfBtn = document.getElementById('exportPdfBtn');
@@ -3535,6 +3852,7 @@
         report += '-----------------------------------------------------------------\n\n';
         if (scenario) {
           report += 'Scenario Name: ' + scenario.name + '\n';
+          report += 'Airport: ' + (scenario.siteLabel || TTX_SITE.context(siteSel).airport.name) + '\n';
           report += 'Aircraft: ' + (scenario.aircraft || 'N/A') + '\n';
           report += 'Souls on Board: ' + scenario.soulsOnBoard + '\n';
           report += 'Fuel Load: ' + scenario.fuelLoad + '\n';
@@ -3549,7 +3867,8 @@
           report += '  ARFF Vehicles: ' + scenario.resources.arff + '\n';
           report += '  Ambulances: ' + scenario.resources.ambulances + '\n';
           report += '  Fire Trucks: ' + scenario.resources.fireTrucks + '\n';
-          report += '  Buses: ' + scenario.resources.buses + '\n\n';
+          report += '  Buses: ' + scenario.resources.buses + '\n';
+          report += '  Boats / Sea Ambulances: ' + (scenario.resources.boats || 0) + '\n\n';
           report += 'Exercise Injects:\n';
           scenario.injects.forEach(function (inject) {
             report += '  ' + inject + '\n';
@@ -3567,7 +3886,7 @@
         report += '1. Incident Name: ' + (scenario ? scenario.name : 'Airport Emergency Exercise') + '\n';
         report += '2. Date/Time Prepared: ' + dateStr + ' ' + timeStr + '\n';
         report += '3. Incident Commander: _________________________\n';
-        report += '4. Agency: Airport Emergency Management\n';
+        report += '4. Agency: ' + TTX_SITE.context(siteSel).airport.operator + '\n';
         report += '5. Incident Type: ' + (scenario ? (scenario.category || 'aircraft') : 'Exercise') + '\n\n';
         report += '6. Current Actions:\n';
         if (timelineEvents.length > 0) {
@@ -3729,7 +4048,8 @@
       'ttx-custom-scenarios', 'ttx-casualty-tracker', 'ttx-resource-tracker',
       'ttx-scenario-resources',
       'ttx-timeline-events', 'ttx-restore-points', 'ttx-version-history',
-      'ttx-clock', 'ttx-aar-notes', 'ttx-map-config'
+      'ttx-clock', 'ttx-aar-notes', 'ttx-map-config', 'ttx-airport',
+      'ttx-wx-place'
     ];
 
     var exportData = function (type) {
@@ -3741,6 +4061,11 @@
           var v = localStorage.getItem(k);
           if (v !== null) data.data[k] = v;
         });
+        /* per-airport map layouts, pin and crash-site positions */
+        for (var bi = 0; bi < localStorage.length; bi++) {
+          var bk = localStorage.key(bi);
+          if (bk && /^ttx-(pin-positions|map-config|crash-zone-positions):/.test(bk)) data.data[bk] = localStorage.getItem(bk);
+        }
       } else {
         data = {
           version: '1.0',
@@ -3806,6 +4131,7 @@
               }
             });
             saveCustomScenarios();
+            loadCustomScenarios();
           }
 
           // Replace resources
@@ -3832,13 +4158,7 @@
 
           // Refresh scenario selector
           if (scenarioSelect) {
-            scenarioSelect.innerHTML = '<option value="">— Select a scenario —</option>';
-            allScenarios.forEach(function (s) {
-              var opt = document.createElement('option');
-              opt.value = s.id;
-              opt.textContent = s.name + (s.custom ? ' (custom)' : '');
-              scenarioSelect.appendChild(opt);
-            });
+            populateScenarioSelect();
           }
 
           updateDataSummary();
@@ -4141,8 +4461,20 @@
   }
 
   /* ================= VERSION HISTORY (changelog) ================= */
-  var APP_VERSION = '2026.10.04';
+  var APP_VERSION = '2026.10.21';
   var CHANGELOG = [
+    { v: '2026.10.21', items: [
+      'Airport + runway selection in the header — Velana, Gan, Hanimaadhoo, Kadhdhoo, Dharavandhoo, Maamigili or a generic island template, plus the runway in use',
+      'Scenarios adapt to the airport: aircraft, souls on board, fuel, casualties and resources scale to what it handles; injects name the runway, hospital, transfer times and mutual aid',
+      'New Maldives scenarios: seaplane capsize, overrun into the lagoon, no hospital on the island, tsunami warning, monsoon squall, fuel tanker delay, widebody emergency, communicable disease',
+      'Key Locations map drawn as the selected island with its runway in its real orientation (designators now match the runway heading), jetty, links and seaplane lanes',
+      'Airport profile: RFF, hospitals and transfer times, agencies, mutual aid, on-island resources and a live-wind runway suggestion',
+      'Boats / sea ambulances added to resource requirements, trackers, ICS forms and exports; shortfall against on-island resources shown per scenario',
+      'Twin Otter seaplane, A330-200 and 777-300ER added; ICAO RFF category for every aircraft',
+      'Maldives glossary and references (MCAA, MCAR-139, MNDF, NDMA, HPA, IGMH); tsunami and Water & Marine emergency types replace volcanic ash and tornado',
+      'Sea state (wave height) in the weather widget; weather follows the selected airport',
+      'Offline fix: cached app files load even when the page asks for a newer ?v= version; deploy script keeps ?v= strings in step'
+    ]},
     { v: '2026.10.04', items: [
       'Escaping hardened — every user-entered string is HTML-escaped (XSS audit)',
       'Share preview (Open Graph / Twitter) + noscript fallback message',
@@ -4288,7 +4620,8 @@
     if (!body || !TTX_DATA.aircraftComparison) return;
     var html = '';
     TTX_DATA.aircraftComparison.forEach(function (a) {
-      html += '<tr><td class="ac-name">' + a.name + '</td><td class="num">' + a.pax + '</td><td class="num">' + a.crew + '</td><td class="num">' + a.total + '</td><td>' + a.fuel + '</td><td class="num">' + a.wheels + '</td><td>' + a.door + '</td><td>' + a.baggage + '</td></tr>';
+      var rff = TTX_SITE.rffForAircraft(a.name);
+      html += '<tr><td class="ac-name">' + a.name + '</td><td class="num">' + a.pax + '</td><td class="num">' + a.crew + '</td><td class="num">' + a.total + '</td><td>' + a.fuel + '</td><td class="num">' + (a.wheels || 'Floats') + '</td><td>' + a.door + '</td><td>' + a.baggage + '</td><td class="num">' + (rff || '—') + '</td></tr>';
     });
     body.innerHTML = html;
   };
@@ -4296,7 +4629,7 @@
   var renderAircraftCards = function () {
     var grid = document.getElementById('acGrid');
     if (!grid || !TTX_DATA.aircraftDetails) return;
-    var badges = ['✈️', '✈️', '🛫', '🛩️', '🛩️', '🛩️', '🛫', '🛫', '🛫'];
+    var badges = ['🛥️', '🛩️', '🛩️', '🛩️', '🛩️', '🛩️', '🛩️', '🛫', '🛫', '🛫', '✈️', '✈️'];
     var html = '';
     TTX_DATA.aircraftDetails.forEach(function (a, i) {
       html += '<div class="ac-card">';
@@ -4305,8 +4638,10 @@
       html += '<div class="stat"><span class="num">' + a.pax + '</span><span class="lbl">Pax</span></div>';
       html += '<div class="stat"><span class="num">' + a.crew + '</span><span class="lbl">Crew</span></div>';
       html += '<div class="stat"><span class="num">' + a.total + '</span><span class="lbl">Total</span></div>';
-      html += '<div class="stat"><span class="num">' + a.wheels + '</span><span class="lbl">Wheels</span></div>';
+      html += '<div class="stat"><span class="num">' + (a.wheels || '—') + '</span><span class="lbl">' + (a.wheels ? 'Wheels' : 'Floats') + '</span></div>';
       html += '</div><div class="spec-rows">';
+      var rffCat = TTX_SITE.rffForAircraft(a.name);
+      if (rffCat) html += '<div class="spec-row"><span class="k">RFF category (Annex 14)</span><span class="v">Cat ' + rffCat + ' · ' + a.lengthM + ' m long</span></div>';
       a.specs.forEach(function (s) {
         html += '<div class="spec-row"><span class="k">' + s.k + '</span><span class="v">' + s.v + '</span></div>';
       });
@@ -4355,9 +4690,9 @@
     html += row('Casualties (R/Y/G/D)',
       a.casualties.red + ' / ' + a.casualties.yellow + ' / ' + a.casualties.green + ' / ' + a.casualties.deceased,
       b.casualties.red + ' / ' + b.casualties.yellow + ' / ' + b.casualties.green + ' / ' + b.casualties.deceased);
-    html += row('Resources (ARFF/Amb/Fire/Bus)',
-      a.resources.arff + ' / ' + a.resources.ambulances + ' / ' + a.resources.fireTrucks + ' / ' + a.resources.buses,
-      b.resources.arff + ' / ' + b.resources.ambulances + ' / ' + b.resources.fireTrucks + ' / ' + b.resources.buses);
+    html += row('Resources (ARFF/Amb/Fire/Bus/Boat)',
+      a.resources.arff + ' / ' + a.resources.ambulances + ' / ' + a.resources.fireTrucks + ' / ' + a.resources.buses + ' / ' + (a.resources.boats || 0),
+      b.resources.arff + ' / ' + b.resources.ambulances + ' / ' + b.resources.fireTrucks + ' / ' + b.resources.buses + ' / ' + (b.resources.boats || 0));
     html += row('Injects', a.injects.length, b.injects.length);
     html += '</div>';
     cmpBody.innerHTML = html;

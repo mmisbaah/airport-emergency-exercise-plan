@@ -5,7 +5,7 @@
    VERSION must be bumped whenever index.html / css / js change so stale
    caches are dropped on deploy (keep it in step with the ?v= versions). */
 
-var VERSION = 'eop-20261004.49';
+var VERSION = 'eop-20261021.51';
 var SHELL_CACHE = 'eop-shell-' + VERSION;
 
 var SHELL = [
@@ -14,6 +14,7 @@ var SHELL = [
   './css/styles.css',
   './js/app.js',
   './js/data.js',
+  './js/airports.js',
   './favicon.svg',
   './manifest.webmanifest',
   './icons/icon-192.png',
@@ -101,10 +102,14 @@ self.addEventListener('fetch', function (event) {
           caches.open(SHELL_CACHE).then(function (c) { c.put(req, copy); });
           return resp;
         }
-        // network failed or answered with an error → cached copy if we have one
-        return caches.match(req, { ignoreSearch: false }).then(function (cached) {
+        // network answered with an error → cached copy if we have one
+        return caches.match(req, { ignoreSearch: true }).then(function (cached) {
           return cached || resp;
         });
+      }).catch(function () {
+        // offline: the precached shell is stored without the ?v= query,
+        // so match ignoring the search string
+        return caches.match(req, { ignoreSearch: true });
       });
     })
   );

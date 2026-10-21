@@ -32,7 +32,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" href="css/styles.css?v=20260929.17">
+  <link rel="stylesheet" href="css/styles.css?v=20261021.51">
 </head>
 <body>
 
@@ -90,6 +90,13 @@
         Exercise Planning Mode
       </div>
     </div>
+  </div>
+  <div class="wrap scenario-row site-row" style="padding-top:10px;padding-bottom:0;">
+    <label for="airportSelect" style="font-size:12px;color:var(--muted);margin-right:8px;">Airport:</label>
+    <select id="airportSelect" class="site-select" aria-describedby="siteHint"></select>
+    <label for="runwaySelect" style="font-size:12px;color:var(--muted);margin:0 8px 0 6px;">Runway in use:</label>
+    <select id="runwaySelect" class="site-select"></select>
+    <span id="siteHint" class="site-hint">Exercises, map, hospitals and mutual aid adjust to the airport and runway</span>
   </div>
   <div class="wrap scenario-row" style="padding-top:10px;padding-bottom:10px;">
     <label for="scenarioSelect" style="font-size:12px;color:var(--muted);margin-right:8px;">Scenario:</label>
@@ -239,19 +246,27 @@
     <div class="team-grid">
       <div class="team-card">
         <h4><span class="icon-badge">🎯</span>Incident / Unified Command</h4>
-        <p>Core leadership: IC, Safety Officer, Liaison Officer, PIO.</p>
+        <p>Core leadership: IC, Safety Officer, Liaison Officer, PIO. Unified command with MNDF and MPS for major events.</p>
       </div>
       <div class="team-card">
         <h4><span class="icon-badge">🚒</span>Fire / Rescue &amp; ARFF</h4>
-        <p>Aircraft Rescue and Firefighting plus structural fire response.</p>
+        <p>Airport RFF (e.g. MACL Airport Fire &amp; Rescue) plus MNDF Fire &amp; Rescue Service for structural fire support.</p>
       </div>
       <div class="team-card">
         <h4><span class="icon-badge">🚑</span>EMS / Medical / Triage</h4>
-        <p>Emergency medical services, casualty collection, hospital coordination.</p>
+        <p>Triage, casualty collection, hospital coordination — IGMH, regional and atoll hospitals, HPA for public health.</p>
       </div>
       <div class="team-card">
         <h4><span class="icon-badge">🚔</span>Law Enforcement / Security</h4>
-        <p>Airport police, perimeter control, scene security.</p>
+        <p>Maldives Police Service, airport AVSEC, perimeter and shoreline control, scene security and evidence.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="icon-badge">🚤</span>Marine / Coast Guard</h4>
+        <p>MNDF Coast Guard, airport rescue boats, sea ambulances, resort and ferry boats — water rescue and casualty transfer.</p>
+      </div>
+      <div class="team-card">
+        <h4><span class="icon-badge">🏝️</span>Island &amp; Atoll Councils / NDMA</h4>
+        <p>Local shelters, schools as holding areas, volunteers, utilities (STELCO / FENAKA) and national disaster coordination.</p>
       </div>
       <div class="team-card">
         <h4><span class="icon-badge">🛫</span>Airport Operations / Airside</h4>
@@ -259,7 +274,7 @@
       </div>
       <div class="team-card">
         <h4><span class="icon-badge">👨‍👩‍👧</span>Passenger / Family Assistance</h4>
-        <p>Uninjured passenger gathering, Friends &amp; Relatives Center, reunification.</p>
+        <p>Uninjured passenger gathering, Friends &amp; Relatives Center, reunification — with embassies, resorts and tour operators.</p>
       </div>
       <div class="team-card">
         <h4><span class="icon-badge">📢</span>Public Information / Media</h4>
@@ -271,7 +286,7 @@
       </div>
       <div class="team-card">
         <h4><span class="icon-badge">🏢</span>Airlines / Tenant Reps</h4>
-        <p>Airline operations and ground handler coordination.</p>
+        <p>Airline, seaplane operator and ground handler coordination; resort transfer desks.</p>
       </div>
     </div>
 
@@ -283,8 +298,10 @@
 
   <!-- ============ LOCATIONS ============ -->
   <section id="locations" class="view">
-    <h2 class="section-head">Key Locations — Airport Reference Layout</h2>
-    <p class="section-sub">Generic airport layout for exercise planning: <strong>Runway oriented north–south</strong>, parallel taxiway and apron on the <strong>west</strong> side, passenger terminal beyond the apron, <strong>perimeter road</strong> along the east boundary, and the airport support zone to the south. Hover any numbered marker to highlight it.</p>
+    <h2 class="section-head">Key Locations — <span id="mapAirportName">Airport Layout</span></h2>
+    <p class="section-sub" id="mapLayoutDesc">Select an airport and runway in the header to draw its island layout.</p>
+
+    <div id="airportProfile" class="ap-profile" aria-live="polite"></div>
 
     <div class="map-toolbar">
       <button id="editMapBtn" class="reset-btn" type="button">✏️ Customize Map</button>
@@ -302,55 +319,8 @@
             </radialGradient>
           </defs>
 
-          <rect width="1000" height="720" fill="url(#oceanGrad)"/>
-
-          <!-- airport boundary -->
-          <path d="M 60,80 C 200,-10 760,0 920,90 C 990,200 990,500 920,640 C 780,720 200,720 60,650 C -20,500 -20,220 60,80 Z"
-                fill="#0a2942" opacity="0.55"/>
-
-          <!-- airfield landmass -->
-          <path d="M 200,40 C 360,15 640,20 800,60 C 900,90 935,190 930,310 C 925,450 900,590 810,660 C 660,715 340,715 190,665 C 95,610 70,500 70,360 C 70,220 90,80 200,40 Z"
-                fill="#12202e" stroke="#1e3a5a" stroke-width="1.4"/>
-
-          <!-- runway N-S -->
-          <g>
-            <rect x="490" y="100" width="34" height="360" rx="2" fill="#2a3d58" stroke="#3a5070" stroke-width="1.2"/>
-            <line x1="507" y1="120" x2="507" y2="440" stroke="#5b7ea8" stroke-width="1.4" stroke-dasharray="14 10"/>
-            <line x1="495" y1="110" x2="519" y2="110" stroke="#7ba3d1" stroke-width="1.5"/>
-            <line x1="495" y1="116" x2="519" y2="116" stroke="#7ba3d1" stroke-width="1.5"/>
-            <line x1="495" y1="122" x2="519" y2="122" stroke="#7ba3d1" stroke-width="1.5"/>
-            <line x1="495" y1="128" x2="519" y2="128" stroke="#7ba3d1" stroke-width="1.5"/>
-            <line x1="495" y1="432" x2="519" y2="432" stroke="#7ba3d1" stroke-width="1.5"/>
-            <line x1="495" y1="438" x2="519" y2="438" stroke="#7ba3d1" stroke-width="1.5"/>
-            <line x1="495" y1="444" x2="519" y2="444" stroke="#7ba3d1" stroke-width="1.5"/>
-            <line x1="495" y1="450" x2="519" y2="450" stroke="#7ba3d1" stroke-width="1.5"/>
-            <text x="507" y="145" font-size="13" fill="#a8c4e0" text-anchor="middle" font-weight="700" letter-spacing="2">09</text>
-            <text x="507" y="420" font-size="13" fill="#a8c4e0" text-anchor="middle" font-weight="700" letter-spacing="2" transform="rotate(180,507,415)">27</text>
-          </g>
-          <text x="507" y="485" font-size="9.5" fill="#5d7a9e" text-anchor="middle" letter-spacing="2" font-weight="600">RUNWAY · ADJUST TO YOUR AIRPORT</text>
-
-          <!-- taxiway west of runway -->
-          <g>
-            <rect x="434" y="180" width="20" height="200" rx="2" fill="#1e2e48" stroke="#2a3d58" stroke-width="1"/>
-            <line x1="444" y1="190" x2="444" y2="370" stroke="#3d5a86" stroke-width="0.9" stroke-dasharray="5 5"/>
-            <rect x="454" y="205" width="36" height="10" fill="#1e2e48"/>
-            <rect x="454" y="345" width="36" height="10" fill="#1e2e48"/>
-          </g>
-          <text x="444" y="400" font-size="8.5" fill="#4d6a92" text-anchor="middle" letter-spacing="1.2">TAXIWAY</text>
-
-          <!-- apron -->
-          <rect x="300" y="215" width="134" height="92" rx="6" fill="#1e2e48" stroke="#2a3d58" stroke-width="1.1"/>
-          <text x="367" y="258" font-size="10" fill="#5d7a9e" text-anchor="middle" letter-spacing="2" font-weight="600">APRON</text>
-          <text x="367" y="275" font-size="7.5" fill="#3d5a86" text-anchor="middle">ADJUST TO YOUR AIRPORT</text>
-          <circle cx="325" cy="285" r="6" fill="none" stroke="#3d5a86" stroke-width="0.8" stroke-dasharray="2 2"/>
-          <circle cx="367" cy="285" r="6" fill="none" stroke="#3d5a86" stroke-width="0.8" stroke-dasharray="2 2"/>
-          <circle cx="409" cy="285" r="6" fill="none" stroke="#3d5a86" stroke-width="0.8" stroke-dasharray="2 2"/>
-
-          <!-- terminal -->
-          <rect x="180" y="222" width="118" height="82" rx="5" fill="#2a3d5a" stroke="#3a5070" stroke-width="1.2"/>
-          <text x="239" y="258" font-size="9.5" fill="#a8c4e0" text-anchor="middle" letter-spacing="1.6" font-weight="600">TERMINAL</text>
-          <text x="239" y="274" font-size="7.5" fill="#5d7a9e" text-anchor="middle">ADJUST TO YOUR AIRPORT</text>
-          <text x="239" y="290" font-size="7" fill="#4d6a92" text-anchor="middle">PASSENGER TERMINAL</text>
+          <!-- island, runway, terminal, links … drawn per airport by js/airports.js -->
+          <g id="mapBase"></g>
 
           <!-- tower -->
           <g id="mapTwr" class="site-mark" transform="translate(165, 200)">
@@ -369,65 +339,6 @@
             <text x="0" y="28" font-size="7.5" fill="#a86666" text-anchor="middle" letter-spacing="1">RAPID RWY ACCESS</text>
           </g>
 
-          <!-- perimeter road -->
-          <path d="M 810,90 C 870,140 885,240 878,360 C 872,480 850,580 800,650"
-                stroke="#2a4166" stroke-width="6" fill="none" stroke-linecap="round"/>
-          <path d="M 810,90 C 870,140 885,240 878,360 C 872,480 850,580 800,650"
-                stroke="#3d5a86" stroke-width="1.2" fill="none" stroke-dasharray="8 10"/>
-          <text x="895" y="380" font-size="9" fill="#5d7a9e" text-anchor="middle" letter-spacing="1.5" transform="rotate(88,895,380)">Perimeter Rd</text>
-
-          <!-- access road -->
-          <path d="M 140,680 L 200,620 L 210,510 L 230,440 L 260,400 L 290,370"
-                stroke="#22344f" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <path d="M 140,680 L 200,620 L 210,510 L 230,440 L 260,400 L 290,370"
-                stroke="#3d5a86" stroke-width="1" fill="none" stroke-dasharray="6 8"/>
-          <text x="165" y="610" font-size="8" fill="#4d6a92" letter-spacing="1.2" transform="rotate(-70,165,610)">ACCESS ROAD</text>
-
-          <!-- support zone -->
-          <g>
-            <rect x="200" y="490" width="600" height="200" rx="8" fill="#16263a" opacity="0.6"/>
-            <line x1="210" y1="510" x2="790" y2="510" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="210" y1="535" x2="790" y2="535" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="210" y1="560" x2="790" y2="560" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="210" y1="585" x2="790" y2="585" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="210" y1="610" x2="790" y2="610" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="210" y1="635" x2="790" y2="635" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="210" y1="660" x2="790" y2="660" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="240" y1="495" x2="240" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="280" y1="495" x2="280" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="320" y1="495" x2="320" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="360" y1="495" x2="360" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="400" y1="495" x2="400" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="440" y1="495" x2="440" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="480" y1="495" x2="480" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="520" y1="495" x2="520" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="560" y1="495" x2="560" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="600" y1="495" x2="600" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="640" y1="495" x2="640" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="680" y1="495" x2="680" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="720" y1="495" x2="720" y2="685" stroke="#22344f" stroke-width="1.4"/>
-            <line x1="760" y1="495" x2="760" y2="685" stroke="#22344f" stroke-width="1.4"/>
-          </g>
-          <text x="500" y="475" font-size="10" fill="#4d6a92" text-anchor="middle" letter-spacing="3" font-weight="600">AIRPORT SUPPORT ZONE</text>
-
-          <!-- compass -->
-          <g transform="translate(930, 80)">
-            <circle r="22" fill="#0a1728" stroke="#2a3d58" stroke-width="1"/>
-            <g transform="rotate(-120)">
-              <polygon points="0,-16 4,0 0,16 -4,0" fill="#5d7a9e"/>
-              <polygon points="0,-16 4,0 0,0 -4,0" fill="#a8c4e0"/>
-              <text x="0" y="-20" font-size="9" fill="#a8c4e0" text-anchor="middle" font-weight="700">N</text>
-            </g>
-          </g>
-
-          <!-- scale -->
-          <g transform="translate(60, 690)">
-            <line x1="0" y1="0" x2="80" y2="0" stroke="#5d7a9e" stroke-width="2"/>
-            <line x1="0" y1="-4" x2="0" y2="4" stroke="#5d7a9e" stroke-width="2"/>
-            <line x1="80" y1="-4" x2="80" y2="4" stroke="#5d7a9e" stroke-width="2"/>
-            <text x="40" y="-7" font-size="8" fill="#5d7a9e" text-anchor="middle">Not to scale</text>
-          </g>
-
           <!-- crash site + zone rings (grouped for unified drag) -->
           <g id="crashZoneGroup" transform="translate(0,0)" style="cursor:grab;">
             <!-- zone rings -->
@@ -443,13 +354,6 @@
             <title>Crash Site &amp; Zones (drag to move)</title>
           </g>
 
-          <!-- wind -->
-          <g transform="translate(660, 140)">
-            <text x="0" y="-14" font-size="8.5" fill="#5d7a9e" text-anchor="middle" letter-spacing="1.2" font-weight="600">WIND</text>
-            <line x1="-30" y1="0" x2="30" y2="0" stroke="#5d7a9e" stroke-width="1.5"/>
-            <polygon points="30,0 22,-5 22,5" fill="#5d7a9e"/>
-          </g>
-
           <g id="pinLayer"></g>
         </svg>
       </div>
@@ -459,7 +363,7 @@
 
     <div class="notice">
       <span class="ni">💡</span>
-      <div><strong>Placement logic:</strong> the runway runs north–south with the apron and terminal on the west side. ARFF sits southwest of the apron for rapid runway access. The ICP is positioned upwind (west of the crash site) and outside the warm zone. Triage and CCP are further west, using the apron and ARFF zone. The FAC is in the terminal complex, off the operational area. The morgue uses a remote corner of the airfield, well away from the terminal.</div>
+      <div id="mapPlacementNote"><strong>Placement logic:</strong> scene locations sit upwind of the incident and outside the warm zone.</div>
     </div>
   </section>
 
@@ -653,8 +557,7 @@
           <li>HazMat / Dangerous Goods spills</li>
           <li>Radiological incidents</li>
           <li>Utility failures (e.g. movement area lighting)</li>
-          <li>Water rescue situations (airport perimeter)</li>
-        </ul>
+                  </ul>
       </div>
 
       <div class="emg-card">
@@ -680,8 +583,24 @@
         <ul class="clean">
           <li>Communicable disease spread via air travel</li>
           <li>Severe outbreak affecting airport staff</li>
-          <li>Natural disasters — earthquake, flood, tornado</li>
-          <li>Volcanic ash events</li>
+          <li>Tsunami warning — island airports sit 1–2 m above sea level (Velana flooded in 2004)</li>
+          <li>Monsoon squalls, waterspouts, swell surges and flooding of the airfield</li>
+          <li>Fuel, sewage or chemical runoff reaching the lagoon and reef</li>
+        </ul>
+      </div>
+
+      <div class="emg-card">
+        <div class="emg-head">
+          <div class="emg-icon" style="background:rgba(6,182,212,.12);border-color:rgba(6,182,212,.3)">🌊</div>
+          <h4>Water &amp; Marine</h4>
+          <span class="alert-range r23" title="Typical alert level range for these emergencies">Alert 2–3</span>
+        </div>
+        <ul class="clean">
+          <li>Undershoot or overrun into the sea — most runways end at the reef</li>
+          <li>Seaplane capsize, collision or fire at a water aerodrome</li>
+          <li>Ditching in the lagoon or open sea</li>
+          <li>Boat collision or person overboard during transfers</li>
+          <li>Sea transport of casualties when the hospital is on another island</li>
         </ul>
       </div>
 
@@ -727,6 +646,7 @@
             <th>Wheels</th>
             <th>Boarding Door</th>
             <th>Baggage</th>
+            <th title="ICAO Annex 14 rescue and firefighting category">RFF Cat</th>
           </tr>
         </thead>
         <tbody id="acTableBody">
@@ -1164,7 +1084,12 @@
           <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Buses</label>
           <input id="editBuses" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="2">
         </div>
+        <div>
+          <label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;">Boats / Sea Ambulances</label>
+          <input id="editBoats" type="number" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;" placeholder="2">
+        </div>
       </div>
+      <p class="form-hint">Injects can use airport tokens — <code>{AIRPORT}</code> <code>{RWY}</code> <code>{HOSPITAL}</code> <code>{HOSP_ETA}</code> <code>{MUTUAL_AID}</code> — filled in for the selected airport.</p>
 
       <h4 style="margin:0 0 8px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">Exercise Injects (one per line)</h4>
       <textarea id="editInjects" rows="6" style="width:100%;background:var(--stat-bg);border:1px solid var(--line-soft);border-radius:6px;padding:8px 10px;color:var(--text);font:inherit;font-size:13px;resize:vertical;" placeholder="09:00 — Aircraft reports gear malfunction&#10;09:05 — Aircraft crashes short of runway"></textarea>
@@ -1443,6 +1368,7 @@
     <div class="guide-sec" id="g-start">
       <h3>🚀 Quick start</h3>
       <ol>
+        <li><strong>Pick the airport and runway</strong> — Velana, Gan, Hanimaadhoo, Kadhdhoo, Dharavandhoo, Maamigili or a generic template, then the <strong>runway in use</strong>. Scenarios, aircraft, souls on board, hospitals, transfer times and the island map all follow that choice.</li>
         <li><strong>Pick a scenario</strong> — choose one in the <strong>Scenario</strong> dropdown in the header. The scenario panel (key facts &amp; injects) and the <strong>Exercise Timeline</strong> appear at the top of the page.</li>
         <li><strong>Review the reference tabs</strong> — use the <strong>7 tabs</strong> below the header to walk through your IC role, team labels, the airport map, incident zones, emergency types and aircraft specs.</li>
         <li><strong>Run the exercise</strong> — log injects and decisions in the <strong>Timeline</strong>, check off the <strong>IC Checklist</strong>, and keep <strong>Resources</strong> and <strong>Casualties</strong> up to date as the play unfolds.</li>
@@ -1469,7 +1395,7 @@
         <tr><td>Aircraft Specs</td><td>Reference specifications for <strong>9 aircraft types</strong> with a comparison table, detail cards, side and top diagrams, a passenger &amp; baggage flow, and emergency planning implications.</td></tr>
         <tr><td>Incident Zones</td><td>Concentric hot, warm and cold zone diagram with guidance for each ring.</td></tr>
         <tr><td>IC Role</td><td>Incident Commander responsibilities across three phases: <strong>Before</strong> (Preparation), <strong>During</strong> (Execution) and <strong>After</strong> (Evaluation), plus 8 Command &amp; General Staff role cards.</td></tr>
-        <tr><td>Key Locations</td><td>Interactive airport map with draggable numbered pins, movable TWR/ARFF station markers, the crash site, zone rings and a legend.</td></tr>
+        <tr><td>Key Locations</td><td>Airport profile (runway, RFF, hospitals and transfer times, agencies, mutual aid) and an island map drawn for the selected airport and runway in use, with draggable numbered pins, movable TWR/ARFF station markers, the crash site, zone rings and a legend.</td></tr>
         <tr><td>Team Labels</td><td>14 label cards for assigning tabletop roles to players and participating agencies.</td></tr>
         <tr><td>TTX Flow &amp; Checklist</td><td>The 10-step exercise flow, the 11-item IC checklist with a live progress bar, a filterable <strong>glossary</strong> and the <strong>regulatory references</strong> behind the content.</td></tr>
       </table>
@@ -1626,7 +1552,8 @@
   </div>
 </div>
 
-<script src="js/data.js?v=20260929.17"></script>
-<script src="js/app.js?v=20260929.17"></script>
+<script src="js/data.js?v=20261021.51"></script>
+<script src="js/airports.js?v=20261021.51"></script>
+<script src="js/app.js?v=20261021.51"></script>
 </body>
 </html>
