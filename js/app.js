@@ -3630,7 +3630,7 @@
               html += '<div style="margin-top:12px;padding:12px;background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.28);border-left:3px solid var(--blue);border-radius:8px;">';
               html += '<div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:4px;">Exercise Impact Assessment</div>';
               var impacts = [];
-              if (windSpeed > 30) impacts.push('⚠️ High winds may affect smoke drift and helicopter operations');
+              if (windSpeed > 30) impacts.push('⚠️ High winds may affect smoke drift, seaplane, boat and drone operations');
               if (temp > 35) impacts.push('⚠️ Extreme heat — monitor responders for heat stress');
               if (temp < 5) impacts.push('⚠️ Cold conditions — consider hypothermia risk for casualties');
               if (weatherCode >= 500 && weatherCode < 600) impacts.push('🌧️ Rain may affect visibility and runway conditions');

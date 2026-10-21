@@ -135,7 +135,7 @@ var TTX_DATA = {
         '09:06 — Fuel fire on the wreckage; survivors in the water and on the reef flat',
         '09:10 — Wind shifts 45 degrees, smoke drifts toward the terminal',
         '09:15 — Rescue boats needed — only part of the wreck is reachable from land',
-        '09:20 — Tourist drone and phone footage spreading on social media',
+        '09:20 — Media drone hovering over the wreckage, close to the approach path — live footage already on social media',
         '09:30 — Receiving hospital ({HOSPITAL}) asks for casualty numbers — transfer {HOSP_ETA}'
       ]
     },
@@ -160,6 +160,7 @@ var TTX_DATA = {
         '08:40 — Fuel sheen on the water drifting toward the floating docks',
         '08:45 — Resort transfer passengers in the seaplane lounge demand information',
         '08:50 — Divers requested from the Coast Guard; casualties landed at the docks for triage',
+        '08:55 — News drone launched from a nearby boat over the lagoon — seaplane lanes still closed',
         '09:00 — Tour operator asks for the passenger manifest — several nationalities aboard'
       ]
     },
@@ -183,6 +184,7 @@ var TTX_DATA = {
         '19:52 — Jet fuel leaking into the lagoon; risk to the reef and to swimmers',
         '19:55 — Runway closed — all inbound traffic must divert',
         '20:05 — Head count does not match the manifest — people may have drifted',
+        '20:10 — Media drones over the lagoon filming the evacuation — inbound aircraft told to hold',
         '20:20 — Environmental agency asks about fuel containment booms'
       ]
     },
@@ -228,7 +230,8 @@ var TTX_DATA = {
         '14:10 — Two passengers trapped in upstairs lounge',
         '14:15 — Power failure in terminal, emergency lighting only',
         '14:18 — Structural fire support requested — {MUTUAL_AID}',
-        '14:20 — Resort transfer desks evacuated; hundreds of tourists on the forecourt in the heat'
+        '14:20 — Resort transfer desks evacuated; hundreds of tourists on the forecourt in the heat',
+        '14:25 — Media drone filming above the terminal roof, near the firefighting operation'
       ]
     },
     {
@@ -469,6 +472,7 @@ var TTX_DATA = {
         '21:25 — Over 300 evacuees on the airfield at night — where do they go?',
         '21:35 — Mutual aid: {MUTUAL_AID}',
         '21:50 — {HOSPITAL} activates its mass-casualty plan',
+        '22:10 — Drone footage of the evacuation trending online before families are told',
         '22:30 — Embassies call — passengers from more than 20 countries'
       ]
     },
@@ -515,7 +519,7 @@ var TTX_DATA = {
         '17:10 — Triage overwhelmed, request additional medical teams',
         '17:15 — {HOSPITAL} at capacity — overflow and referral to {TERTIARY}',
         '17:20 — Family reception centre overwhelmed — embassy and resort reps arriving',
-        '17:25 — Media and social-media footage growing, establish remote briefing area'
+        '17:25 — Several media drones over the scene — PIO and MPS enforce a no-drone zone; set up a remote briefing area'
       ]
     },
     {
