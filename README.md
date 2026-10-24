@@ -24,7 +24,7 @@ An **Emergency Operations Plan (EOP) Exercise Dashboard** for airport emergency 
 
 ### Run the Hanimaadhoo MNDF tabletop exercise
 
-Choose **Run MNDF TTX** in the header, or open `ttx.html`. Northern Response is a dedicated facilitator console for an A320 landing gear emergency at Hanimaadhoo: first call 16:00 MVT, assumed crash 16:10, left-engine fire, 110 persons aboard, and 22 red/immediate casualties (20%). The additional allocation of 33 yellow, 50 green and 5 deceased is an exercise assumption.
+Choose **Run MNDF TTX** in the header, or open `ttx.html`. Northern Response is a dedicated facilitator console for an A320 landing gear emergency at Hanimaadhoo: first call 16:00 MVT, assumed crash 16:10, left-engine fire, 110 persons aboard, and 22 red/immediate casualties (20%). The additional allocation of 33 yellow, 50 green and 5 deceased is an exercise assumption. Total delivery time is 120 minutes: 10 briefing, 20 warning/mobilisation, 30 crash/rescue, 30 casualty movement/sustainment, 20 hotwash and 10 corrective actions. Scenario time advances independently of the delivery schedule.
 
 - Manually release 21 injects, start/pause/accelerate the scenario clock, and open `ttx-display.html` on the same browser for a projector showing released-only information.
 - Use **NO DUFF · pause** to stop scenario advancement. EXCON must explicitly resume play.

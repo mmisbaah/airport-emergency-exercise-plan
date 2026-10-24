@@ -2,6 +2,15 @@
 var NORTHERN_RESPONSE = Object.freeze({
   id: 'hanimaadhoo-a320-110-v1', title: 'Northern Response', airport: 'Hanimaadhoo International Airport',
   aircraft: 'Airbus A320', flight: 'EXR320', startMinute: 960, persons: 110,
+  durationMinutes: 120,
+  delivery: [
+    {minutes:10, activity:'player brief and role assignment'},
+    {minutes:20, activity:'warning and mobilisation'},
+    {minutes:30, activity:'crash and rescue'},
+    {minutes:30, activity:'casualty movement and sustainment'},
+    {minutes:20, activity:'hotwash'},
+    {minutes:10, activity:'assign corrective actions'}
+  ],
   categories: [
     {id:'Red', prefix:'R', count:22, label:'Immediate'}, {id:'Yellow', prefix:'Y', count:33, label:'Delayed'},
     {id:'Green', prefix:'G', count:50, label:'Minor'}, {id:'Deceased', prefix:'D', count:5, label:'Confirmed in exercise'}
