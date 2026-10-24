@@ -6,6 +6,7 @@
 
    Usage:  node scripts/ci-tests.mjs   (requires: npm i playwright) */
 import {browserTests} from './maldives-tests.mjs';
+import {northernResponseTests} from './ttx-tests.mjs';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
@@ -357,6 +358,7 @@ try {
     await ctx.close();
   });
   await browserTests({behavior,newAppPage,assert});
+  await northernResponseTests({behavior,newAppPage,assert});
 } catch (err) {
   failed = true;
   console.error('Runner error:', err);
