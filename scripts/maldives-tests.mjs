@@ -79,5 +79,11 @@ export async function workerTests(){
  let result;listeners.fetch({request:{method:'GET',mode:'navigate',url:'https://airport.example/'},respondWith:p=>result=p});
  const response=await result;assert.equal(response.status,200);assert.equal(response.redirected,false);assert.match(await response.text(),/Offline exercise shell/);
  console.log('Service-worker regression passed: redirected Pages shell is normalised for offline navigation.');
+ const online=new Response('<html>Emergency Response</html>',{headers:{'Content-Type':'text/html'}});
+ Object.defineProperty(online,'redirected',{value:true});
+ context.fetch=async()=>online;
+ listeners.fetch({request:{method:'GET',mode:'navigate',url:'https://airport.example/ttx.html'},respondWith:p=>result=p});
+ const redirected=await result;assert.equal(redirected.status,200);assert.equal(redirected.redirected,false);assert.match(await redirected.text(),/Emergency Response/);
+ console.log('Service-worker regression passed: live Pages HTML redirects are safe for navigation.');
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){unitTests();await workerTests();}
