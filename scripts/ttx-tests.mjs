@@ -12,7 +12,7 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
   const release = async (p,count) => {for(let i=0;i<count;i++)await p.click('#nextBtn');};
   const state = p => p.evaluate(()=>JSON.parse(localStorage.getItem('nr-ttx-v1:'+JSON.parse(localStorage.getItem('nr-ttx-v1:active')))));
 
-  await behavior('Northern Response: 16:00 call, 16:10 crash, 22 red of 110, manual release',async()=>{
+  await behavior('Emergency Response: 16:00 call, 16:10 crash, 22 red of 110, manual release',async()=>{
     const {ctx,p}=await open();
     assert((await p.textContent('#clockValue'))==='16:00:00','clock must start at 16:00 MVT');
     assert((await state(p)).patients.length===110,'110 unique patient records required');
@@ -40,7 +40,7 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert(!p.errors.length,p.errors.join('; '));await ctx.close();
   });
 
-  await behavior('Northern Response: projector receives released-only information and safety pause',async()=>{
+  await behavior('Emergency Response: projector receives released-only information and safety pause',async()=>{
     const {ctx,p}=await open();
     const display=await ctx.newPage();await display.goto(new URL('/ttx-display.html',p.url()).href);
     assert(!(await display.textContent('body')).includes('left engine catches fire'),'unreleased crash exposed');
@@ -61,7 +61,7 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert(!p.errors.length,p.errors.join('; '));await ctx.close();
   });
 
-  await behavior('Northern Response: bulk patient updates and transfer acceptance guard',async()=>{
+  await behavior('Emergency Response: bulk patient updates and transfer acceptance guard',async()=>{
     const {ctx,p}=await open();await release(p,7);await section(p,'casualties');
     await p.selectOption('#categoryFilter','Red');await p.click('#selectFilteredBtn');await p.click('#bulkPatientBtn');
     await p.selectOption('#patientForm [name=status]','Treatment');await p.fill('#patientForm [name=location]','Exercise TA');
@@ -77,7 +77,7 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     await ctx.close();
   });
 
-  await behavior('Northern Response: resource confirmation, command transfer and facility validation',async()=>{
+  await behavior('Emergency Response: resource confirmation, command transfer and facility validation',async()=>{
     const {ctx,p}=await open();await section(p,'resources');
     await p.fill('#resourceForm [name=capability]','Stretcher support');await p.fill('#resourceForm [name=owner]','Exercise logistics');await p.selectOption('#resourceForm [name=status]','Assigned');await p.click('#resourceForm button.primary');
     assert((await p.textContent('#resourceError')).includes('Confirm capability'),'assigned resource did not require confirmation');
@@ -92,7 +92,7 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert((await state(p)).commandTransfers.length===1,'command transfer not recorded');await ctx.close();
   });
 
-  await behavior('Northern Response: decisions, evidence, AAR, JSON restore and session isolation',async()=>{
+  await behavior('Emergency Response: decisions, evidence, AAR, JSON restore and session isolation',async()=>{
     const {ctx,p}=await open();await release(p,1);const initialId=(await state(p)).id;
     await section(p,'decisions');await p.fill('#decisionForm [name=text]','Activate responding agency internal notification.');await p.fill('#decisionForm [name=owner]','Duty officer');await p.fill('#decisionForm [name=action]','Confirm liaison and acknowledgement.');await p.click('#decisionForm button.primary');
     await section(p,'review');await p.selectOption('[data-score="0"]','2');await p.fill('[data-evidence="0"]','Acknowledgement recorded.');await p.locator('[data-evidence="0"]').blur();
@@ -109,7 +109,7 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert(!p.errors.length,p.errors.join('; '));await ctx.close();
   });
 
-  await behavior('Northern Response: malformed/XSS backup rejected and mobile layout stays within viewport',async()=>{
+  await behavior('Emergency Response: malformed/XSS backup rejected and mobile layout stays within viewport',async()=>{
     const {ctx,p}=await open();const before=await state(p),bad=JSON.parse(JSON.stringify(before));bad.decisions.push({id:'"><img src=x onerror=alert(1)>',at:new Date().toISOString(),scenario:'16:00:00',text:'Bad record',owner:'x',action:'x',due:'',inject:'',status:'Open'});
     await p.setInputFiles('#importFile',{name:'bad.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify({format:'northern-response-ttx',version:1,session:bad}))});
     await p.waitForFunction(()=>document.getElementById('toast').textContent.includes('Invalid'));
@@ -119,7 +119,7 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert(!p.errors.length,p.errors.join('; '));await ctx.close();
   });
 
-  await behavior('Northern Response: controller and projector remain distinct offline',async()=>{
+  await behavior('Emergency Response: controller and projector remain distinct offline',async()=>{
     const {ctx,p}=await open();await release(p,1);
     await p.evaluate(()=>navigator.serviceWorker.ready);await p.waitForFunction(()=>!!navigator.serviceWorker.controller);
     await ctx.setOffline(true);

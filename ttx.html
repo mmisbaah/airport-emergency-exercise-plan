@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#111c27">
   <meta name="description" content="Run the Hanimaadhoo airport emergency tabletop exercise: scenario control, casualty accounting, decisions and after-action review.">
-  <title>Northern Response · Airport TTX</title>
+  <title>Emergency Response · Airport TTX</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/ttx.css">
   <script src="js/ttx-scenario.js" defer></script>
@@ -15,7 +15,7 @@
   <a class="skip" href="#workspace">Skip to exercise</a>
   <div class="exercise-ribbon">EXERCISE ONLY <span>All incidents, casualties and messages are simulated</span></div>
   <header class="topbar">
-    <a class="wordmark" href="ttx.html"><span class="brand-icon" aria-hidden="true">NR</span><span>NORTHERN RESPONSE<small>AIRPORT · TABLETOP EXERCISE</small></span></a>
+    <a class="wordmark" href="ttx.html"><span class="brand-icon" aria-hidden="true">ER</span><span>EMERGENCY RESPONSE<small>AIRPORT · TABLETOP EXERCISE</small></span></a>
     <div class="top-actions"><span id="saveStatus" class="save-status" role="status">Saved on this device</span><button type="button" id="noDuffBtn" class="danger">NO DUFF · pause</button><button type="button" id="projectorBtn">Open projector ↗</button><button type="button" id="exportBtn" class="primary">Export exercise</button></div>
   </header>
   <div class="app-layout">
@@ -39,7 +39,7 @@
   </div>
   <div id="toast" class="toast" role="status" hidden></div>
   <dialog id="exportDialog"><div class="dialog-heading"><h2>Export exercise</h2><button type="button" data-close="exportDialog" aria-label="Close export">×</button></div><p>Keep a backup of this session, or generate a report for your debrief.</p><button type="button" id="backupBtn" class="primary wide">Download session backup · JSON</button><button type="button" id="reportBtn" class="wide">Download after-action report · HTML</button><p class="muted">The report includes released injects, casualty records, decisions, resource tasks and review actions. Open it in a browser to print or save as PDF.</p></dialog>
-  <dialog id="newSessionDialog"><form id="newSessionForm"><div class="dialog-heading"><h2>Start an exercise</h2><button type="button" data-close="newSessionDialog" aria-label="Close new session">×</button></div><label>Exercise name<input name="name" required maxlength="100" value="Northern Response — Hanimaadhoo"></label><label>Exercise date · MVT<input name="date" type="date" required></label><label>Facilitator<input name="facilitator" maxlength="100" placeholder="Name or appointment"></label><p class="muted">Your current session is paused and retained. The new session starts at 16:00 with no injects released.</p><button class="primary wide">Create session</button></form></dialog>
+  <dialog id="newSessionDialog"><form id="newSessionForm"><div class="dialog-heading"><h2>Start an exercise</h2><button type="button" data-close="newSessionDialog" aria-label="Close new session">×</button></div><label>Exercise name<input name="name" required maxlength="100" value="Emergency Response — Hanimaadhoo"></label><label>Exercise date · MVT<input name="date" type="date" required></label><label>Facilitator<input name="facilitator" maxlength="100" placeholder="Name or appointment"></label><p class="muted">Your current session is paused and retained. The new session starts at 16:00 with no injects released.</p><button class="primary wide">Create session</button></form></dialog>
   <dialog id="confirmDialog"><form method="dialog"><h2 id="confirmTitle">Confirm action</h2><p id="confirmText"></p><div class="button-row"><button value="cancel">Cancel</button><button value="confirm" class="primary">Continue</button></div></form></dialog>
   <input type="file" id="importFile" accept="application/json,.json" hidden>
   <noscript><p>This exercise console needs JavaScript. Enable it to run the TTX.</p></noscript>

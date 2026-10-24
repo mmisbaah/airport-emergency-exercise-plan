@@ -1,6 +1,6 @@
 /* Exercise design assumptions; validate local arrangements against the approved AEP. */
 var NORTHERN_RESPONSE = Object.freeze({
-  id: 'hanimaadhoo-a320-110-v1', title: 'Northern Response', airport: 'Hanimaadhoo International Airport',
+  id: 'hanimaadhoo-a320-110-v1', title: 'Emergency Response', airport: 'Hanimaadhoo International Airport',
   aircraft: 'Airbus A320', flight: 'EXR320', startMinute: 960, persons: 110,
   durationMinutes: 120,
   delivery: [

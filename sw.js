@@ -5,7 +5,7 @@
    VERSION must be bumped whenever index.html / css / js change so stale
    caches are dropped on deploy (keep it in step with the ?v= versions). */
 
-var VERSION = 'eop-20261024.ttxneutral';
+var VERSION = 'eop-20261024.ttxemergency';
 var SHELL_CACHE = 'eop-shell-' + VERSION;
 
 var SHELL = [
