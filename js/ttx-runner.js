@@ -2,6 +2,7 @@
 (function () {
   'use strict';
   var S = NORTHERN_RESPONSE;
+  var prettyUrls = location.hostname === 'airportemergency.mellowpilot.com' || location.hostname.endsWith('.pages.dev');
   var PREFIX = 'nr-ttx-v1:', INDEX = PREFIX + 'sessions', ACTIVE = PREFIX + 'active', DISPLAY = PREFIX + 'display';
   var view = 'control', selectedInject = null, categoryFilter = '', patientSearch = '', toastTimer;
   var storageOK = true, sessionList, state;
@@ -159,7 +160,7 @@
   });
   function switchSession(id){var target=read(PREFIX+id,null);if(!target){toast('That session is unavailable.');return;}try{validate(target);}catch(_){toast('Session data is damaged. Restore a backup.');return;}pause();save();state=target;if(state.name==='Northern Response — Hanimaadhoo')state.name='Emergency Response — Hanimaadhoo';pause();selectedInject=null;categoryFilter='';patientSearch='';audit('Session resumed','Clock paused for facilitator');save();render();toast('Session resumed with clock paused.');}
   $('newSessionForm').onsubmit=function(e){e.preventDefault();var f=new FormData(e.target),name=String(f.get('name')).trim();if(!name)return;pause();save();state=fresh(name,f.get('date'),String(f.get('facilitator')).trim());selectedInject=null;categoryFilter='';patientSearch='';audit('Session created',name);save();$('newSessionDialog').close();go('control');toast('New exercise ready. Previous session retained.');};
-  $('projectorBtn').onclick=function(){publish();var w=window.open('ttx-display.html','northern-response-projector');if(!w)toast('Allow pop-ups for this site to open the projector.');};
+  $('projectorBtn').onclick=function(){publish();var w=window.open(prettyUrls?'ttx-display':'ttx-display.html','northern-response-projector');if(!w)toast('Allow pop-ups for this site to open the projector.');};
   $('noDuffBtn').onclick=function(){pause();state.pausedForSafety=true;audit('Safety pause','NO DUFF: exercise play paused');save();render();toast('NO DUFF. Exercise play paused. Follow actual emergency arrangements.');};
   $('exportBtn').onclick=function(){$('exportDialog').showModal();};
   function download(name,content,type){var url=URL.createObjectURL(new Blob([content],{type:type})),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);}
@@ -205,6 +206,7 @@
   if(state&&state.name==='Northern Response — Hanimaadhoo')state.name='Emergency Response — Hanimaadhoo';
   sessionList.forEach(function(item){if(item.name==='Northern Response — Hanimaadhoo')item.name='Emergency Response — Hanimaadhoo';});
   try{validate(state);}catch(_){state=fresh('Emergency Response — Hanimaadhoo',mvtDate(),'');audit('Session created','Initial exercise');}
+  if(prettyUrls){document.querySelector('.wordmark').href='ttx';document.querySelector('.sidebar-bottom a').href='./';}
   save();render();
   window.addEventListener('storage',function(e){if(e.key===PREFIX+state.id&&e.newValue){try{var incoming=validate(JSON.parse(e.newValue));if(incoming.revision>state.revision){state=incoming;selectedInject=null;render();toast('Updated from another facilitator window. Use one controller window.');}}catch(_){/* Never adopt damaged external state. */}}});
   window.addEventListener('pagehide',function(){if(state.running){state.elapsed=elapsed();state.anchor=Date.now();save();}});
