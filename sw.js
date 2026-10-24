@@ -5,7 +5,7 @@
    VERSION must be bumped whenever index.html / css / js change so stale
    caches are dropped on deploy (keep it in step with the ?v= versions). */
 
-var VERSION = 'eop-20261024.ttxlightnav';
+var VERSION = 'eop-20261024.dashboardlight';
 var SHELL_CACHE = 'eop-shell-' + VERSION;
 
 var SHELL = [
@@ -19,6 +19,7 @@ var SHELL = [
   './js/ttx-display.js',
   './js/ttx-theme.js',
   './css/styles.css',
+  './css/neumorphic-light.css',
   './js/app.js',
   './js/maldives.js',
   './css/maldives.css',
