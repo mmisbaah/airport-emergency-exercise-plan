@@ -12,6 +12,10 @@
 @media(max-width:1150px){.grid-two,.setup-columns{grid-template-columns:minmax(0,1fr)}}
 
 /* Soft, tactile surfaces with explicit borders and readable operational colours. */
+.main-page-button{display:inline-flex;align-items:center;white-space:nowrap;text-decoration:none;background:#1b2b3a;color:var(--text);border:1px solid #344859;border-radius:10px;padding:10px 15px;font-weight:600}
+.main-page-button:hover{background:#293e50}
+[data-ttx-theme="light"] .main-page-button{background:var(--panel);border-color:#f6f9fc;box-shadow:4px 4px 9px #c5ced9,-4px -4px 9px #fff}
+[data-ttx-theme="light"] .main-page-button:hover{background:#e1e8f0;box-shadow:var(--inset)}
 :root[data-ttx-theme="light"]{color-scheme:light;--bg:#e8edf3;--panel:#e8edf3;--panel2:#e0e7ef;--line:#c2ced9;--text:#24384c;--muted:#52677c;--accent:#87500b;--green:#226452;--red:#a02f42;--radius:18px;--raised:8px 8px 20px #cbd2dc,-8px -8px 20px #fff;--inset:inset 3px 3px 7px #ccd3dd,inset -3px -3px 7px #fff}
 [data-ttx-theme="light"] button{background:var(--panel);border-color:#f6f9fc;box-shadow:4px 4px 9px #c5ced9,-4px -4px 9px #fff;border-radius:10px}
 [data-ttx-theme="light"] button:hover:not(:disabled),[data-ttx-theme="light"] button:active:not(:disabled){background:#e1e8f0;box-shadow:var(--inset)}
