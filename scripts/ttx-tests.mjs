@@ -12,6 +12,25 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
   const release = async (p,count) => {for(let i=0;i<count;i++)await p.click('#nextBtn');};
   const state = p => p.evaluate(()=>JSON.parse(localStorage.getItem('nr-ttx-v1:'+JSON.parse(localStorage.getItem('nr-ttx-v1:active')))));
 
+  await behavior('Emergency Response: theme persists and syncs without changing the exercise',async()=>{
+    const {ctx,p}=await open();
+    assert(await p.getAttribute('html','data-ttx-theme')==='light','new sessions should use the light theme');
+    await release(p,1);
+    const records=s=>JSON.stringify(Object.fromEntries(Object.entries(s).filter(([key])=>!['revision','updatedAt'].includes(key))));
+    const before=records(await state(p));
+    const display=await ctx.newPage();
+    await display.goto(new URL('/ttx-display.html',p.url()).href);
+    await display.waitForSelector('#ttxThemeToggle');
+    await p.click('#ttxThemeToggle');
+    await display.waitForFunction(()=>document.documentElement.dataset.ttxTheme==='dark');
+    await p.reload();await p.waitForSelector('#nextBtn');
+    assert(await p.getAttribute('html','data-ttx-theme')==='dark','theme preference must survive reload');
+    assert(records(await state(p))===before,'theme changes must preserve exercise records');
+    await display.click('#ttxThemeToggle');
+    await p.waitForFunction(()=>document.documentElement.dataset.ttxTheme==='light');
+    await ctx.close();
+  });
+
   await behavior('Emergency Response: 16:00 call, 16:10 crash, 22 red of 110, manual release',async()=>{
     const {ctx,p}=await open();
     assert((await p.textContent('#clockValue'))==='16:00:00','clock must start at 16:00 MVT');
