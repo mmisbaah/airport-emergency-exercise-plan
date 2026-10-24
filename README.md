@@ -22,6 +22,22 @@ An **Emergency Operations Plan (EOP) Exercise Dashboard** for airport emergency 
 
 ## Usage
 
+### Run the Hanimaadhoo MNDF tabletop exercise
+
+Choose **Run MNDF TTX** in the header, or open `ttx.html`. Northern Response is a dedicated facilitator console for an A320 landing gear emergency at Hanimaadhoo: first call 16:00 MVT, assumed crash 16:10, left-engine fire, 110 persons aboard, and 22 red/immediate casualties (20%). The additional allocation of 33 yellow, 50 green and 5 deceased is an exercise assumption.
+
+- Manually release 21 injects, start/pause/accelerate the scenario clock, and open `ttx-display.html` on the same browser for a projector showing released-only information.
+- Use **NO DUFF · pause** to stop scenario advancement. EXCON must explicitly resume play.
+- Track 110 patient IDs, bulk-update movements, and require transport/destination/receiving acceptance for transfer and handover. Medical priorities remain with qualified personnel.
+- Record decisions, confirmed resource tasks, command transfers, facility activation, objective evidence and corrective actions.
+- Export a JSON backup or a self-contained HTML after-action report (browser print supports PDF). Restore creates a separate paused session; existing sessions remain available.
+
+Primary operational source: user-supplied **HAQ Airport Emergency Plan, Edition 2**, issued 09 November 2025, effective 15 November 2025, reference O2-MNL/2025/25. Sections are identified in **Command & facilities**. ARFF holds interim command until the designated MNDF Incident Commander takes over; Gold coordination is through AEMC. The HDK Emergency Exercise 2026 PPTX and HTML supplied by the user inform the nine-phase teaching structure, logging and exercise conventions. Their Kulhudhuffushi location, 74-person scenario and draft timings do not replace the requested Hanimaadhoo scenario.
+
+No reference files, private contact directories, MNDF locations, unit strengths, movement times or operational asset availability are embedded. Validate current AEP revisions and actual arrangements before delivery. The app is a tabletop discussion tool, not an emergency dispatch or clinical record system.
+
+Sessions are browser-local and separate from the planning dashboard’s storage. Use one facilitator window. The projector synchronises only within the same browser profile/origin; it is not an authenticated participant role or a remotely shared session. Export backups to move devices. Serve over HTTP/HTTPS for service-worker offline support; both controller and display routes are cached distinctly.
+
 Open `index.html` in any modern web browser. No build step or server required.
 
 ## Customization

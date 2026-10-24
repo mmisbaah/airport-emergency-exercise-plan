@@ -21,6 +21,10 @@ jobs:
           node --check js/airports.js
           node --check js/app.js
           node --check js/data.js
+          node --check js/ttx-scenario.js
+          node --check js/ttx-runner.js
+          node --check js/ttx-display.js
+          node --check scripts/ttx-tests.mjs
           node --check sw.js
           node --check scripts/make-icons.js
           node --check scripts/ci-tests.mjs

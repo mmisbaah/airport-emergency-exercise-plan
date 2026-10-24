@@ -5,12 +5,18 @@
    VERSION must be bumped whenever index.html / css / js change so stale
    caches are dropped on deploy (keep it in step with the ?v= versions). */
 
-var VERSION = 'eop-20261022.maprestore';
+var VERSION = 'eop-20261024.ttx';
 var SHELL_CACHE = 'eop-shell-' + VERSION;
 
 var SHELL = [
   './',
   './index.html',
+  './ttx.html',
+  './ttx-display.html',
+  './css/ttx.css',
+  './js/ttx-scenario.js',
+  './js/ttx-runner.js',
+  './js/ttx-display.js',
   './css/styles.css',
   './js/app.js',
   './js/maldives.js',
@@ -56,6 +62,10 @@ self.addEventListener('fetch', function (event) {
   // Falls back on BOTH network errors and non-ok responses (proxies and
   // captive portals answer 5xx instead of failing the connection).
   if (req.mode === 'navigate') {
+    // Keep the controller and participant routes distinct when offline.
+    var navigationPath = new URL(req.url).pathname;
+    var fallbackShell = /\/ttx-display(?:\.html)?\/?$/.test(navigationPath) ? './ttx-display.html'
+      : /\/ttx(?:\.html)?\/?$/.test(navigationPath) ? './ttx.html' : './index.html';
     event.respondWith(
       // fetch by URL (not req) — navigation requests carry redirect:'manual',
       // which would surface Pages' 308 (e.g. tests.html -> /tests/tests) as a
@@ -72,13 +82,13 @@ self.addEventListener('fetch', function (event) {
           return resp;
         }
         // not ok (4xx/5xx) — serve the cached shell instead of an error page
-        return caches.match('./index.html').then(function (hit) {
+        return caches.match(fallbackShell).then(function (hit) {
           // Pages redirects index.html to /. A redirected cached Response
           // cannot satisfy a navigation whose redirect mode is manual.
           return hit ? new Response(hit.body, { status: 200, headers: hit.headers }) : resp;
         });
       }).catch(function () {
-        return caches.match('./index.html').then(function (hit) {
+        return caches.match(fallbackShell).then(function (hit) {
           return hit ? new Response(hit.body, { status: 200, headers: hit.headers }) : Response.error();
         });
       })
