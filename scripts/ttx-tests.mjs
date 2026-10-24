@@ -31,6 +31,7 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert(new Set(s.patients.map(x=>x.id)).size===110,'duplicate patient IDs');
     assert(s.released.length===7,'clock must never automatically release an inject');
     await section(p,'control');await p.selectOption('#speedSelect','10');await p.click('#playBtn');await p.click('#advanceBtn');await p.click('#resetExerciseBtn');await p.click('#confirmDialog button[value=confirm]');
+    await p.waitForFunction(()=>{const s=JSON.parse(localStorage.getItem('nr-ttx-v1:'+JSON.parse(localStorage.getItem('nr-ttx-v1:active'))));return s.elapsed===0&&s.released.length===0&&!s.running;});
     const reset=await state(p);assert(reset.elapsed===0&&!reset.running&&reset.speed===1,'reset must pause at 16:00 with 1x speed');
     assert(reset.released.length===0&&reset.patients.length===110&&reset.patients.every(x=>x.status==='Unlocated'),'exercise reset must clear injects and restore patients');
     assert(reset.decisions.length===0&&reset.resources.length===0&&reset.actions.length===0&&reset.commandTransfers.length===0,'exercise reset must clear run records');
@@ -57,6 +58,7 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert(after.released.length===before.released.length&&after.elapsed===before.elapsed,'NO DUFF allowed play to advance');
     await display.waitForFunction(()=>document.body.innerText.includes('NO DUFF · PLAY PAUSED'));
     await p.click('#resumeSafetyBtn');await p.click('#confirmDialog button[value=confirm]');
+    await p.waitForFunction(()=>!JSON.parse(localStorage.getItem('nr-ttx-v1:'+JSON.parse(localStorage.getItem('nr-ttx-v1:active')))).pausedForSafety);
     assert(!(await state(p)).pausedForSafety,'EXCON resume did not clear safety pause');
     assert(!p.errors.length,p.errors.join('; '));await ctx.close();
   });
@@ -105,6 +107,7 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert((await state(p)).released.length===0&&(await state(p)).decisions.length===0,'new session inherited previous records');
     await section(p,'setup');await p.click(`[data-session="${initialId}"]`);assert((await state(p)).decisions.length===1,'original session lost');
     await p.setInputFiles('#importFile',{name:'backup.json',mimeType:'application/json',buffer:Buffer.from(backupText)});await p.waitForSelector('#confirmDialog[open]');await p.click('#confirmDialog button[value=confirm]');
+    await p.waitForFunction(id=>JSON.parse(localStorage.getItem('nr-ttx-v1:active'))!==id,initialId);
     const restored=await state(p);assert(restored.id!==initialId&&restored.decisions.length===1&&!restored.running,'restore must create a separate paused session');
     assert(!p.errors.length,p.errors.join('; '));await ctx.close();
   });
