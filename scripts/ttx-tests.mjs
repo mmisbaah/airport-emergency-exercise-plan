@@ -30,9 +30,12 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert(s.patients.filter(x=>x.category==='Red').length===22,'red allocation incorrect');
     assert(new Set(s.patients.map(x=>x.id)).size===110,'duplicate patient IDs');
     assert(s.released.length===7,'clock must never automatically release an inject');
-    await section(p,'control');await p.selectOption('#speedSelect','10');await p.click('#playBtn');await p.click('#advanceBtn');await p.click('#resetTimerBtn');
+    await section(p,'control');await p.selectOption('#speedSelect','10');await p.click('#playBtn');await p.click('#advanceBtn');await p.click('#resetExerciseBtn');await p.click('#confirmDialog button[value=confirm]');
     const reset=await state(p);assert(reset.elapsed===0&&!reset.running&&reset.speed===1,'reset must pause at 16:00 with 1x speed');
-    assert(reset.released.length===7&&reset.patients.length===110,'timer reset must preserve exercise records');
+    assert(reset.released.length===0&&reset.patients.length===110&&reset.patients.every(x=>x.status==='Unlocated'),'exercise reset must clear injects and restore patients');
+    assert(reset.decisions.length===0&&reset.resources.length===0&&reset.actions.length===0&&reset.commandTransfers.length===0,'exercise reset must clear run records');
+    assert(reset.review.every(x=>x.score===-1&&x.evidence==='')&&reset.facilities.every(x=>x.status==='Not established'&&!x.owner&&!x.location),'exercise reset must clear assessments and facility records');
+    assert(reset.id===s.id&&reset.name===s.name&&!reset.ended&&!reset.pausedForSafety,'exercise reset must restart the same session');
     await p.reload();assert((await p.textContent('#clockValue'))==='16:00:00','timer reset must persist across reload');
     assert(!p.errors.length,p.errors.join('; '));await ctx.close();
   });
