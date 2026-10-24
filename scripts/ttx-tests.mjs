@@ -30,6 +30,10 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert(s.patients.filter(x=>x.category==='Red').length===22,'red allocation incorrect');
     assert(new Set(s.patients.map(x=>x.id)).size===110,'duplicate patient IDs');
     assert(s.released.length===7,'clock must never automatically release an inject');
+    await section(p,'control');await p.selectOption('#speedSelect','10');await p.click('#playBtn');await p.click('#advanceBtn');await p.click('#resetTimerBtn');
+    const reset=await state(p);assert(reset.elapsed===0&&!reset.running&&reset.speed===1,'reset must pause at 16:00 with 1x speed');
+    assert(reset.released.length===7&&reset.patients.length===110,'timer reset must preserve exercise records');
+    await p.reload();assert((await p.textContent('#clockValue'))==='16:00:00','timer reset must persist across reload');
     assert(!p.errors.length,p.errors.join('; '));await ctx.close();
   });
 
