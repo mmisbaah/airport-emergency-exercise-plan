@@ -83,24 +83,24 @@ export async function northernResponseTests({behavior,newAppPage,assert}) {
     assert((await p.textContent('#resourceError')).includes('Confirm capability'),'assigned resource did not require confirmation');
     await p.check('#resourceForm [name=confirmed]');await p.click('#resourceForm button.primary');assert((await state(p)).resources.length===1,'resource not saved');
     await section(p,'coordination');
-    assert((await p.textContent('#pageContent')).includes('designated MNDF Incident Commander takes over'),'HAQ command rule missing');
+    assert((await p.textContent('#pageContent')).includes('designated Incident Commander takes over'),'HAQ command rule missing');
     const status=p.locator('[data-facility="0"][data-field=status]');await status.selectOption('Established');
     assert((await state(p)).facilities[0].status==='Not established','facility established without owner and location');
     await p.fill('[data-facility="0"][data-field=owner]','Exercise RVP coordinator');await p.fill('[data-facility="0"][data-field=location]','Validated exercise point');await p.locator('[data-facility="0"][data-field=location]').blur();await status.selectOption('Established');
     assert((await state(p)).facilities[0].status==='Established','facility record not saved');
-    await p.fill('#transferCommandForm [name=from]','ARFF interim commander');await p.fill('#transferCommandForm [name=to]','Designated MNDF IC');await p.fill('#transferCommandForm [name=brief]','Face-to-face briefing: hazards, priorities, resources and outstanding tasks.');await p.check('#transferCommandForm [name=announced]');await p.click('#transferCommandForm button.primary');
+    await p.fill('#transferCommandForm [name=from]','ARFF interim commander');await p.fill('#transferCommandForm [name=to]','Designated Incident Commander');await p.fill('#transferCommandForm [name=brief]','Face-to-face briefing: hazards, priorities, resources and outstanding tasks.');await p.check('#transferCommandForm [name=announced]');await p.click('#transferCommandForm button.primary');
     assert((await state(p)).commandTransfers.length===1,'command transfer not recorded');await ctx.close();
   });
 
   await behavior('Northern Response: decisions, evidence, AAR, JSON restore and session isolation',async()=>{
     const {ctx,p}=await open();await release(p,1);const initialId=(await state(p)).id;
-    await section(p,'decisions');await p.fill('#decisionForm [name=text]','Activate MNDF internal notification.');await p.fill('#decisionForm [name=owner]','Duty officer');await p.fill('#decisionForm [name=action]','Confirm liaison and acknowledgement.');await p.click('#decisionForm button.primary');
+    await section(p,'decisions');await p.fill('#decisionForm [name=text]','Activate responding agency internal notification.');await p.fill('#decisionForm [name=owner]','Duty officer');await p.fill('#decisionForm [name=action]','Confirm liaison and acknowledgement.');await p.click('#decisionForm button.primary');
     await section(p,'review');await p.selectOption('[data-score="0"]','2');await p.fill('[data-evidence="0"]','Acknowledgement recorded.');await p.locator('[data-evidence="0"]').blur();
     await p.fill('#actionForm [name=text]','Verify the fallback communications plan.');await p.fill('#actionForm [name=owner]','Communications lead');await p.fill('#actionForm [name=due]','2026-11-01');await p.click('#actionForm button.primary');
     await p.click('#exportBtn');
     const backupPromise=p.waitForEvent('download');await p.click('#backupBtn');const backup=await backupPromise;const backupText=await readFile(await backup.path(),'utf8');const parsed=JSON.parse(backupText);
     assert(parsed.session.decisions.length===1&&parsed.session.review[0].score===2,'backup incomplete');
-    const reportPromise=p.waitForEvent('download');await p.click('#reportBtn');const report=await reportPromise;const html=await readFile(await report.path(),'utf8');assert(html.includes('Activate MNDF internal notification.')&&html.includes('Command transfers')&&html.includes('HAQ Airport Emergency Plan'),'AAR incomplete');
+    const reportPromise=p.waitForEvent('download');await p.click('#reportBtn');const report=await reportPromise;const html=await readFile(await report.path(),'utf8');assert(html.includes('Activate responding agency internal notification.')&&html.includes('Command transfers')&&html.includes('HAQ Airport Emergency Plan'),'AAR incomplete');
     await p.click('[data-close=exportDialog]');await section(p,'setup');await p.click('#newSessionBtn');await p.fill('#newSessionForm [name=name]','Second exercise');await p.click('#newSessionForm button.primary');
     assert((await state(p)).released.length===0&&(await state(p)).decisions.length===0,'new session inherited previous records');
     await section(p,'setup');await p.click(`[data-session="${initialId}"]`);assert((await state(p)).decisions.length===1,'original session lost');
