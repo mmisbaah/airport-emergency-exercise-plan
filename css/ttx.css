@@ -10,3 +10,46 @@
 /* Allow nested grids and scrollable tables to shrink on narrow displays. */
 .stack,.table-wrap{min-width:0;max-width:100%}
 @media(max-width:1150px){.grid-two,.setup-columns{grid-template-columns:minmax(0,1fr)}}
+
+/* Soft, tactile surfaces with explicit borders and readable operational colours. */
+:root[data-ttx-theme="light"]{color-scheme:light;--bg:#e8edf3;--panel:#e8edf3;--panel2:#e0e7ef;--line:#c2ced9;--text:#24384c;--muted:#52677c;--accent:#87500b;--green:#226452;--red:#a02f42;--radius:18px;--raised:8px 8px 20px #cbd2dc,-8px -8px 20px #fff;--inset:inset 3px 3px 7px #ccd3dd,inset -3px -3px 7px #fff}
+[data-ttx-theme="light"] button{background:var(--panel);border-color:#f6f9fc;box-shadow:4px 4px 9px #c5ced9,-4px -4px 9px #fff;border-radius:10px}
+[data-ttx-theme="light"] button:hover:not(:disabled),[data-ttx-theme="light"] button:active:not(:disabled){background:#e1e8f0;box-shadow:var(--inset)}
+[data-ttx-theme="light"] button.primary{background:#e9bd7c;border-color:#f5d5a7;color:#392b17;box-shadow:4px 4px 9px #c5ced9,-4px -4px 9px #fff}
+[data-ttx-theme="light"] button.primary:hover{background:#edc995}
+[data-ttx-theme="light"] input,[data-ttx-theme="light"] select,[data-ttx-theme="light"] textarea{background:var(--bg);border-color:#c2ccd8;box-shadow:var(--inset);border-radius:10px}
+[data-ttx-theme="light"] input::placeholder,[data-ttx-theme="light"] textarea::placeholder{color:#61758a;opacity:1}
+[data-ttx-theme="light"] input[type="checkbox"]{accent-color:var(--green);box-shadow:none}
+[data-ttx-theme="light"] :is(button,a,input,select,textarea,summary):focus-visible{outline-color:#237b70}
+[data-ttx-theme="light"] .exercise-ribbon{background:#e9ddc9;color:#60431f}
+[data-ttx-theme="light"] .exercise-ribbon span{color:#685539}
+[data-ttx-theme="light"] .topbar,[data-ttx-theme="light"] .sidebar{background:var(--bg)}
+[data-ttx-theme="light"] .topbar{box-shadow:0 4px 14px #cbd2dc80}
+[data-ttx-theme="light"] .brand-icon{border-color:#fff;box-shadow:var(--raised)}
+[data-ttx-theme="light"] .nav-item{box-shadow:none;border-color:transparent}
+[data-ttx-theme="light"] .nav-item span{color:#576c81}
+[data-ttx-theme="light"] .nav-item.active{background:var(--bg);border-color:#cbd4df;color:var(--accent);box-shadow:var(--inset)}
+[data-ttx-theme="light"] .panel,[data-ttx-theme="light"] .clock-strip,[data-ttx-theme="light"] .stat{background:var(--panel);box-shadow:var(--raised);border-color:#f8fafc}
+[data-ttx-theme="light"] .clock{color:#785019}
+[data-ttx-theme="light"] .current-event .message,[data-ttx-theme="light"] .event-prompt p{color:var(--text)}
+[data-ttx-theme="light"] .count-badge,[data-ttx-theme="light"] .pill{background:#dbe4ee;color:#3e566e;box-shadow:var(--inset)}
+[data-ttx-theme="light"] .accounting{background:#e0ebe6;border-color:#a8c2b6}
+[data-ttx-theme="light"] .accounting.warning{background:#f0e5d2;border-color:#cbb993}
+[data-ttx-theme="light"] .note-box{background:#dfe9e9;color:#345d60}
+[data-ttx-theme="light"] .stat.red{border-top-color:#b34451}
+[data-ttx-theme="light"] .stat.red .number{color:#a02f42}
+[data-ttx-theme="light"] .stat.yellow{border-top-color:#a57a17}
+[data-ttx-theme="light"] .stat.yellow .number{color:#805b08}
+[data-ttx-theme="light"] .stat.green{border-top-color:#39866a}
+[data-ttx-theme="light"] .stat.green .number{color:#226452}
+[data-ttx-theme="light"] .stat.deceased{border-top-color:#5b6b7b}
+[data-ttx-theme="light"] .pill.red{background:#f0dce0;color:#8c283b;box-shadow:none}
+[data-ttx-theme="light"] .pill.yellow{background:#eee3c6;color:#715007;box-shadow:none}
+[data-ttx-theme="light"] .pill.green{background:#d7e8df;color:#205b46;box-shadow:none}
+[data-ttx-theme="light"] .pill.deceased{background:#d7dfe8;color:#344659;box-shadow:none}
+[data-ttx-theme="light"] .flow-diagram rect{fill:#dfe7ef;stroke:#aebfce}
+[data-ttx-theme="light"] .flow-diagram text{fill:#354e65}
+[data-ttx-theme="light"] dialog{border-color:#fff;box-shadow:0 24px 70px #172c4b55}
+[data-ttx-theme="light"] dialog::backdrop{background:#263d5466}
+[data-ttx-theme="light"] .end-banner{background:#deebe1;color:#285636;border-color:#9cbaa3}
+@media(max-width:700px){[data-ttx-theme="light"] .panel,[data-ttx-theme="light"] .clock-strip,[data-ttx-theme="light"] .stat{box-shadow:5px 5px 12px #cbd2dc,-5px -5px 12px #fff}}
